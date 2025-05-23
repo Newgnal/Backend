@@ -2,11 +2,8 @@
 
 ### Git Convention
 #### 1. Branch 전략
-- 브랜치명 : ``` feat/{이슈번호}/{작업설명}``` 
-
-- **일회성 브랜치 -> 지속 branch** 시 ```일반 merge```
-  
-  ex) feat -> main
+- 브랜치명 : ``` feat/{이슈번호}/{작업설명}```
+- 일회성 브랜치 -> main 머지 시 일반 merge 사용 
 
 #### 2. Commit convention
 - ```feat:, fix:, docs:, refactor:, chore:``` 등으로 시작
