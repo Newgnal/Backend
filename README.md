@@ -1,4 +1,4 @@
-## 알람있슈 백엔드
+## 뉴그널 백엔드
 
 ### Git Convention
 #### 1. Branch 전략
