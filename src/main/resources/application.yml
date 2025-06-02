@@ -2,6 +2,9 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    include: local, jwt
+
   datasource:
     url: jdbc:mysql://${DB_URL_NAME}?useSSL=false&serverTimezone=Asia/Seoul
     username: ${DB_USERNAME}
@@ -17,3 +20,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+jwt:
+  expiration:
+    access: ${ACCESS_EXPIRATION:1_800_000}
+    refresh: ${REFRESH_EXPIRATION:2_592_000_000}
+  secret: ${JWT_SECRET:test1234tes1tte2st1234test1te!stte7stt@#e4sttes5ttest2testtest1234123415215161231}

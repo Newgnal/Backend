@@ -8,24 +8,26 @@ import org.springframework.http.ResponseEntity;
 @Getter
 public class CustomException extends RuntimeException {
 
-    private final ErrorStatus errorStatus;
+    private final ErrorCode errorCode;
 
-    public CustomException(ErrorStatus errorStatus) {
-        super(errorStatus.getMessage());
-        this.errorStatus = errorStatus;
+    public CustomException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
-    public ErrorStatus getErrorStatus() {
-        return errorStatus;
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
-    public static <T> ResponseEntity<CommonResponse<T>> createErrorResponse(ErrorStatus errorStatus, T data) {
+
+    public static <T> ResponseEntity<CommonResponse<T>> createErrorResponse(ErrorCode errorCode, T data) {
         CommonResponse<T> response = CommonResponse.<T>builder()
-                .status(errorStatus.getHttpStatus().value())
-                .message(errorStatus.getMessage())
+                .status(errorCode.getHttpStatus().value())
+                .message(errorCode.getMessage())
                 .data(data)
                 .build();
 
         return ResponseEntity
-                .status(errorStatus.getHttpStatus())
+                .status(errorCode.getHttpStatus())
                 .body(response);
     }
 }
