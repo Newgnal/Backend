@@ -24,7 +24,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
-            "/swagger-ui/**", "/v3/api-docs/**", "/login", "/auth/**"
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/login/**",
+            "/auth/**",
+            "/error"
     };
 
     @Bean

@@ -7,3 +7,6 @@ REFRESH_EXPIRATION : 2_592_000_000
 
 JWT_SECRET: "eawfiwsfefafsdljl124fw4ennnsd412asdffalskfwnld123aiiiewnsfdwenwekewnlewnklenwlkewlewnlwewenl3101ln4223jndsfnfl1sdfwfeljk134"
 
+#OAUTH
+KAKAO_CLIENT_ID : 874e11dff95cc5879de696573bab2afe
+KAKAO_REDIRECT_URI : http://localhost:8080/auth/login/kakao
