@@ -46,10 +46,7 @@ public class AuthService {
         //닉네임 자동 생성
         UserEntity user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
-                    String kakaoNickname = kakaoUserInfo.getKakaoAccount().getProfile().getNickname();
-                    String nicknameToUse = (kakaoNickname != null && !kakaoNickname.isBlank())
-                            ? kakaoNickname
-                            : generateRandomNickname();
+                    String  nicknameToUse = generateRandomNickname();
 
                     UserEntity newUser = UserEntity.builder()
                             .email(email)
@@ -63,8 +60,17 @@ public class AuthService {
         return AuthConverter.toSocialLoginResponse(user,accessToken);
     }
 
+    //닉네임 unique 처리
     private String generateRandomNickname() {
-        return "user_" + UUID.randomUUID().toString().substring(0, 8);
+        for (int i = 0; i < 5; i++) {
+            String nickname = "user_" + UUID.randomUUID().toString().substring(0, 4);
+            boolean exists = userRepository.existsByNickName(nickname);
+            if (!exists) {
+                return nickname;
+            }
+        }
+        // 최대 시도 횟수 초과 시, 그냥 UUID 전체를 씀
+        return "user_" + UUID.randomUUID().toString().replace("-", "");
     }
 
     public String createAccessTokenWhenLogin(Long userId) {

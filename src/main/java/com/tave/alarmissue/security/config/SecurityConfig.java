@@ -1,5 +1,9 @@
 package com.tave.alarmissue.security.config;
 
+import com.tave.alarmissue.redis.service.RefreshTokenRedisService;
+import com.tave.alarmissue.security.filter.JwtAuthorizationFilter;
+import com.tave.alarmissue.security.filter.JwtExceptionFilter;
+import com.tave.alarmissue.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,15 +25,20 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     private static final String[] WHITE_LIST = {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/login/**",
             "/auth/**",
-            "/error"
+            "/error",
     };
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,14 +51,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST).permitAll()
                         .anyRequest().authenticated()
-                );
-
+                )
+                // 인가 필터 설정
+                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                // 필터 예외 설정
+                .addFilterBefore(jwtExceptionFilter, jwtAuthorizationFilter.getClass());
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
