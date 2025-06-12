@@ -2,7 +2,6 @@ package com.tave.alarmissue.auth.service;
 
 import com.tave.alarmissue.auth.client.KakaoApiClient;
 import com.tave.alarmissue.auth.converter.AuthConverter;
-import com.tave.alarmissue.auth.dto.request.RegisterRequest;
 import com.tave.alarmissue.auth.dto.request.TokenRequest;
 import com.tave.alarmissue.auth.dto.response.KakaoUserInfo;
 import com.tave.alarmissue.auth.dto.response.SocialLoginResponse;
@@ -33,7 +32,7 @@ public class AuthService {
 
     public SocialLoginResponse loginOrRegister(TokenRequest tokenRequest) {
 
-        String accessToken = tokenRequest.getAccessToken();
+        String accessToken = tokenRequest.getKakaoAccessToken();
 
         // 카카오 리소스 서버에 사용자 정보 요청
         KakaoUserInfo kakaoUserInfo = kakaoApiClient.getUserInfo(accessToken);

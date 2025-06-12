@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    include: local, jwt
+    include: local, jwt, oauth
 
   datasource:
     url: jdbc:mysql://${DB_URL_NAME}?useSSL=false&serverTimezone=Asia/Seoul

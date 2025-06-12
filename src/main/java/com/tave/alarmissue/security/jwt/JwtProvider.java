@@ -123,6 +123,7 @@ public class JwtProvider {
         return parseClaims(token).getSubject();
     }
 
+    //인가된 사용자 꺼내기
     public Authentication getAuthenticationFromUserId(String userId) {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         User principal = new User(userId, "", authorities);

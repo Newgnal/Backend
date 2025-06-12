@@ -45,7 +45,7 @@ public class AuthController {
         String accessToken = kakaoApiClient.requestAccessToken(code);
 
         TokenRequest tokenRequest = new TokenRequest();
-        tokenRequest.setAccessToken(accessToken);
+        tokenRequest.setKakaoAccessToken(accessToken);
 
         SocialLoginResponse loginResponse = authService.loginOrRegister(tokenRequest);
 
