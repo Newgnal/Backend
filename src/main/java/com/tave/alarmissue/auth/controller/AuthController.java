@@ -24,32 +24,21 @@ public class AuthController {
     private final KakaoApiClient kakaoApiClient;
 
 
-    @PostMapping("/login/kakao")
-    public ResponseEntity<JwtLoginResponse> kakaoLogin (
-            @Valid @RequestBody TokenRequest tokenRequest) {
-
-        SocialLoginResponse socialLoginResponse = authService.loginOrRegister(tokenRequest);
-        String accessWithBearer = authService.createAccessTokenWhenLogin(socialLoginResponse.getUserId());
-
-        JwtLoginResponse jwtResponse = AuthConverter.toJwtLoginResponse(socialLoginResponse, accessWithBearer);
-
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, accessWithBearer)
-                .body(jwtResponse);
-
-    }
+//    @GetMapping("/login/kakao")
+//    public ResponseEntity<JwtLoginResponse> kakaoLogin (
+//            @Valid @RequestParam String code) {
+//
+//        JwtLoginResponse response = authService.loginOrRegister(code);
+//
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.AUTHORIZATION, response.getAccessToken())
+//                .body(response);
+//
+//    }
 
     @GetMapping("/auth/login/kakao")
-    public ResponseEntity<SocialLoginResponse> kakaoLoginToken(@RequestParam String code) {
-
-        String accessToken = kakaoApiClient.requestAccessToken(code);
-
-        TokenRequest tokenRequest = new TokenRequest();
-        tokenRequest.setKakaoAccessToken(accessToken);
-
-        SocialLoginResponse loginResponse = authService.loginOrRegister(tokenRequest);
-
+    public ResponseEntity<JwtLoginResponse> kakaoLoginToken(@RequestParam String code) {
+        JwtLoginResponse loginResponse = authService.loginOrRegister(code);
         return ResponseEntity.ok(loginResponse);
     }
 

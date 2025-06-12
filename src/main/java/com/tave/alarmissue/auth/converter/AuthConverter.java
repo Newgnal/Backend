@@ -8,22 +8,14 @@ import com.tave.alarmissue.user.domain.UserEntity;
 
 public class AuthConverter {
 
-    public static SocialLoginResponse toSocialLoginResponse(UserEntity userEntity, String accessToken) {
-        return SocialLoginResponse.builder()
-                .userId(userEntity.getId())
-                .email(userEntity.getEmail())
-                .nickName(userEntity.getNickName())
-                .KakaoAccessToken(accessToken)
-                .build();
-    }
 
-
-    public static JwtLoginResponse toJwtLoginResponse(SocialLoginResponse socialLoginResponse, String jwtToken) {
+    public static JwtLoginResponse toJwtLoginResponse(UserEntity user, String accessToken, String refreshToken) {
         return JwtLoginResponse.builder()
-                .userId(socialLoginResponse.getUserId())
-                .email(socialLoginResponse.getEmail())
-                .nickName(socialLoginResponse.getNickName())
-                .jwtAccessToken(jwtToken)
+                .userId(user.getId())
+                .email(user.getEmail())
+                .nickName(user.getNickName())
+                .jwtAccessToken("Bearer " + accessToken)
+                .jwtAccessToken(refreshToken)
                 .build();
     }
 

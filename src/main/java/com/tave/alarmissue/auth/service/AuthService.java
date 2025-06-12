@@ -3,6 +3,7 @@ package com.tave.alarmissue.auth.service;
 import com.tave.alarmissue.auth.client.KakaoApiClient;
 import com.tave.alarmissue.auth.converter.AuthConverter;
 import com.tave.alarmissue.auth.dto.request.TokenRequest;
+import com.tave.alarmissue.auth.dto.response.JwtLoginResponse;
 import com.tave.alarmissue.auth.dto.response.KakaoUserInfo;
 import com.tave.alarmissue.auth.dto.response.SocialLoginResponse;
 import com.tave.alarmissue.redis.service.RefreshTokenRedisService;
@@ -22,42 +23,48 @@ import java.util.UUID;
 @Slf4j
 public class AuthService {
 
-    private final UserRepository userRepository;
     private final KakaoApiClient kakaoApiClient;
+    private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
-
     private final RefreshTokenRedisService refreshTokenRedisService;
+
     @Value("${jwt.expiration.refresh}")
     private Long REFRESH_TOKEN_EXPIRE_TIME;
 
-    public SocialLoginResponse loginOrRegister(TokenRequest tokenRequest) {
+    public JwtLoginResponse loginOrRegister(String code) {
 
-        String accessToken = tokenRequest.getKakaoAccessToken();
+        // 1. 인가 코드로 카카오 access token 요청
+        String kakaoAccessToken = kakaoApiClient.requestAccessToken(code);
 
-        // 카카오 리소스 서버에 사용자 정보 요청
-        KakaoUserInfo kakaoUserInfo = kakaoApiClient.getUserInfo(accessToken);
-        log.debug("카카오 사용자 정보: {}", kakaoUserInfo);
-
-        // 사용자 정보 가져오기
+        // 2. 카카오 access token으로 사용자 정보 조회
+        KakaoUserInfo kakaoUserInfo = kakaoApiClient.getUserInfo(kakaoAccessToken);
         String email = kakaoUserInfo.getKakaoAccount().getEmail();
         String profileImage = kakaoUserInfo.getKakaoAccount().getProfile().getProfileImageUrl();
 
-        //닉네임 자동 생성
+        // 3. 회원 조회 또는 생성
         UserEntity user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
-                    String  nicknameToUse = generateRandomNickname();
-
-                    UserEntity newUser = UserEntity.builder()
+                    String nicknameToUse = generateRandomNickname();
+                    return userRepository.save(UserEntity.builder()
                             .email(email)
                             .nickName(nicknameToUse)
                             .imageUrl(profileImage)
                             .enabled(false)
-                            .build();
-                    return userRepository.save(newUser);
+                            .build());
                 });
-        // AuthConverter 수정: accessToken 포함 반환
-        return AuthConverter.toSocialLoginResponse(user,accessToken);
+
+        // 4. Access & Refresh Token 생성
+        Authentication authentication = jwtProvider.getAuthenticationFromUserId(user.getId().toString());
+        String accessToken = jwtProvider.generateAccessToken(authentication, user.getId().toString());
+        String refreshToken = jwtProvider.generateRefreshToken(authentication, user.getId().toString());
+
+        // 5. Refresh Token을 Redis에 저장
+        refreshTokenRedisService.saveRefreshToken(user.getId(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+
+        // 6. JwtLoginResponse 반환
+        return AuthConverter.toJwtLoginResponse(user,accessToken,refreshToken);
     }
+
 
     //닉네임 unique 처리
     private String generateRandomNickname() {
@@ -70,17 +77,6 @@ public class AuthService {
         }
         // 최대 시도 횟수 초과 시, 그냥 UUID 전체를 씀
         return "user_" + UUID.randomUUID().toString().replace("-", "");
-    }
-
-    public String createAccessTokenWhenLogin(Long userId) {
-
-        Authentication authentication = jwtProvider.getAuthenticationFromUserId(userId.toString());
-        String accessToken = jwtProvider.generateAccessToken(authentication, userId.toString());
-        String refreshToken = jwtProvider.generateRefreshToken(authentication, userId.toString());
-
-        refreshTokenRedisService.saveRefreshToken(userId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
-
-        return "Bearer " + accessToken;
     }
 
 }
