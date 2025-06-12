@@ -17,6 +17,7 @@ import java.awt.desktop.UserSessionEvent;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth/v1")
 public class AuthController {
 
     private final AuthService authService;
