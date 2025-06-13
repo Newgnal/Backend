@@ -17,16 +17,8 @@ public class UserEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    // soft delete 후 재 가입을 위해 unique false
     @Column(length = 30, nullable = false, unique = false)
     private String email;
-
-    @Column(length =30)
-    private String realName;
-
-    // 이메일 이름
-    @Column(length = 30)
-    private String loginName;
 
     // 닉네임
     @Column(length = 20, nullable = true, unique = true)
