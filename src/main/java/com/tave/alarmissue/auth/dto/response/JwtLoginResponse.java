@@ -10,5 +10,6 @@ public class JwtLoginResponse {
     private String email;
     private String nickName;
     private String jwtAccessToken;
+    private String jwtRefreshToken;
     // boolean enabled;
 }

@@ -3,9 +3,9 @@ package com.tave.alarmissue.auth.controller;
 import com.tave.alarmissue.auth.client.KakaoApiClient;
 import com.tave.alarmissue.auth.converter.AuthConverter;
 import com.tave.alarmissue.auth.dto.response.JwtLoginResponse;
-import com.tave.alarmissue.auth.dto.response.SocialLoginResponse;
-import com.tave.alarmissue.auth.dto.request.TokenRequest;
+import com.tave.alarmissue.auth.dto.response.TokenResponse;
 import com.tave.alarmissue.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -21,25 +21,24 @@ import java.awt.desktop.UserSessionEvent;
 public class AuthController {
 
     private final AuthService authService;
-    private final KakaoApiClient kakaoApiClient;
 
-
-//    @GetMapping("/login/kakao")
-//    public ResponseEntity<JwtLoginResponse> kakaoLogin (
-//            @Valid @RequestParam String code) {
-//
-//        JwtLoginResponse response = authService.loginOrRegister(code);
-//
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.AUTHORIZATION, response.getAccessToken())
-//                .body(response);
-//
-//    }
-
-    @GetMapping("/auth/login/kakao")
+    @GetMapping("/login/kakao")
     public ResponseEntity<JwtLoginResponse> kakaoLoginToken(@RequestParam String code) {
         JwtLoginResponse loginResponse = authService.loginOrRegister(code);
         return ResponseEntity.ok(loginResponse);
+    }
+
+    //백엔드 확인용
+    @PostMapping("/token/reissue")
+    @Operation(summary = "백엔드 개발용 API")
+    public ResponseEntity<TokenResponse> reissueAccessToken(@RequestParam String refreshToken) {
+
+        // 새 AccessToken 재발급 시도
+        String newAccessToken = authService.reissueAccessToken(refreshToken);
+
+        TokenResponse response = new TokenResponse(newAccessToken);
+
+        return ResponseEntity.ok(response);
     }
 
 

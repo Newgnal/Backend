@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = request.getHeader("access");
+        String accessToken = extractAccessTokenFromHeader(request);
 
         if (accessToken == null || accessToken.isEmpty()) {
             filterChain.doFilter(request, response);
@@ -42,6 +43,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         validateAndReissue(response, accessToken);
         setAuthentication(accessToken);
         filterChain.doFilter(request, response);
+    }
+
+    private String extractAccessTokenFromHeader(HttpServletRequest request) {
+
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.replace("Bearer ", "");
+        }
+
+        return null;
     }
 
     private void validateAndReissue(HttpServletResponse response, String accessToken) {
@@ -75,7 +87,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (jwtProvider.validateToken(refreshToken)) {
             // 재발급
             String newAccessToken = jwtProvider.reissueWithRefresh(refreshToken);
-            response.setHeader("access", newAccessToken);
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
         }
     }
 

@@ -15,7 +15,7 @@ public class AuthConverter {
                 .email(user.getEmail())
                 .nickName(user.getNickName())
                 .jwtAccessToken("Bearer " + accessToken)
-                .jwtAccessToken(refreshToken)
+                .jwtRefreshToken(refreshToken)
                 .build();
     }
 
