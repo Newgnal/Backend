@@ -87,7 +87,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (jwtProvider.validateToken(refreshToken)) {
             // 재발급
             String newAccessToken = jwtProvider.reissueWithRefresh(refreshToken);
-            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer ㅅㄷ" + newAccessToken);
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newAccessToken);
         }
     }
 
