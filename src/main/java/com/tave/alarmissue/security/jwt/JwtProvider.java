@@ -65,7 +65,7 @@ public class JwtProvider {
                 .collect(Collectors.joining());
 
         return Jwts.builder()
-                .subject(userId)
+                .subject(authentication.getName())
                 .claim("category", category)
                 .claim("email", authentication.getName())
                 .claim("authorities", authorities)
@@ -73,6 +73,7 @@ public class JwtProvider {
                 .expiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(secretKey)
                 .compact();
+
     }
 
     // 만료 되었을 때만 false 반환
@@ -105,8 +106,10 @@ public class JwtProvider {
 
         String email = claims.get("email", String.class);
 
-        // email을 principal로 사용
-        return new UsernamePasswordAuthenticationToken(email, token, authorities);
+        User principal = new User(email, "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+
     }
 
     private Claims parseClaims(String token) {
