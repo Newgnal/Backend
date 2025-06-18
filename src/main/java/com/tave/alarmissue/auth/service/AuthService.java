@@ -4,7 +4,6 @@ import com.tave.alarmissue.auth.client.KakaoApiClient;
 import com.tave.alarmissue.auth.converter.AuthConverter;
 import com.tave.alarmissue.auth.dto.response.JwtLoginResponse;
 import com.tave.alarmissue.auth.dto.response.KakaoUserInfo;
-import com.tave.alarmissue.auth.dto.response.SocialLoginResponse;
 import com.tave.alarmissue.redis.entity.RefreshToken;
 import com.tave.alarmissue.redis.service.RefreshTokenRedisService;
 import com.tave.alarmissue.security.exception.SecurityErrorCode;
@@ -43,6 +42,7 @@ public class AuthService {
         KakaoUserInfo kakaoUserInfo = kakaoApiClient.getUserInfo(kakaoAccessToken);
         String email = kakaoUserInfo.getKakaoAccount().getEmail();
         String profileImage = kakaoUserInfo.getKakaoAccount().getProfile().getProfileImageUrl();
+
 
         // 3. 회원 조회 또는 생성
         UserEntity user = userRepository.findByEmail(email)

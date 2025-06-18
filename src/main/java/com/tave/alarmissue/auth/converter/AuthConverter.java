@@ -1,6 +1,5 @@
 package com.tave.alarmissue.auth.converter;
 
-import com.tave.alarmissue.auth.dto.response.SocialLoginResponse;
 import com.tave.alarmissue.auth.dto.response.JwtLoginResponse;
 import com.tave.alarmissue.user.domain.UserEntity;
 

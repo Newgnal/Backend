@@ -20,6 +20,6 @@ public class UserController {
 
         String userId = currentUser.getUsername();
 
-        return ResponseEntity.ok("인증된 사용자: " + userId.toString());
+        return ResponseEntity.ok("인증된 사용자: " + userId);
     }
 }
