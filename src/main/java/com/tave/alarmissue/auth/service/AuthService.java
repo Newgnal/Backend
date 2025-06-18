@@ -57,9 +57,9 @@ public class AuthService {
                 });
 
         // 4. Access & Refresh Token 생성
-        Authentication authentication = jwtProvider.getAuthenticationFromUserId(user.getEmail().toString());
-        String accessToken = jwtProvider.generateAccessToken(authentication, user.getEmail().toString());
-        String refreshToken = jwtProvider.generateRefreshToken(authentication, user.getEmail().toString());
+        Authentication authentication = jwtProvider.getAuthenticationFromUserId(user.getId().toString());
+        String accessToken = jwtProvider.generateAccessToken(authentication, user.getId().toString());
+        String refreshToken = jwtProvider.generateRefreshToken(authentication, user.getId().toString());
 
         // 5. Refresh Token을 Redis에 저장
         refreshTokenRedisService.saveRefreshToken(user.getId(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);

@@ -65,7 +65,7 @@ public class JwtProvider {
                 .collect(Collectors.joining());
 
         return Jwts.builder()
-                .subject(authentication.getName())
+                .subject(userId)
                 .claim("category", category)
                 .claim("email", authentication.getName())
                 .claim("authorities", authorities)
@@ -103,11 +103,7 @@ public class JwtProvider {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-
-        String email = claims.get("email", String.class);
-
-        User principal = new User(email, "", authorities);
-
+        User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 
     }
