@@ -25,10 +25,9 @@ public class AuthController {
     @PostMapping("/login/kakao")
     public ResponseEntity<JwtLoginResponse> kakaoLoginToken(@RequestParam String code) {
         JwtLoginResponse loginResponse = authService.loginOrRegister(code);
-        String accessWithBearer = authService.createAccessTokenWhenLogin(loginResponse.getUserId().toString());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.AUTHORIZATION, accessWithBearer)
+                .header(HttpHeaders.AUTHORIZATION, loginResponse.getJwtAccessToken())
                 .body(loginResponse);
 
     }

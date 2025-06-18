@@ -70,17 +70,6 @@ public class AuthService {
         return AuthConverter.toJwtLoginResponse(user,accessToken,refreshToken);
     }
 
-    public String createAccessTokenWhenLogin(String userId) {
-        Authentication authentication = jwtProvider.getAuthenticationFromUserId(userId);
-        String accessToken = jwtProvider.generateAccessToken(authentication, userId);
-        String refreshToken = jwtProvider.generateRefreshToken(authentication, userId);
-
-        refreshTokenRedisService.saveRefreshToken(userId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
-
-        return "Bearer " + accessToken;
-    }
-
-
     //닉네임 unique 처리
     private String generateRandomNickname() {
         for (int i = 0; i < 5; i++) {
