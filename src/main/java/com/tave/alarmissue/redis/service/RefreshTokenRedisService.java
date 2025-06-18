@@ -14,10 +14,10 @@ public class RefreshTokenRedisService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public void saveRefreshToken(Long userId, String refreshToken, Long ttl) {
+    public void saveRefreshToken(String userId, String refreshToken, Long ttl) {
 
         RefreshToken token = RefreshToken.builder()
-                .userId(userId)
+                .userId(Long.valueOf(userId))
                 .refreshToken(refreshToken)
                 .ttl(ttl)
                 .build();

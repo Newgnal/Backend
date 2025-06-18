@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
@@ -47,13 +48,15 @@ public class JwtProvider {
                 Jwts.SIG.HS512.key().build().getAlgorithm());
     }
 
+
     public String generateAccessToken(Authentication authentication, String userId) {
         return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME, "access", userId);
     }
 
     public String generateRefreshToken(Authentication authentication, String userId) {
-        return generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, "refresh", userId);
+        return generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, "refresh",userId);
     }
+
 
     private String generateToken(Authentication authentication, Long expirationMs, String category, String userId) {
 
@@ -70,6 +73,7 @@ public class JwtProvider {
                 .expiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(secretKey)
                 .compact();
+
     }
 
     // 만료 되었을 때만 false 반환
@@ -99,11 +103,9 @@ public class JwtProvider {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
+        User principal = new User(claims.getSubject(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 
-        String email = claims.get("email", String.class);
-
-        // email을 principal로 사용
-        return new UsernamePasswordAuthenticationToken(email, token, authorities);
     }
 
     private Claims parseClaims(String token) {
@@ -118,6 +120,13 @@ public class JwtProvider {
 
     public String getSubject(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    //인가된 사용자 꺼내기
+    public Authentication getAuthenticationFromUserId(String userId) {
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        User principal = new User(userId, "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, null, authorities);
     }
 
 
