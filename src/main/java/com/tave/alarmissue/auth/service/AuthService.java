@@ -57,15 +57,27 @@ public class AuthService {
                 });
 
         // 4. Access & Refresh Token 생성
-        Authentication authentication = jwtProvider.getAuthenticationFromUserId(user.getId().toString());
-        String accessToken = jwtProvider.generateAccessToken(authentication, user.getId().toString());
-        String refreshToken = jwtProvider.generateRefreshToken(authentication, user.getId().toString());
+        String userIdStr = user.getId().toString();
+        Authentication authentication = jwtProvider.getAuthenticationFromUserId(userIdStr);
+        String accessToken = jwtProvider.generateAccessToken(authentication, userIdStr);
+        String refreshToken = jwtProvider.generateRefreshToken(authentication, userIdStr);
+
 
         // 5. Refresh Token을 Redis에 저장
-        refreshTokenRedisService.saveRefreshToken(user.getId(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+        refreshTokenRedisService.saveRefreshToken(user.getId().toString(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
 
         // 6. JwtLoginResponse 반환
         return AuthConverter.toJwtLoginResponse(user,accessToken,refreshToken);
+    }
+
+    public String createAccessTokenWhenLogin(String userId) {
+        Authentication authentication = jwtProvider.getAuthenticationFromUserId(userId);
+        String accessToken = jwtProvider.generateAccessToken(authentication, userId);
+        String refreshToken = jwtProvider.generateRefreshToken(authentication, userId);
+
+        refreshTokenRedisService.saveRefreshToken(userId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+
+        return "Bearer " + accessToken;
     }
 
 

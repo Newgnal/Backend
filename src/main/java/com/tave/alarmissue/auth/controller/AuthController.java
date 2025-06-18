@@ -22,10 +22,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/login/kakao")
+    @PostMapping("/login/kakao")
     public ResponseEntity<JwtLoginResponse> kakaoLoginToken(@RequestParam String code) {
         JwtLoginResponse loginResponse = authService.loginOrRegister(code);
-        return ResponseEntity.ok(loginResponse);
+        String accessWithBearer = authService.createAccessTokenWhenLogin(loginResponse.getUserId().toString());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.AUTHORIZATION, accessWithBearer)
+                .body(loginResponse);
+
     }
 
     //백엔드 확인용
