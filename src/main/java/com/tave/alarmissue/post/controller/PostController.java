@@ -1,6 +1,6 @@
 package com.tave.alarmissue.post.controller;
 
-import com.tave.alarmissue.post.domain.PostEntity;
+import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.domain.PostType;
 import com.tave.alarmissue.post.dto.PostCreateRequestDto;
 import com.tave.alarmissue.post.dto.PostResponseDto;
