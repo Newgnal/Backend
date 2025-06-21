@@ -1,4 +1,4 @@
-package com.tave.alarmissue.post.dto;
+package com.tave.alarmissue.post.dto.request;
 
 import com.tave.alarmissue.post.domain.PostType;
 import lombok.Getter;

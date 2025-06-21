@@ -31,4 +31,15 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
+
+
+    @Builder
+    public Post(String postTitle, String postContent, String postImage, PostType postType, UserEntity user) {
+        this.postTitle = postTitle;
+        this.postContent = postContent;
+        this.postImage = postImage;
+        this.postType = postType;
+        this.user = user;
+    }
+
 }
