@@ -17,7 +17,6 @@ public class PostEntity {
     private Long postId;
 
 
-
     @Column(nullable = false, length = 100)
     private String postTitle;
     @Column(columnDefinition = "TEXT", nullable = false)

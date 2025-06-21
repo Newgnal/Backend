@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
@@ -21,8 +22,13 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostCreateRequestDto dto, @AuthenticationPrincipal UserEntity user) {
-        PostResponseDto responseDto = postService.createPost(dto, user);
+    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostCreateRequestDto dto, @AuthenticationPrincipal User currentUser)
+
+    {
+
+        String userId = currentUser.getUsername();
+
+        PostResponseDto responseDto = postService.createPost(dto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
 
