@@ -7,7 +7,6 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -23,10 +22,13 @@ public class Post extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String postContent;
 
-    private String postImage;
+    @Column
+    private String articleUrl; //기사 url
+
+    @Column
+    private Boolean hasVote = false;
 
     @Enumerated(EnumType.STRING)
-
     private PostType postType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,10 +37,10 @@ public class Post extends BaseTimeEntity {
 
 
     @Builder
-    public Post(String postTitle, String postContent, String postImage, PostType postType, UserEntity user) {
+    public Post(String postTitle, String postContent, String articleUrl, PostType postType, UserEntity user) {
         this.postTitle = postTitle;
         this.postContent = postContent;
-        this.postImage = postImage;
+        this.articleUrl = articleUrl;
         this.postType = postType;
         this.user = user;
     }

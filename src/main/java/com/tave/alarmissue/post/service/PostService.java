@@ -30,7 +30,7 @@ public class PostService {
         Post post = Post.builder()
                 .postTitle(dto.getPostTitle())
                 .postContent(dto.getPostContent())
-                .postImage(dto.getPostImage())
+                .articleUrl(dto.getArticleUrl())
                 .postType(dto.getPostType())
                 .user(user)
                 .build();

@@ -12,6 +12,6 @@ public class PostResponseDto {
     private Long postId;
     private String postTitle;
     private String postContent;
-    private String postImage;
+    private String articleUrl;
     private PostType postType;
 }

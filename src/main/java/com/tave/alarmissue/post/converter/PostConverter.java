@@ -5,14 +5,15 @@ import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.user.domain.UserEntity;
 
-public class PostConverter {
+public class
+PostConverter {
 
     public static PostResponseDto toPostResponseDto(Post post) {
         return PostResponseDto.builder()
                 .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
-                .postImage(post.getPostImage())
+                .articleUrl(post.getArticleUrl())
                 .postType(post.getPostType())
                 .build();
     }
@@ -21,7 +22,7 @@ public class PostConverter {
         return Post.builder()
                 .postTitle(dto.getPostTitle())
                 .postContent(dto.getPostContent())
-                .postImage(dto.getPostImage())
+                .articleUrl(dto.getArticleUrl())
                 .postType(dto.getPostType())
                 .user(user)
                 .build();

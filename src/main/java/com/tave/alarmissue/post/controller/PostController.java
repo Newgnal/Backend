@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
-
+    //게시글 작성
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(@RequestBody PostCreateRequestDto dto, @AuthenticationPrincipal User currentUser)
 
@@ -26,7 +26,9 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
     }
+    //게시글 조회
 
-
+    //게시글 수정
+    //게시글 삭제
 
 }

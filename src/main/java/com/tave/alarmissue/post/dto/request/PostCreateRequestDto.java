@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 public class PostCreateRequestDto {
     private String postTitle;
     private String postContent;
-    private String postImage;
+    private String articleUrl;
     private PostType postType;
 }
