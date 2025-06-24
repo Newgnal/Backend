@@ -15,6 +15,9 @@ PostConverter {
                 .postContent(post.getPostContent())
                 .articleUrl(post.getArticleUrl())
                 .postType(post.getPostType())
+                .nickname(post.getUser().getNickName())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
                 .build();
     }
 
