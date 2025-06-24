@@ -46,4 +46,7 @@ public class News {
     @Column
     private double sentiment;
 
+    @Column
+    private Long view;
+
 }
