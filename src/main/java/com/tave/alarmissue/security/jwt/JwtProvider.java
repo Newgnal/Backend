@@ -1,7 +1,10 @@
 package com.tave.alarmissue.security.jwt;
 
+import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.security.exception.SecurityErrorCode;
 import com.tave.alarmissue.security.exception.TokenException;
+import com.tave.alarmissue.user.domain.UserEntity;
+import com.tave.alarmissue.user.repository.UserRepository;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +16,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +35,7 @@ import static java.security.cert.CertPathValidatorException.BasicReason.INVALID_
 @Slf4j
 @RequiredArgsConstructor
 public class JwtProvider {
-
+    private final UserRepository userRepository;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -44,8 +49,8 @@ public class JwtProvider {
 
     @PostConstruct
     protected void initSecretKey() {
-        this.secretKey = new SecretKeySpec(secret.getBytes(UTF_8),
-                Jwts.SIG.HS512.key().build().getAlgorithm());
+        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
+                SignatureAlgorithm.HS512.getJcaName());
     }
 
 
@@ -103,7 +108,11 @@ public class JwtProvider {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-        User principal = new User(claims.getSubject(), "", authorities);
+        UserEntity userEntity = userRepository.findById(Long.parseLong(claims.getSubject()))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        PrincipalUserDetails principal = new PrincipalUserDetails(userEntity);
+
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 
     }
