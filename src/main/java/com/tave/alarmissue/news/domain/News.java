@@ -1,6 +1,8 @@
 package com.tave.alarmissue.news.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,6 +32,9 @@ public class News {
     @Column(nullable = false, unique = true, length = 1000)
     private String url;
 
+    @Column(nullable = false, unique = true, length=1000)
+    private String imageUrl;
+
     @Column
     private String content;
 
@@ -41,6 +46,7 @@ public class News {
     private Thema thema;
 
     @Column
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
     private LocalDateTime date;    //기사 날짜
 
     @Column
