@@ -26,10 +26,7 @@ public class Post extends BaseTimeEntity {
     private String articleUrl; //기사 url
 
     @Column
-    private Boolean hasVote = false;
-
-    @Enumerated(EnumType.STRING)
-    private PostType postType;
+    private Boolean hasVote =false ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -37,12 +34,12 @@ public class Post extends BaseTimeEntity {
 
 
     @Builder
-    public Post(String postTitle, String postContent, String articleUrl, PostType postType, UserEntity user) {
+    public Post(String postTitle, String postContent, String articleUrl, UserEntity user, boolean hasVote) {
         this.postTitle = postTitle;
         this.postContent = postContent;
         this.articleUrl = articleUrl;
-        this.postType = postType;
         this.user = user;
+        this.hasVote = hasVote;
     }
 
 }

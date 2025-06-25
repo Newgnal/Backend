@@ -22,9 +22,9 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public PostResponseDto createPost(PostCreateRequestDto dto, String userId) {
+    public PostResponseDto createPost(PostCreateRequestDto dto, Long userId) {
 
-        UserEntity user = userRepository.findById(Long.parseLong(userId))
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
 
         Post post = postConverter.toPost(dto, user);
