@@ -1,5 +1,6 @@
 package com.tave.alarmissue.user.controller;
 
+import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.user.dto.response.LogoutResponse;
 import com.tave.alarmissue.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,11 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<LogoutResponse> logout(
-            @AuthenticationPrincipal User currentUser
+            @AuthenticationPrincipal PrincipalUserDetails principal
+
     ) {
 
-        String userId = currentUser.getUsername();
+        Long userId = principal.getUserId();
 
         LogoutResponse response = userService.logout(userId);
 

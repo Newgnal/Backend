@@ -13,8 +13,8 @@ public class UserService {
 
     private final RefreshTokenRedisService refreshTokenRedisService;
 
-    public LogoutResponse logout(String userId) {
-        boolean isDeleted = refreshTokenRedisService.deleteRefreshToken(Long.parseLong(userId));
+    public LogoutResponse logout(Long userId) {
+        boolean isDeleted = refreshTokenRedisService.deleteRefreshToken(userId);
         String message = isDeleted ? "Logout successful" : "Logout failed: User not found";
         return new LogoutResponse(message);
     }
