@@ -4,7 +4,9 @@ import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.user.domain.UserEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class
 PostConverter {
 

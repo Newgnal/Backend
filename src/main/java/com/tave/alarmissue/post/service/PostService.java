@@ -18,7 +18,7 @@ import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 @Service
 @Slf4j
 public class PostService {
-
+    private final PostConverter postConverter;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
@@ -27,14 +27,7 @@ public class PostService {
         UserEntity user = userRepository.findById(Long.parseLong(userId))
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
 
-        Post post = Post.builder()
-                .postTitle(dto.getPostTitle())
-                .postContent(dto.getPostContent())
-                .articleUrl(dto.getArticleUrl())
-                .postType(dto.getPostType())
-                .user(user)
-                .build();
-
+        Post post = postConverter.toPost(dto, user);
         Post saved = postRepository.save(post);
 
         return PostConverter.toPostResponseDto(saved);
