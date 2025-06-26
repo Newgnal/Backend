@@ -1,7 +1,11 @@
 package com.tave.alarmissue.user.domain;
 
+import com.tave.alarmissue.newsroom.entity.Keyword;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -32,4 +36,7 @@ public class UserEntity {
     @Enumerated(STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Keyword> keywords = new ArrayList<>();
 }
