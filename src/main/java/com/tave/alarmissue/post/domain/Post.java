@@ -42,4 +42,11 @@ public class Post extends BaseTimeEntity {
         this.hasVote = hasVote;
     }
 
+    public void Update(String postTitle,String postContent, String articleUrl,boolean hasVote)
+    {
+        this.postTitle=postTitle;
+        this.postContent=postContent;
+        this.articleUrl=articleUrl;
+        this.hasVote=hasVote;
+    }
 }

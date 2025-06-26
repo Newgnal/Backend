@@ -3,6 +3,7 @@ package com.tave.alarmissue.post.service;
 import com.tave.alarmissue.post.converter.PostConverter;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
+import com.tave.alarmissue.post.dto.request.PostUpdateRequestDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.post.repository.PostRepository;
@@ -11,6 +12,8 @@ import com.tave.alarmissue.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 
@@ -33,4 +36,23 @@ public class PostService {
         return PostConverter.toPostResponseDto(saved);
 
     }
+
+    //게시글 수정
+    public PostResponseDto updatePost(PostUpdateRequestDto dto, Long userId, Long postId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"해당 게시글을 찾을 수 없습니다."));
+
+        if(!Objects.equals(post.getUser().getId(), user.getId())) {
+            throw new PostException(POST_EDIT_FORBIDDEN,"수정 권한이 없습니다.");
+        }
+
+        post.Update(dto.getPostTitle(),dto.getPostContent(),dto.getArticleUrl(),dto.isHasVote());
+        Post saved = postRepository.save(post);
+        return PostConverter.toPostResponseDto(saved);
+
+    }
+
 }
