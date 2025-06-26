@@ -2,24 +2,23 @@ package com.tave.alarmissue.fcm.service;
 
 
 import com.tave.alarmissue.fcm.entity.FcmToken;
+import com.tave.alarmissue.fcm.exception.FcmErrorCode;
+import com.tave.alarmissue.fcm.exception.FcmException;
 import com.tave.alarmissue.fcm.repository.FcmTokenRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class FcmTokenService {
 
     private final FcmTokenRepository fcmTokenRepository;
     private final UserRepository userRepository;
-
-    public FcmTokenService(FcmTokenRepository fcmTokenRepository, UserRepository userRepository) {
-        this.fcmTokenRepository = fcmTokenRepository;
-        this.userRepository = userRepository;
-    }
 
     /**
      * 토큰 등록/갱신
@@ -27,7 +26,7 @@ public class FcmTokenService {
     @Transactional
     public void registerToken(Long userId, String token) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() ->  new FcmException(FcmErrorCode.USER_NOT_FOUND));
 
         FcmToken fcmToken = fcmTokenRepository.findByFcmToken(token)
                 .orElseGet(() -> FcmToken.builder()
@@ -45,6 +44,10 @@ public class FcmTokenService {
      */
     @Transactional
     public void deleteToken(String token) {
-        fcmTokenRepository.deleteByToken(token);
+        if (!fcmTokenRepository.existsByFcmToken(token)) {
+            throw new FcmException(FcmErrorCode.TOKEN_NOT_FOUND);
+        }
+
+        fcmTokenRepository.deleteByFcmToken(token);
     }
 }
