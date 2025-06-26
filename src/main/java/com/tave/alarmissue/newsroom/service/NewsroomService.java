@@ -7,6 +7,8 @@ import com.tave.alarmissue.newsroom.entity.Keyword;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.newsroom.dto.response.KeywordNewsResponse;
 import com.tave.alarmissue.news.dto.response.NewsDto;
+import com.tave.alarmissue.newsroom.exception.KeywordErrorCode;
+import com.tave.alarmissue.newsroom.exception.KeywordException;
 import com.tave.alarmissue.newsroom.repository.KeywordRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
@@ -33,22 +35,22 @@ public class NewsroomService {
     public KeywordResponse addKeyword(Long userId, String keywordText) {
         // null 체크 및 trim
         if (keywordText == null || keywordText.trim().isEmpty()) {
-            throw new IllegalArgumentException("키워드를 입력해주세요.");
+            throw new KeywordException(KeywordErrorCode.KEYWORD_EMPTY);
         }
 
         String trimmedKeyword = keywordText.trim();
 
         // 길이 검사
         if (trimmedKeyword.length() < 2 || trimmedKeyword.length() > 10) {
-            throw new IllegalArgumentException("키워드는 2자 이상 10자 이하로 입력해주세요.");
+            throw new KeywordException(KeywordErrorCode.KEYWORD_LENGTH_INVALID);
         }
 
         if (keywordRepository.existsByUserIdAndKeyword(userId, keywordText)) {
-            throw new IllegalArgumentException("이미 존재하는 키워드입니다: " + keywordText);
+            throw new KeywordException(KeywordErrorCode.KEYWORD_ALREADY_EXISTS, trimmedKeyword);
         }
 
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() ->new KeywordException(KeywordErrorCode.USER_NOT_FOUND));
 
         Keyword keyword = Keyword.builder()
                 .keyword(trimmedKeyword)
@@ -63,7 +65,7 @@ public class NewsroomService {
     @Transactional
     public void removeKeyword(Long userId, String keywordText) {
         if (!keywordRepository.existsByUserIdAndKeyword(userId, keywordText)) {
-            throw new IllegalArgumentException("존재하지 않는 키워드입니다: " + keywordText);
+            throw new KeywordException(KeywordErrorCode.KEYWORD_NOT_FOUND, keywordText);
         }
         keywordRepository.deleteByUserIdAndKeyword(userId, keywordText);
     }
@@ -78,7 +80,7 @@ public class NewsroomService {
     public KeywordNewsResponse getNewsByKeyword(Long userId, String keywordText) {
         // 사용자가 해당 키워드를 등록했는지 확인
         if (!keywordRepository.existsByUserIdAndKeyword(userId, keywordText)) {
-            throw new IllegalArgumentException("등록되지 않은 키워드입니다: " + keywordText);
+            throw new KeywordException(KeywordErrorCode.KEYWORD_NOT_REGISTERED, keywordText);
         }
 
         List<News> newsList = newsRepository.findByTitleContainingIgnoreCaseOrderByDateDesc(keywordText);

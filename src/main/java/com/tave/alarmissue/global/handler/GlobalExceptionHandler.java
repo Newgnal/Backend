@@ -62,4 +62,36 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
+    //-------- 아래 내 코드 ----
+    // Bean Validation 오류 처리
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseError> handleValidationException(MethodArgumentNotValidException e,
+                                                                   HttpServletRequest request) {
+        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        ResponseError responseError = ResponseError.builder()
+                .messageDetail(errorMessage)
+                .errorDetail("유효성 검사 실패")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
+    }
+
+    //키워드
+    @ExceptionHandler(KeywordException.class)
+    public ResponseEntity<ResponseError> handleKeywordException(KeywordException e,
+                                                                HttpServletRequest request) {
+
+        ResponseError responseError = ResponseError.builder()
+                .messageDetail(e.getMessage())
+                .errorDetail(e.getErrorCode().getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(responseError);
+    }
 }

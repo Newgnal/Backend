@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public final class KeywordConverter {
+public class KeywordConverter {
 
     /**
      * Keyword 엔티티를 KeywordResponse DTO로 변환
