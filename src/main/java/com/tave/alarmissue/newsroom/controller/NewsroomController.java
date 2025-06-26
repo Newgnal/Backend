@@ -1,14 +1,16 @@
 package com.tave.alarmissue.newsroom.controller;
 
+import com.tave.alarmissue.global.dto.request.PagenationRequest;
 import com.tave.alarmissue.newsroom.dto.request.KeywordRequest;
 import com.tave.alarmissue.newsroom.dto.response.KeywordResponse;
-import com.tave.alarmissue.newsroom.entity.Keyword;
 import com.tave.alarmissue.newsroom.dto.response.KeywordNewsResponse;
 import com.tave.alarmissue.newsroom.service.NewsroomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -56,9 +58,22 @@ public class NewsroomController {
     // 특정 키워드의 뉴스 조회
     @GetMapping("/keywords/{keyword}/news")
     @Operation(summary = "키워드별 뉴스 조회", description = "사용자가 등록한 특정 키워드와 관련된 뉴스 목록을 조회합니다. 최신 뉴스부터 정렬되어 반환됩니다.")
-    public ResponseEntity<KeywordNewsResponse> getNewsByKeyword(@Parameter Long userId,
-                                                                @PathVariable String keyword) {
-        KeywordNewsResponse response = newsroomService.getNewsByKeyword(userId, keyword);
+    public ResponseEntity<KeywordNewsResponse> getNewsByKeyword(
+            @Parameter(description = "사용자 ID", required = true, example = "1")
+            @RequestParam Long userId,
+            @Parameter(description = "조회할 키워드", required = true, example = "인공지능")
+            @PathVariable String keyword,
+            @Parameter(description = "마지막 뉴스 ID (무한 스크롤용)", example = "100")
+            @RequestParam(required = false) Long lastId,
+            @Parameter(description = "페이지 크기", example = "10")
+            @RequestParam(defaultValue = "10") @Min(1) @Max(50) Integer size) {
+
+        PagenationRequest paginationRequest = PagenationRequest.builder()
+                .lastId(lastId)
+                .size(size)
+                .build();
+
+        KeywordNewsResponse response = newsroomService.getNewsByKeyword(userId, keyword, paginationRequest);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
