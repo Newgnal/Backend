@@ -46,7 +46,6 @@ public class JwtProvider {
     private SecretKey secretKey;
     private final UserDetailsService userDetailsService;
 
-
     @PostConstruct
     protected void initSecretKey() {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
@@ -78,7 +77,6 @@ public class JwtProvider {
                 .expiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(secretKey)
                 .compact();
-
     }
 
     // 만료 되었을 때만 false 반환
@@ -101,6 +99,7 @@ public class JwtProvider {
         String userId = getSubject(refreshToken);
         return generateAccessToken(authentication, userId);
     }
+
 
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
