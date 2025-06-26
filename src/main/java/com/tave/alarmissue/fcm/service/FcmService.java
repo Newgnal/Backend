@@ -3,17 +3,24 @@ package com.tave.alarmissue.fcm.service;
 
 import com.google.firebase.messaging.*;
 import com.tave.alarmissue.fcm.dto.request.FcmSendReqeust;
+import com.tave.alarmissue.fcm.dto.response.FcmNotificationResponse;
 import com.tave.alarmissue.fcm.exception.FcmErrorCode;
 import com.tave.alarmissue.fcm.exception.FcmException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class FcmService {
     private final FcmTokenService fcmTokenService;
 
-    public void sendPushNotification(FcmSendReqeust fcmSendDto) {
+    public FcmNotificationResponse sendPushNotification(FcmSendReqeust fcmSendDto) {
+        if (!fcmTokenService.isTokenExists(fcmSendDto.getToken())) {
+            throw new FcmException(FcmErrorCode.TOKEN_NOT_FOUND);
+        }
+
         Notification notification = Notification.builder()
                 .setTitle(fcmSendDto.getTitle())
                 .setBody(fcmSendDto.getBody())
@@ -25,13 +32,21 @@ public class FcmService {
                 .setNotification(notification)
                 .build();
         try {
-            String response = FirebaseMessaging.getInstance().send(message);
-            System.out.println("Successfully sent message: " + response);
+            String messageId = FirebaseMessaging.getInstance().send(message);
+            System.out.println("Successfully sent message: " + messageId);
+
+            return FcmNotificationResponse.builder()
+                    .messageId(messageId)
+                    .fcmToken(fcmSendDto.getToken())
+                    .sentAt(LocalDateTime.now())
+                    .build();
+
         } catch (FirebaseMessagingException ex) {
             handleFirebaseMessagingException(ex, fcmSendDto.getToken());
         } catch (Exception e) {
             throw new FcmException(FcmErrorCode.PUSH_SEND_FAILED);
         }
+        return null;
     }
 
     private void handleFirebaseMessagingException(FirebaseMessagingException ex, String token) {
