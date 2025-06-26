@@ -1,5 +1,6 @@
 package com.tave.alarmissue.newsroom.controller;
 
+import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.global.dto.request.PagenationRequest;
 import com.tave.alarmissue.newsroom.dto.request.KeywordRequest;
 import com.tave.alarmissue.newsroom.dto.response.KeywordResponse;
@@ -15,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.attribute.UserPrincipal;
 import java.util.Map;
 
 @RestController
@@ -31,8 +34,9 @@ public class NewsroomController {
     // 키워드 등록
     @PostMapping("/keywords/{userId}")
     @Operation(summary = "키워드 등록", description = "사용자가 관심 키워드를 등록합니다. 키워드는 2자 이상 10자 이하로 입력해야 합니다.")
-    public ResponseEntity<KeywordResponse> addKeyword(@PathVariable Long userId,
+    public ResponseEntity<KeywordResponse> addKeyword( @AuthenticationPrincipal PrincipalUserDetails principal,
                                                       @Valid @RequestBody KeywordRequest request) {
+        Long userId = principal.getUserId();
         KeywordResponse response = newsroomService.addKeyword(userId, request.getKeyword());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -41,8 +45,9 @@ public class NewsroomController {
     // 사용자별 키워드 삭제
     @DeleteMapping("keywords/{keyword}")
     @Operation(summary = "키워드 삭제", description = "사용자가 등록한 특정 키워드를 삭제합니다.")
-    public ResponseEntity<String> removeKeyword(@Parameter Long userId,
+    public ResponseEntity<String> removeKeyword(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                 @PathVariable String keyword) {
+        Long userId = principal.getUserId();
         newsroomService.removeKeyword(userId, keyword);
         return ResponseEntity.status(HttpStatus.OK).body("키워드가 삭제되었습니다.");
     }
@@ -50,7 +55,8 @@ public class NewsroomController {
     // 사용자의 키워드별 뉴스 개수 조회
     @Operation(summary = "키워드별 뉴스 개수 조회", description = "사용자가 등록한 모든 키워드별로 관련 뉴스 개수를 조회합니다.")
     @GetMapping("/keywords/count")
-    public ResponseEntity<Map<String, Integer>> getUserKeywordNewsCount(@Parameter Long userId) {
+    public ResponseEntity<Map<String, Integer>> getUserKeywordNewsCount(@AuthenticationPrincipal PrincipalUserDetails principal) {
+        Long userId = principal.getUserId();
         Map<String, Integer> response = newsroomService.getUserKeywordNewsCount(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -60,13 +66,15 @@ public class NewsroomController {
     @Operation(summary = "키워드별 뉴스 조회", description = "사용자가 등록한 특정 키워드와 관련된 뉴스 목록을 조회합니다. 최신 뉴스부터 정렬되어 반환됩니다.")
     public ResponseEntity<KeywordNewsResponse> getNewsByKeyword(
             @Parameter(description = "사용자 ID", required = true, example = "1")
-            @RequestParam Long userId,
+            @AuthenticationPrincipal PrincipalUserDetails principal,
             @Parameter(description = "조회할 키워드", required = true, example = "인공지능")
             @PathVariable String keyword,
             @Parameter(description = "마지막 뉴스 ID (무한 스크롤용)", example = "100")
             @RequestParam(required = false) Long lastId,
             @Parameter(description = "페이지 크기", example = "10")
             @RequestParam(defaultValue = "10") @Min(1) @Max(50) Integer size) {
+
+        Long userId = principal.getUserId();
 
         PagenationRequest paginationRequest = PagenationRequest.builder()
                 .lastId(lastId)
