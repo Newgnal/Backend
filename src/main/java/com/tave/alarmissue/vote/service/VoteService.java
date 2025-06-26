@@ -39,11 +39,11 @@ public class VoteService {
 
         //게시글이 없을때
         Post post = postRepository.findById(dto.getPostId()).
-                orElseThrow(() -> new VoteException(POST_ID_NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
+                orElseThrow(() -> new VoteException(POST_ID_NOT_FOUND, "postId: "+dto.getPostId()));
 
         //게시글에 투표가 없을때
         if (!post.getHasVote()) {
-            throw new VoteException(POST_NOT_VOTABLE, "투표 기능이 존재하지 않습니다.");
+            throw new VoteException(POST_NOT_VOTABLE, "postId: "+dto.getPostId());
         }
 
         // 기존 투표가 있으면 삭제(재투표 가능하게)
