@@ -13,5 +13,5 @@ public class VoteResponseDto {
     private Integer buyCount;
     private Integer holdCount;
     private Integer sellCount;
-    private VoteType myvoteType;
+    private VoteType voteType;
 }
