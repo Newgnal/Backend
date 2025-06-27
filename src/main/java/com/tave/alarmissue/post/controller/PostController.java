@@ -42,5 +42,11 @@ public class PostController {
     }
 
     //게시글 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> deletePost(@PathVariable Long postId, @AuthenticationPrincipal PrincipalUserDetails principal){
+        Long userId = principal.getUserId();
+        PostResponseDto responseDto = postService.deletePost(postId, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 
 }

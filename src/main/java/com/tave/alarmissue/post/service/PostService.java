@@ -65,5 +65,25 @@ public class PostService {
         return PostConverter.toPostResponseDto(saved);
 
     }
+    //게시글 삭제
+    @Transactional
+    public PostResponseDto deletePost(Long postId, Long userId){
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ postId));
+
+        if(!Objects.equals(post.getUser().getId(), user.getId())) {
+            throw new PostException(POST_DELETE_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());
+        }
+
+        PostResponseDto deletedPostDto = PostConverter.toPostResponseDto(post);
+        voteRepository.deleteAllByPost(post);
+        postRepository.delete(post);
+        return deletedPostDto;
+    }
+
 
 }
