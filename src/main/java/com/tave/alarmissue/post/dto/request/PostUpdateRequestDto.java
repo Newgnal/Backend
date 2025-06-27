@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class PostUpdateRequestDto {
+    private Long postId;
     private String postTitle;
     private String postContent;
     private String articleUrl;

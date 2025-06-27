@@ -12,6 +12,7 @@ import com.tave.alarmissue.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -20,6 +21,7 @@ import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Transactional
 public class PostService {
     private final PostConverter postConverter;
     private final PostRepository postRepository;
@@ -38,15 +40,15 @@ public class PostService {
     }
 
     //게시글 수정
-    public PostResponseDto updatePost(PostUpdateRequestDto dto, Long userId, Long postId) {
+    public PostResponseDto updatePost(PostUpdateRequestDto dto, Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"해당 게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(dto.getPostId())
+                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ dto.getPostId()));
 
         if(!Objects.equals(post.getUser().getId(), user.getId())) {
-            throw new PostException(POST_EDIT_FORBIDDEN,"수정 권한이 없습니다.");
+            throw new PostException(POST_EDIT_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());
         }
 
         post.Update(dto.getPostTitle(),dto.getPostContent(),dto.getArticleUrl(),dto.isHasVote());
