@@ -2,6 +2,7 @@ package com.tave.alarmissue.post.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
+import com.tave.alarmissue.post.dto.request.PostUpdateRequestDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,16 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
     }
-    //게시글 조회
-
     //게시글 수정
+    @PatchMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long postId ,@RequestBody PostUpdateRequestDto dto , @AuthenticationPrincipal PrincipalUserDetails principal)
+    {
+        Long userId = principal.getUserId();
+        PostResponseDto responseDto = postService.updatePost(postId, dto, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+
+    }
+
     //게시글 삭제
 
 }
