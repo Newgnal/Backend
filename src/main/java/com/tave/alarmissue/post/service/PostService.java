@@ -40,12 +40,12 @@ public class PostService {
     }
 
     //게시글 수정
-    public PostResponseDto updatePost(PostUpdateRequestDto dto, Long userId) {
+    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto dto, Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
 
-        Post post = postRepository.findById(dto.getPostId())
-                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ dto.getPostId()));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ postId));
 
         if(!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new PostException(POST_EDIT_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());

@@ -33,10 +33,10 @@ public class PostController {
     }
     //게시글 수정
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostUpdateRequestDto dto , @AuthenticationPrincipal PrincipalUserDetails principal)
+    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long postId ,@RequestBody PostUpdateRequestDto dto , @AuthenticationPrincipal PrincipalUserDetails principal)
     {
         Long userId = principal.getUserId();
-        PostResponseDto responseDto = postService.updatePost(dto, userId);
+        PostResponseDto responseDto = postService.updatePost(postId, dto, userId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
