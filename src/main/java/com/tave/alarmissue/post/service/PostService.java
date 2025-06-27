@@ -9,6 +9,7 @@ import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.post.repository.PostRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
+import com.tave.alarmissue.vote.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class PostService {
     private final PostConverter postConverter;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final VoteRepository voteRepository;
 
     public PostResponseDto createPost(PostCreateRequestDto dto, Long userId) {
 
@@ -52,6 +54,8 @@ public class PostService {
         }
 
         post.Update(dto.getPostTitle(),dto.getPostContent(),dto.getArticleUrl(),dto.isHasVote());
+        //투표기능끄면 post와 연관된 vote DB삭제
+        if(!post.getHasVote()) voteRepository.deleteAllByPost(post);
         Post saved = postRepository.save(post);
         return PostConverter.toPostResponseDto(saved);
 
