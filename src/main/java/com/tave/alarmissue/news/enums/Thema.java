@@ -1,0 +1,16 @@
+package com.tave.alarmissue.news.enums;
+
+public enum Thema {
+    SEMICONDUCTOR_AI,
+    IT_INTERNET,
+    FINANCE_INSURANCE,
+    MOBILITY,
+    DEFENSE_AEROSPACE,
+    SECOND_BATTERY_ENVIRONMENT,
+    REAL_ESTATE_REIT,
+    BOND_INTEREST,
+    HEALTHCARE_BIO,
+    EXCHANGE_RATE,
+    RAW_MATERIAL_METALS,
+    ETC;
+}
