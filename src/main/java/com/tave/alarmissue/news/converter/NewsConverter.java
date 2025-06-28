@@ -1,6 +1,5 @@
 package com.tave.alarmissue.news.converter;
 
-
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.dto.response.NewsDto;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
@@ -24,7 +23,6 @@ public class NewsConverter {
                 .build();
     }
 
-
     /**
      * News 엔티티를 NewsDto로 변환
      */
@@ -36,14 +34,10 @@ public class NewsConverter {
         return NewsDto.builder()
                 .id(news.getId())
                 .title(news.getTitle())
-                .content(news.getContent())
-                .url(news.getUrl())
-                .imageUrl(news.getImageUrl())
+//                .thema(news.getThema())
                 .source(news.getSource())
-                //            .thema(news.getThema())
-                .date(news.getDate())
                 .sentiment(news.getSentiment())
-                .view(news.getView())
+                .date(news.getDate())
                 .build();
     }
 
@@ -60,3 +54,4 @@ public class NewsConverter {
                 .collect(Collectors.toList());
     }
 }
+

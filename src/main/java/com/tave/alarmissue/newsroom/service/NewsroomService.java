@@ -110,7 +110,8 @@ public class NewsroomService {
             nextLastId = paginationResult.getData().get(paginationResult.getData().size() - 1).getId();
         }
 
-        List<NewsDto> newsArticles = NewsConverter.toDtoList(newsList);
+        // paginationResult.getData() : 실제 반환할 데이터만 dto로 변환 (newList X)
+        List<NewsDto> newsArticles = NewsConverter.toDtoList(paginationResult.getData());
 
         // 전체 개수 조회
         long totalCount = newsRepository.countByKeyword(keywordText);
