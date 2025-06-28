@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @Slf4j
 @RequiredArgsConstructor
 public class NewsroomService {
@@ -75,11 +75,6 @@ public class NewsroomService {
         keywordRepository.deleteByUserIdAndKeyword(userId, keywordText);
     }
 
-    // 사용자의 모든 키워드 조회
-    public List<KeywordResponse> getUserKeywords(Long userId) {
-        List<Keyword> keywords = keywordRepository.findByUserId(userId);
-        return KeywordConverter.toResponseList(keywords);
-    }
 
     // 키워드별 뉴스 조회
     public KeywordNewsResponse getNewsByKeyword(Long userId, String keywordText, PagenationRequest pagenationRequest) {
@@ -131,13 +126,13 @@ public class NewsroomService {
 
     // 키워드별 뉴스 개수 조회
     //TODO : 페이지네이션 적용 할지 정하기 (읽지않은 알림 구현해보고)
-    public Map<String, Integer> getUserKeywordNewsCount(Long userId) {
+    public Map<String, Long> getUserKeywordNewsCount(Long userId) {
         List<Keyword> keywords = keywordRepository.findByUserIdOrderByCreatedAtAsc(userId);
 
         return KeywordConverter.toResponseList(keywords).stream()
                 .collect(Collectors.toMap(
                         KeywordResponse::getKeyword,
-                        k -> newsRepository.countByTitleContainingIgnoreCase(k.getKeyword()),
+                        k -> newsRepository.countByKeyword(k.getKeyword()),
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));

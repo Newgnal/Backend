@@ -32,7 +32,7 @@ public class NewsroomController {
     private final NewsroomService newsroomService;
 
     // 키워드 등록
-    @PostMapping("/keywords/{userId}")
+    @PostMapping("/keywords")
     @Operation(summary = "키워드 등록", description = "사용자가 관심 키워드를 등록합니다. 키워드는 2자 이상 10자 이하로 입력해야 합니다.")
     public ResponseEntity<KeywordResponse> addKeyword( @AuthenticationPrincipal PrincipalUserDetails principal,
                                                       @Valid @RequestBody KeywordRequest request) {
@@ -49,15 +49,15 @@ public class NewsroomController {
                                                 @PathVariable String keyword) {
         Long userId = principal.getUserId();
         newsroomService.removeKeyword(userId, keyword);
-        return ResponseEntity.status(HttpStatus.OK).body("키워드가 삭제되었습니다.");
+        return ResponseEntity.ok().build();
     }
 
     // 사용자의 키워드별 뉴스 개수 조회
     @Operation(summary = "키워드별 뉴스 개수 조회", description = "사용자가 등록한 모든 키워드별로 관련 뉴스 개수를 조회합니다.")
     @GetMapping("/keywords/count")
-    public ResponseEntity<Map<String, Integer>> getUserKeywordNewsCount(@AuthenticationPrincipal PrincipalUserDetails principal) {
+    public ResponseEntity<Map<String, Long>> getUserKeywordNewsCount(@AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
-        Map<String, Integer> response = newsroomService.getUserKeywordNewsCount(userId);
+        Map<String, Long> response = newsroomService.getUserKeywordNewsCount(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
