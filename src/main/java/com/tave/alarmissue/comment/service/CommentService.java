@@ -27,6 +27,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentConverter commentConverter;
+
 
     @Transactional
     public CommentResponseDto createComment(CommentCreateRequestDto dto, Long userId, Long postId) {
@@ -36,7 +38,7 @@ public class CommentService {
         Post post= postRepository.findById(postId).
                 orElseThrow(()->new CommentException(POST_ID_NOT_FOUND, "postId:" + postId));
 
-        Comment comment = CommentConverter.toComment(dto,user,post);
+        Comment comment = commentConverter.toComment(dto,user,post);
         Comment saved = commentRepository.save(comment);
         return CommentConverter.toCommentResponseDto(saved);
     }

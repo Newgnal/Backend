@@ -18,7 +18,7 @@ public class CommentConverter {
             .updatedAt(comment.getUpdatedAt())
             .build();
     }
-    public static Comment toComment(CommentCreateRequestDto dto, UserEntity user, Post post) {
+    public Comment toComment(CommentCreateRequestDto dto, UserEntity user, Post post) {
         return Comment.builder()
                 .comment(dto.getComment())
                 .user(user)
