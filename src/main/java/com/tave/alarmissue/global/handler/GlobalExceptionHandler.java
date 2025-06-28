@@ -7,8 +7,12 @@ import lombok.Builder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Builder
@@ -43,4 +47,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
 
+    //Validation 에러 처리
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseError> handleValidationException(MethodArgumentNotValidException e,
+                                                                   HttpServletRequest request) {
+        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        ResponseError responseError = ResponseError.builder()
+                .messageDetail("입력값 검증에 실패했습니다.")
+                .errorDetail(errorMessage)
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
+    }
 }

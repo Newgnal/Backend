@@ -40,4 +40,8 @@ application-jwt.yml
 application-local.yml
 application-oauth.yml
 
+
+# Firebase 서비스 계정 키
+src/main/resources/firebase/*.json
 firebaseAccountKey.json
+
