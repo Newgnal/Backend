@@ -1,6 +1,7 @@
 package com.tave.alarmissue.post.dto.response;
 
 
+import com.tave.alarmissue.news.enums.Thema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class PostResponseDto {
     private String postTitle;
     private String postContent;
     private String articleUrl;
+    private Thema thema;
     private String nickname;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

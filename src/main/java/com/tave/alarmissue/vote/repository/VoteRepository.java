@@ -22,4 +22,6 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     List<VoteCountResponse> countVotesByType(@Param("post") Post post);
 
     void deleteByUserAndPost(UserEntity currentUser, Post post);
+
+    void deleteAllByPost(Post post);
 }
