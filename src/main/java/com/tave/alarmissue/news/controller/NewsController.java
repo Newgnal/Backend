@@ -6,6 +6,8 @@ import com.tave.alarmissue.news.dto.request.NewsSortType;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.news.dto.response.SliceResponseDto;
 import com.tave.alarmissue.news.service.NewsService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.websocket.OnOpen;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,19 +60,21 @@ public class NewsController {
 //        return ResponseEntity.ok(response);
 //    }
 
+    @Operation(summary = "뉴스 전체 조회")
     @GetMapping("/news")
     public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllNews(@RequestParam(defaultValue = "LATEST")NewsSortType sortType, @RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size) {
         Pageable pageable= PageRequest.of(page,size,sortType.getSort());
         SliceResponseDto<NewsResponseDto> response = newsService.getAllNews(sortType,pageable);
         return ResponseEntity.ok(response);
     }
-
+    @Operation(summary = "테마별 뉴스 전체 조회")
     @GetMapping("/news/thema/{thema}")
     public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllThemaNews(@RequestParam(defaultValue = "LATEST")NewsSortType sortType,@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size,@PathVariable Thema thema) {
         Pageable pageable= PageRequest.of(page,size,sortType.getSort());
         SliceResponseDto<NewsResponseDto> response = newsService.getAllThemaNews(sortType,thema,pageable);
         return ResponseEntity.ok(response);
     }
+
 
     //테마별 전체 뉴스 조회(최신순)
 //    @GetMapping("/news/thema/{thema}")
