@@ -11,10 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {
-    List<Keyword> findByUserId(Long userId);
-    Optional<Keyword> findByUserIdAndKeyword(Long userId, String keyword);
     boolean existsByUserIdAndKeyword(Long userId, String keyword);
-    void deleteByUserIdAndKeyword(Long userId, String keyword);
 
     @Query("SELECT k FROM Keyword k WHERE k.user.id = :userId ORDER BY k.createdAt ASC ")
     List<Keyword> findByUserIdOrderByCreatedAtAsc(@Param("userId") Long userId);

@@ -68,21 +68,30 @@ public class NewsroomService {
 
     // 사용자별 키워드 삭제
     @Transactional
-    public void removeKeyword(Long userId, String keywordText) {
-        if (!keywordRepository.existsByUserIdAndKeyword(userId, keywordText)) {
-            throw new CustomException(KeywordErrorCode.KEYWORD_NOT_FOUND, keywordText);
+    public void removeKeyword(Long userId, Long keywordId) {
+        Keyword keyword = keywordRepository.findById(keywordId)
+                .orElseThrow(() -> new CustomException(KeywordErrorCode.KEYWORD_NOT_FOUND));
+
+        // 사용자 확인
+        if (!keyword.getUser().getId().equals(userId)) {
+            throw new CustomException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
         }
-        keywordRepository.deleteByUserIdAndKeyword(userId, keywordText);
+
+        keywordRepository.deleteById(keywordId);
     }
 
 
     // 키워드별 뉴스 조회
-    public KeywordNewsResponse getNewsByKeyword(Long userId, String keywordText, PagenationRequest pagenationRequest) {
-        // 사용자가 해당 키워드를 등록했는지 확인
-        if (!keywordRepository.existsByUserIdAndKeyword(userId, keywordText)) {
-            throw new CustomException(KeywordErrorCode.KEYWORD_NOT_REGISTERED, keywordText);
+    public KeywordNewsResponse getNewsByKeyword(Long userId, Long keywordId, PagenationRequest pagenationRequest) {
+        Keyword keyword = keywordRepository.findById(keywordId)
+                .orElseThrow(() -> new CustomException(KeywordErrorCode.KEYWORD_NOT_FOUND, keywordId.toString()));
+
+        // 사용자 확인
+        if (!keyword.getUser().getId().equals(userId)) {
+            throw new CustomException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
         }
 
+        String keywordText = keyword.getKeyword();
 
         // 페이지 크기 검증 및 조정
         int pageSize = PagenationUtils.validateAndAdjustPageSize(pagenationRequest.getSize());

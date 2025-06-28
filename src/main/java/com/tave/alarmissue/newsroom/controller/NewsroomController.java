@@ -43,12 +43,12 @@ public class NewsroomController {
 
 
     // 사용자별 키워드 삭제
-    @DeleteMapping("keywords/{keyword}")
+    @DeleteMapping("keywords/{keywordId}")
     @Operation(summary = "키워드 삭제", description = "사용자가 등록한 특정 키워드를 삭제합니다.")
-    public ResponseEntity<String> removeKeyword(@AuthenticationPrincipal PrincipalUserDetails principal,
-                                                @PathVariable String keyword) {
+    public ResponseEntity<Void> removeKeyword(@AuthenticationPrincipal PrincipalUserDetails principal,
+                                                @PathVariable Long keywordId) {
         Long userId = principal.getUserId();
-        newsroomService.removeKeyword(userId, keyword);
+        newsroomService.removeKeyword(userId, keywordId);
         return ResponseEntity.ok().build();
     }
 
@@ -62,13 +62,13 @@ public class NewsroomController {
     }
 
     // 특정 키워드의 뉴스 조회
-    @GetMapping("/keywords/{keyword}/news")
+    @GetMapping("/keywords/{keywordId}/news")
     @Operation(summary = "키워드별 뉴스 조회", description = "사용자가 등록한 특정 키워드와 관련된 뉴스 목록을 조회합니다. 최신 뉴스부터 정렬되어 반환됩니다.")
     public ResponseEntity<KeywordNewsResponse> getNewsByKeyword(
             @Parameter(description = "사용자 ID", required = true, example = "1")
             @AuthenticationPrincipal PrincipalUserDetails principal,
-            @Parameter(description = "조회할 키워드", required = true, example = "인공지능")
-            @PathVariable String keyword,
+            @Parameter(description = "조회할 키워드 ID", required = true, example = "1")
+            @PathVariable Long keywordId,
             @Parameter(description = "마지막 뉴스 ID (무한 스크롤용)", example = "100")
             @RequestParam(required = false) Long lastId,
             @Parameter(description = "페이지 크기", example = "10")
@@ -81,7 +81,7 @@ public class NewsroomController {
                 .size(size)
                 .build();
 
-        KeywordNewsResponse response = newsroomService.getNewsByKeyword(userId, keyword, paginationRequest);
+        KeywordNewsResponse response = newsroomService.getNewsByKeyword(userId, keywordId, paginationRequest);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
