@@ -55,4 +55,11 @@ public class News {
     @Column
     private Long view;
 
+    @Column
+    private Long commentNum;
+
+    @Column
+    private Long voteNum;
+
+
 }

@@ -19,6 +19,9 @@ public class NewsResponseDto {
     private LocalDateTime date;
     private double sentiment;
     private String imageUrl;
-//    private Long view;
+    private Long view;
+    private Long commentNum;
+    private Long voteNum;
+
 }
 

@@ -4,9 +4,9 @@ import com.tave.alarmissue.news.controller.NewsController;
 import com.tave.alarmissue.news.converter.NewsConverter;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.enums.Thema;
+import com.tave.alarmissue.news.dto.request.NewsSortType;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.news.dto.response.SliceResponseDto;
-import com.tave.alarmissue.news.repository.NewsMapping;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +28,48 @@ public class NewsService {
     private final NewsRepository newsRepository;
     private final NewsConverter newsConverter;
 
-    public SliceResponseDto<NewsResponseDto> getAllNewsLatest(Pageable pageable){
-        Slice<News> newsSlice=newsRepository.findAllByOrderByDateDesc(pageable);
+//    public SliceResponseDto<NewsResponseDto> getAllNewsLatest(Pageable pageable){
+//        Slice<News> newsSlice=newsRepository.findAllByOrderByDateDesc(pageable);
+//        List<NewsResponseDto> content=newsSlice.getContent()
+//                .stream().map(newsConverter::toDto)
+//                .collect(Collectors.toList());
+//
+//        return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
+//    }
+//
+//    public SliceResponseDto<NewsResponseDto> getAllNewsViewest(Pageable pageable) {
+//        Slice<News> newsSlice=newsRepository.findAllByOrderByViewDesc(pageable);
+//        List<NewsResponseDto> content=newsSlice.getContent()
+//                .stream().map(newsConverter::toDto)
+//                .collect(Collectors.toList());
+//
+//        return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
+//    }
+
+//    public SliceResponseDto<NewsResponseDto> getThemaNewsLatest(Thema thema,Pageable pageable) {
+//        Slice<News> newsSlice=newsRepository.findByThemaOrderByDateDesc(thema, pageable);
+//        List<NewsResponseDto> content=newsSlice.getContent()
+//                .stream().map(newsConverter::toDto)
+//                .collect(Collectors.toList());
+//
+//        return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
+//    }
+//
+//    public SliceResponseDto<NewsResponseDto> getThemaNewsViewst(Thema thema,Pageable pageable) {
+//        Slice<News> newsSlice=newsRepository.findByThemaOrderByViewDesc(thema, pageable);
+//        List<NewsResponseDto> content=newsSlice.getContent()
+//                .stream().map(newsConverter::toDto)
+//                .collect(Collectors.toList());
+//
+//        return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
+//    }
+
+    public SliceResponseDto<NewsResponseDto> getAllNews(NewsSortType sortType,Pageable pageable){
+//        Slice<News> newsSlice=newsRepository.findAll(sortType,pageable);
+        Slice<News> newsSlice=switch(sortType){
+            case LATEST -> newsRepository.findAllByOrderByDateDesc(pageable);
+            case VIEWEST -> newsRepository.findAllByOrderByViewDesc(pageable);
+        };
         List<NewsResponseDto> content=newsSlice.getContent()
                 .stream().map(newsConverter::toDto)
                 .collect(Collectors.toList());
@@ -37,8 +77,11 @@ public class NewsService {
         return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
     }
 
-    public SliceResponseDto<NewsResponseDto> getAllNewsViewest(Pageable pageable) {
-        Slice<News> newsSlice=newsRepository.findAllByOrderByViewDesc(pageable);
+    public SliceResponseDto<NewsResponseDto> getAllThemaNews(NewsSortType sortType,Thema thema,Pageable pageable) {
+        Slice<News> newsSlice=switch(sortType){
+            case LATEST -> newsRepository.findByThemaOrderByDateDesc(thema,pageable);
+            case VIEWEST -> newsRepository.findByThemaOrderByViewDesc(thema,pageable);
+        };
         List<NewsResponseDto> content=newsSlice.getContent()
                 .stream().map(newsConverter::toDto)
                 .collect(Collectors.toList());
@@ -46,23 +89,8 @@ public class NewsService {
         return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
     }
 
-    public SliceResponseDto<NewsResponseDto> getThemaNewsLatest(Thema thema,Pageable pageable) {
-        Slice<News> newsSlice=newsRepository.findByThemaOrderByDateDesc(thema, pageable);
-        List<NewsResponseDto> content=newsSlice.getContent()
-                .stream().map(newsConverter::toDto)
-                .collect(Collectors.toList());
 
-        return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
-    }
 
-    public SliceResponseDto<NewsResponseDto> getThemaNewsViewst(Thema thema,Pageable pageable) {
-        Slice<News> newsSlice=newsRepository.findByThemaOrderByDateDesc(thema, pageable);
-        List<NewsResponseDto> content=newsSlice.getContent()
-                .stream().map(newsConverter::toDto)
-                .collect(Collectors.toList());
-
-        return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
-    }
 
 //    public List<NewsResponseDto> getThemaNewsLatest(Thema thema) {
 //        return newsRepository.findByThemaOrderByDateDesc(thema)
@@ -77,9 +105,5 @@ public class NewsService {
 //                .map(newsConverter::toDto)
 //                .collect(Collectors.toList());
 //    }
-
-
-
-
 
 }

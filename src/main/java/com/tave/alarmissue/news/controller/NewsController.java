@@ -2,9 +2,9 @@ package com.tave.alarmissue.news.controller;
 
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.enums.Thema;
+import com.tave.alarmissue.news.dto.request.NewsSortType;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.news.dto.response.SliceResponseDto;
-import com.tave.alarmissue.news.repository.NewsMapping;
 import com.tave.alarmissue.news.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,36 +43,50 @@ public class NewsController {
 //    }
 
     //전체 뉴스 조회(최신순)
+//    @GetMapping("/news")
+//    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllNewsLatest(@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size) {
+//        Pageable pageable= PageRequest.of(page,size);
+//        SliceResponseDto<NewsResponseDto> response = newsService.getAllNewsLatest(pageable);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    //전체 뉴스 조회(조회수순)
+//    @GetMapping("/news/viewest")
+//    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllNewsViewest(@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size){
+//        Pageable pageable= PageRequest.of(page,size);
+//        SliceResponseDto<NewsResponseDto> response=newsService.getAllNewsViewest(pageable);
+//        return ResponseEntity.ok(response);
+//    }
+
     @GetMapping("/news")
-    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllNewsLatest(@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size) {
-        Pageable pageable= PageRequest.of(page,size);
-        SliceResponseDto<NewsResponseDto> response = newsService.getAllNewsLatest(pageable);
+    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllNews(@RequestParam(defaultValue = "LATEST")NewsSortType sortType, @RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable= PageRequest.of(page,size,sortType.getSort());
+        SliceResponseDto<NewsResponseDto> response = newsService.getAllNews(sortType,pageable);
         return ResponseEntity.ok(response);
     }
 
-    //전체 뉴스 조회(조회수순)
-    @GetMapping("/news/viewest")
-    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllNewsViewest(@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size){
-        Pageable pageable= PageRequest.of(page,size);
-        SliceResponseDto<NewsResponseDto> response=newsService.getAllNewsViewest(pageable);
+    @GetMapping("/news/thema/{thema}")
+    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllThemaNews(@RequestParam(defaultValue = "LATEST")NewsSortType sortType,@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size,@PathVariable Thema thema) {
+        Pageable pageable= PageRequest.of(page,size,sortType.getSort());
+        SliceResponseDto<NewsResponseDto> response = newsService.getAllThemaNews(sortType,thema,pageable);
         return ResponseEntity.ok(response);
     }
 
     //테마별 전체 뉴스 조회(최신순)
-    @GetMapping("/news/thema/{thema}")
-    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getThemaNews(@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size,@PathVariable Thema thema) {
-        Pageable pageable= PageRequest.of(page,size);
-        SliceResponseDto<NewsResponseDto> response = newsService.getThemaNewsLatest(thema,pageable);
-        return ResponseEntity.ok(response);
-    }
-
-    //테마별 전체 뉴스 조회(조회수순)
-    @GetMapping("/news/thema/viewest/{thema}")
-    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getThemaNewsViewest(@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size,@PathVariable Thema thema) {
-        Pageable pageable= PageRequest.of(page,size);
-        SliceResponseDto<NewsResponseDto> response = newsService.getThemaNewsViewst(thema,pageable);
-        return ResponseEntity.ok(response);
-    }
+//    @GetMapping("/news/thema/{thema}")
+//    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getThemaNews(@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size,@PathVariable Thema thema) {
+//        Pageable pageable= PageRequest.of(page,size);
+//        SliceResponseDto<NewsResponseDto> response = newsService.getThemaNewsLatest(thema,pageable);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    //테마별 전체 뉴스 조회(조회수순)
+//    @GetMapping("/news/thema/viewest/{thema}")
+//    public ResponseEntity<SliceResponseDto<NewsResponseDto>> getThemaNewsViewest(@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size,@PathVariable Thema thema) {
+//        Pageable pageable= PageRequest.of(page,size);
+//        SliceResponseDto<NewsResponseDto> response = newsService.getThemaNewsViewst(thema,pageable);
+//        return ResponseEntity.ok(response);
+//    }
 
 //    //전체 뉴스 조회(최신순)
 //    @GetMapping("/news")
