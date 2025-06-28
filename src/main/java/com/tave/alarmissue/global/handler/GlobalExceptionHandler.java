@@ -79,19 +79,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
-
-    //키워드
-    @ExceptionHandler(KeywordException.class)
-    public ResponseEntity<ResponseError> handleKeywordException(KeywordException e,
-                                                                HttpServletRequest request) {
-
-        ResponseError responseError = ResponseError.builder()
-                .messageDetail(e.getMessage())
-                .errorDetail(e.getErrorCode().getMessage())
-                .path(request.getRequestURI())
-                .build();
-
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(responseError);
-    }
 }
