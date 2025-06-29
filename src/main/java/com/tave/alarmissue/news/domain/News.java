@@ -46,11 +46,11 @@ public class News {
     private Thema thema;
 
     @Column
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
     private LocalDateTime date;    //기사 날짜
 
     @Column
-    private double sentiment;
+    private Double sentiment;
 
     @Column
     private Long view;

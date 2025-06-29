@@ -25,6 +25,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/news/v1")
 public class NewsController {
 
     private final NewsService newsService;
@@ -61,7 +62,7 @@ public class NewsController {
 //    }
 
     @Operation(summary = "뉴스 전체 조회")
-    @GetMapping("/news")
+    @GetMapping("")
     public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllNews(@RequestParam(defaultValue = "LATEST")NewsSortType sortType, @RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size) {
         Pageable pageable= PageRequest.of(page,size,sortType.getSort());
         SliceResponseDto<NewsResponseDto> response = newsService.getAllNews(sortType,pageable);
@@ -69,7 +70,7 @@ public class NewsController {
     }
 
     @Operation(summary = "테마별 뉴스 전체 조회")
-    @GetMapping("/news/thema/{thema}")
+    @GetMapping("/{thema}")
     public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllThemaNews(@RequestParam(defaultValue = "LATEST")NewsSortType sortType,@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size,@PathVariable Thema thema) {
         Pageable pageable= PageRequest.of(page,size,sortType.getSort());
         SliceResponseDto<NewsResponseDto> response = newsService.getAllThemaNews(sortType,thema,pageable);
