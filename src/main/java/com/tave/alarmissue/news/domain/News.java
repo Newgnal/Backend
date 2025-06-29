@@ -46,7 +46,7 @@ public class News {
     private Thema thema;
 
     @Column
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime date;    //기사 날짜
 
     @Column
@@ -61,5 +61,7 @@ public class News {
     @Column
     private Long voteNum;
 
-
+    public void incrementView(){
+        this.view+=1;
+    }
 }
