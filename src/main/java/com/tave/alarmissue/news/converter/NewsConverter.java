@@ -13,7 +13,7 @@ public class NewsConverter {
                 .source(news.getSource())
                 .date(news.getDate())
                 .thema(news.getThema())
-                .sentiment(news.getSentiment())
+                .sentiment(news.getSentiment() != null ? news.getSentiment().doubleValue() : 0.0)
                 .view(news.getView())
                 .imageUrl(news.getImageUrl())
                 .build();
