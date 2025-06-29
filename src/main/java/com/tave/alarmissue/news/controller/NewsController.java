@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/news")
+@RequestMapping("/news/v1")
 public class NewsController {
 
     private final NewsService newsService;
