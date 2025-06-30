@@ -79,7 +79,6 @@ public class PostService {
         if(!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new PostException(POST_DELETE_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());
         }
-        commentRepository.deleteAllByPost(post);
         voteRepository.deleteAllByPost(post);
         postRepository.delete(post);
 
