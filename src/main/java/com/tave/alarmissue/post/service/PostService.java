@@ -1,6 +1,5 @@
 package com.tave.alarmissue.post.service;
 
-import com.tave.alarmissue.comment.repository.CommentRepository;
 import com.tave.alarmissue.post.converter.PostConverter;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
@@ -29,7 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
-    private final CommentRepository commentRepository;
+
 
     @Transactional
     public PostResponseDto createPost(PostCreateRequestDto dto, Long userId) {
@@ -79,11 +78,11 @@ public class PostService {
         if(!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new PostException(POST_DELETE_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());
         }
+
         voteRepository.deleteAllByPost(post);
         postRepository.delete(post);
 
     }
-
 
 
 }
