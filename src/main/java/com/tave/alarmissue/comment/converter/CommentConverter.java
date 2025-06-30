@@ -12,7 +12,7 @@ public class CommentConverter {
     public static CommentResponseDto toCommentResponseDto(Comment comment) {
         return CommentResponseDto.builder()
                 .commentId(comment.getCommentId())
-            .comment(comment.getComment())
+            .commentContent(comment.getCommentContent())
             .nickname(comment.getUser().getNickName())
             .createdAt(comment.getCreatedAt())
             .updatedAt(comment.getUpdatedAt())
@@ -20,7 +20,7 @@ public class CommentConverter {
     }
     public Comment toComment(CommentCreateRequestDto dto, UserEntity user, Post post) {
         return Comment.builder()
-                .comment(dto.getComment())
+                .commentContent(dto.getCommentContent())
                 .user(user)
                 .post(post)
                 .build();
