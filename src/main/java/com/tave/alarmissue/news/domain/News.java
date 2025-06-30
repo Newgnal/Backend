@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -32,10 +29,11 @@ public class News {
     @Column(nullable = false, unique = true, length = 1000)
     private String url;
 
-    @Column(nullable = false, unique = true, length=1000)
+    @Column(nullable = true, unique = true, length=1000)
     private String imageUrl;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
     private String content;
 
     @Column(nullable = false, length = 100)
@@ -61,6 +59,30 @@ public class News {
     @Column
     private Long voteNum;
 
+    @Builder
+    public News(String title,
+                String url,
+                String imageUrl,
+                String content,
+                String source,
+                Thema thema,
+                LocalDateTime date,
+                Double sentiment,
+                Long view,
+                Long commentNum,
+                Long voteNum) {
+        this.title = title;
+        this.url = url;
+        this.imageUrl = imageUrl;
+        this.content = content;
+        this.source = source;
+        this.thema = thema;
+        this.date = date;
+        this.sentiment = sentiment;
+        this.view = view;
+        this.commentNum = commentNum;
+        this.voteNum = voteNum;
+    }
     public void incrementView(){
         this.view+=1;
     }

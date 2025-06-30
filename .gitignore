@@ -43,3 +43,6 @@ application-oauth.yml
 # Firebase 서비스 계정 키
 src/main/resources/firebase/*.json
 firebaseAccountKey.json
+
+# 크롤링 코드
+.env

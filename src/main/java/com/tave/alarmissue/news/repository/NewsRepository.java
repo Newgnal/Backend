@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface NewsRepository extends JpaRepository<News, Long> {
 
@@ -26,5 +27,8 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     Slice<News> findByThemaOrderByDateDesc(Thema thema,Pageable pageable);
     Slice<News> findByThemaOrderByViewDesc(Thema thema,Pageable pageable);
+
+    Optional<News> findByUrl(String url);
+    Optional<News> findByTitle(String title);
 
 }
