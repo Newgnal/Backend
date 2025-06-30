@@ -67,7 +67,7 @@ public class PostService {
     }
     //게시글 삭제
     @Transactional
-    public PostResponseDto deletePost(Long postId, Long userId){
+    public void deletePost(Long postId, Long userId){
 
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
@@ -79,10 +79,9 @@ public class PostService {
             throw new PostException(POST_DELETE_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());
         }
 
-        PostResponseDto deletedPostDto = PostConverter.toPostResponseDto(post);
         voteRepository.deleteAllByPost(post);
         postRepository.delete(post);
-        return deletedPostDto;
+
     }
 
 
