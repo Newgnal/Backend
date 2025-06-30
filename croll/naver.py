@@ -29,6 +29,7 @@ class News(Base):
     url = Column(String(1000), nullable=False, unique=True)
     image_url = Column(String(2000), nullable=True)
     thema = Column(String(100), nullable=True)
+    view = Column(Integer, nullable=True)
 
 Base.metadata.create_all(engine)
 
@@ -47,9 +48,9 @@ driver = webdriver.Chrome(service=service, options=options)
 driver.get("https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=101")
 time.sleep(3)
 
-
+# 기사 링크 수집
 articles = driver.find_elements(By.CSS_SELECTOR, "a.sa_text_title")
-links = [article.get_attribute("href") for article in articles[:30]]
+links = [article.get_attribute("href") for article in articles[:20]]
 
 session = SessionLocal()
 
@@ -87,7 +88,8 @@ for idx, link in enumerate(links, 1):
         image_urls = []
 
     # 중복 체크
-    exists = session.query(News).filter(News.url == link).first()
+    exists = session.query(News).filter(
+        (News.url == link) | (News.title == title))
     if exists:
         print(f"[{idx}] 이미 저장된 기사입니다: {title}")
         continue
@@ -99,7 +101,8 @@ for idx, link in enumerate(links, 1):
         content=content,
         url=link,
         image_url=image_urls[0] if image_urls else None,
-        thema=None  # 현재는 thema 분류 안함
+        thema=None,  # 현재는 thema 분류 안함
+        view=0
     )
     session.add(news_item)
     session.commit()

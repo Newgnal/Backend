@@ -16,6 +16,7 @@ PostConverter {
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
                 .articleUrl(post.getArticleUrl())
+                .thema(post.getThema())
                 .nickname(post.getUser().getNickName())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
@@ -28,6 +29,7 @@ PostConverter {
                 .postTitle(dto.getPostTitle())
                 .postContent(dto.getPostContent())
                 .articleUrl(dto.getArticleUrl())
+                .thema(dto.getThema())
                 .hasVote(dto.isHasVote())
                 .user(user)
                 .build();

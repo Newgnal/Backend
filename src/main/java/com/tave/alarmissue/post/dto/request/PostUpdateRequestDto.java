@@ -1,13 +1,12 @@
 package com.tave.alarmissue.post.dto.request;
 
-
 import com.tave.alarmissue.news.enums.Thema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PostCreateRequestDto {
+public class PostUpdateRequestDto {
     private String postTitle;
     private String postContent;
     private String articleUrl;

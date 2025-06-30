@@ -30,6 +30,7 @@ class News(Base):
     url = Column(String(1000), nullable=False, unique=True)
     image_url = Column(String(2000), nullable=True)
     thema = Column(String(100), nullable=True)
+    view= Column(Integer, nullable=True)
 
 Base.metadata.create_all(engine)
 
@@ -48,8 +49,8 @@ driver = webdriver.Chrome(service=service, options=options)
 driver.get("https://news.daum.net/economy")
 time.sleep(3)
 
-# 2. 기사 링크(상위 30개) 수집
-news_items = driver.find_elements(By.CSS_SELECTOR, "ul.list_newsheadline2 > li")[:30]
+# 2. 기사 링크(상위 20개) 수집
+news_items = driver.find_elements(By.CSS_SELECTOR, "ul.list_newsheadline2 > li")[:20]
 links = []
 for item in news_items:
     try:
@@ -93,7 +94,9 @@ for idx, link in enumerate(links, 1):
     except:
         content = None
 
-    exists = session.query(News).filter(News.url == link).first()
+    # DB 중복 체크
+    exists = session.query(News).filter(
+        (News.url == link) | (News.title == title))
     if exists:
         print(f"[{idx}] 이미 저장된 기사입니다: {title}")
         continue
@@ -105,7 +108,8 @@ for idx, link in enumerate(links, 1):
         content=content,
         url=link,
         image_url=image,
-        thema=None
+        thema=None,
+        view=0
     )
     session.add(news_item)
     session.commit()
@@ -114,3 +118,4 @@ for idx, link in enumerate(links, 1):
 
 session.close()
 driver.quit()
+
