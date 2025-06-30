@@ -19,7 +19,7 @@ public class NewsDetailController {
     private final NewsService newsService;
 
     @Operation(summary = "뉴스 상세 페이지")
-    @GetMapping("/news/{newsId}")
+    @GetMapping("/news/v1/{newsId}")
     public ResponseEntity<NewsDetailResponseDto> getNews(@PathVariable Long newsId){
         NewsDetailResponseDto response = newsService.getDetailNews(newsId);
         return ResponseEntity.ok(response);
