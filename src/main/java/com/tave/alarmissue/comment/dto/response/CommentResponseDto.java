@@ -1,5 +1,6 @@
 package com.tave.alarmissue.comment.dto.response;
 
+import com.tave.alarmissue.vote.domain.VoteType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,4 +16,5 @@ public class CommentResponseDto {
     private String nickname;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private VoteType voteType;
 }

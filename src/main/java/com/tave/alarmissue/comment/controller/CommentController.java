@@ -4,6 +4,7 @@ import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.comment.dto.request.CommentCreateRequestDto;
 import com.tave.alarmissue.comment.dto.response.CommentResponseDto;
 import com.tave.alarmissue.comment.service.CommentService;
+import com.tave.alarmissue.vote.domain.Vote;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

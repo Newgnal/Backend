@@ -5,6 +5,8 @@ import com.tave.alarmissue.comment.dto.request.CommentCreateRequestDto;
 import com.tave.alarmissue.comment.dto.response.CommentResponseDto;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.user.domain.UserEntity;
+import com.tave.alarmissue.vote.domain.Vote;
+import com.tave.alarmissue.vote.domain.VoteType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,13 +18,15 @@ public class CommentConverter {
             .nickname(comment.getUser().getNickName())
             .createdAt(comment.getCreatedAt())
             .updatedAt(comment.getUpdatedAt())
-            .build();
+                .voteType(comment.getVoteTypeSnapshot() != null ? comment.getVoteTypeSnapshot() : null)
+                .build();
     }
-    public Comment toComment(CommentCreateRequestDto dto, UserEntity user, Post post) {
+    public Comment toComment(CommentCreateRequestDto dto, UserEntity user, Post post, VoteType voteType) {
         return Comment.builder()
                 .commentContent(dto.getCommentContent())
                 .user(user)
                 .post(post)
+                .voteTypeSnapshot(voteType)
                 .build();
     }
 
