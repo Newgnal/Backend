@@ -24,4 +24,14 @@ public class CommentController {
 
         CommentResponseDto responseDto = commentService.createComment(dto,userId,postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);}
+
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long postId) {
+        Long userId = principal.getUserId();
+
+        commentService.deleteComment(commentId,userId,postId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    }
 }
