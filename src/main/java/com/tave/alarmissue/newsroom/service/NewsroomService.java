@@ -7,7 +7,9 @@ import com.tave.alarmissue.global.utils.PagenationUtils;
 import com.tave.alarmissue.news.converter.NewsConverter;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.newsroom.converter.KeywordConverter;
+import com.tave.alarmissue.newsroom.dto.response.KeywordCountResponse;
 import com.tave.alarmissue.newsroom.dto.response.KeywordResponse;
+import com.tave.alarmissue.newsroom.dto.response.UserKeywordCountsResponse;
 import com.tave.alarmissue.newsroom.entity.Keyword;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.newsroom.dto.response.KeywordNewsResponse;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class NewsroomService {
+
+    //TODO : 키워드별로 알림 받을지 설정해야함
 
     private final KeywordRepository keywordRepository;
     private final NewsRepository newsRepository;
@@ -70,6 +74,7 @@ public class NewsroomService {
         Keyword keyword = Keyword.builder()
                 .keyword(trimmedKeyword)
                 .user(user)
+                .displayOrder(currentKeywordCount)
                 .build();
 
         Keyword savedKeyword = keywordRepository.save(keyword);
@@ -144,16 +149,46 @@ public class NewsroomService {
     }
 
 
-    // 키워드별 뉴스 개수 조회
-    public Map<String, Long> getUserKeywordNewsCount(Long userId) {
-        List<Keyword> keywords = keywordRepository.findByUserIdOrderByCreatedAtAsc(userId);
+    // 키워드별 뉴스 개수 조회 (수정된 응답 구조)
+    public UserKeywordCountsResponse getUserKeywordNewsCount(Long userId) {
+        // displayOrder 순서대로 조회
+        List<Keyword> keywords = keywordRepository.findByUserIdOrderByDisplayOrder(userId);
 
-        return KeywordConverter.toResponseList(keywords).stream()
-                .collect(Collectors.toMap(
-                        KeywordResponse::getKeyword,
-                        k -> newsRepository.countByKeyword(k.getKeyword()),
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        List<KeywordCountResponse> keywordCountResponses = new ArrayList<>();
+
+        for (Keyword keyword : keywords) {
+            long count = newsRepository.countByKeyword(keyword.getKeyword());
+            keywordCountResponses.add(KeywordCountResponse.builder()
+                    .keywordId(keyword.getId())
+                    .keywordName(keyword.getKeyword())
+                    .count(count)
+                    .build());
+        }
+
+        return UserKeywordCountsResponse.builder()
+                .keywordCounts(keywordCountResponses)
+                .build();
     }
+
+
+
+    // 키워드 순서 변경
+    @Transactional
+    public void updateKeywordOrder(Long userId, List<Long> keywordIds) {
+        // 사용자의 키워드인지 확인
+        List<Keyword> keywords = keywordRepository.findAllById(keywordIds);
+
+        for (Keyword keyword : keywords) {
+            if (!keyword.getUser().getId().equals(userId)) {
+                throw new CustomException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
+            }
+        }
+
+        // 순서 업데이트
+        for (int i = 0; i < keywordIds.size(); i++) {
+            Long keywordId = keywordIds.get(i);
+            keywordRepository.updateDisplayOrder(keywordId, i);
+        }
+    }
+
 }

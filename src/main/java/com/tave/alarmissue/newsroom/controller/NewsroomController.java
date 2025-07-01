@@ -2,9 +2,11 @@ package com.tave.alarmissue.newsroom.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.global.dto.request.PagenationRequest;
+import com.tave.alarmissue.newsroom.dto.request.KeywordOrderRequest;
 import com.tave.alarmissue.newsroom.dto.request.KeywordRequest;
 import com.tave.alarmissue.newsroom.dto.response.KeywordResponse;
 import com.tave.alarmissue.newsroom.dto.response.KeywordNewsResponse;
+import com.tave.alarmissue.newsroom.dto.response.UserKeywordCountsResponse;
 import com.tave.alarmissue.newsroom.service.NewsroomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -53,11 +55,11 @@ public class NewsroomController {
     }
 
     // 사용자의 키워드별 뉴스 개수 조회
-    @Operation(summary = "키워드별 뉴스 개수 조회", description = "사용자가 등록한 모든 키워드별로 관련 뉴스 개수를 조회합니다.")
-    @GetMapping("/keywords/count")
-    public ResponseEntity<Map<String, Long>> getUserKeywordNewsCount(@AuthenticationPrincipal PrincipalUserDetails principal) {
+    @Operation(summary = "키워드 목록 조회", description = "사용자가 등록한 모든 키워드별로 관련 뉴스 개수를 조회합니다. (순서 바뀐거 반영)")
+    @GetMapping("/keywords")
+    public ResponseEntity<UserKeywordCountsResponse> getUserKeywordNewsCount(@AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
-        Map<String, Long> response = newsroomService.getUserKeywordNewsCount(userId);
+        UserKeywordCountsResponse response = newsroomService.getUserKeywordNewsCount(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -83,5 +85,16 @@ public class NewsroomController {
 
         KeywordNewsResponse response = newsroomService.getNewsByKeyword(userId, keywordId, paginationRequest);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    // 키워드 순서 변경
+    @PutMapping("/keywords/order")
+    @Operation(summary = "키워드 순서 변경", description = "사용자가 등록한 키워드들의 표시 순서를 변경합니다.")
+    public ResponseEntity<Void> updateKeywordOrder(
+            @AuthenticationPrincipal PrincipalUserDetails principal,
+            @RequestBody KeywordOrderRequest request) {
+        Long userId = principal.getUserId();
+        newsroomService.updateKeywordOrder(userId, request.getKeywordIds());
+        return ResponseEntity.ok().build();
     }
 }

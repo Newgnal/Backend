@@ -29,4 +29,9 @@ public class Keyword extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore  // JSON 직렬화 시 무시
     private UserEntity user;
+
+    // 순서 필드 추가
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer displayOrder = 0;
 }
