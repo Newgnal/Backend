@@ -1,36 +1,3 @@
-server:
-  port: 8080
-
-spring:
-  profiles:
-    include: local, jwt, oauth
-
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    defer-datasource-initialization: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        show_sql: true
-        format_sql: true
-        use_sql_comments: true
-jwt:
-  expiration:
-    access: ${ACCESS_EXPIRATION:1800000}
-    refresh: ${REFRESH_EXPIRATION:2592000000}
-  secret: ${JWT_SECRET:test1234tes1tte2st1234test1te!stte7stt@#e4sttes5ttest2testtest1234123415215161231}
 
 kakao:
   oauth:
