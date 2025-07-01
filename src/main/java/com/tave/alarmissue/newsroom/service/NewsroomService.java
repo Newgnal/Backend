@@ -41,6 +41,13 @@ public class NewsroomService {
     // 사용자별 키워드 추가
     @Transactional
     public KeywordResponse addKeyword(Long userId, String keywordText) {
+
+        // 키워드 개수 제한 검사 (3개 제한)
+        int currentKeywordCount = keywordRepository.countByUserId(userId);
+        if (currentKeywordCount >= 3) {
+            throw new CustomException(KeywordErrorCode.KEYWORD_LIMIT_EXCEEDED);
+        }
+
         // null 체크 및 trim
         if (keywordText == null || keywordText.trim().isEmpty()) {
             throw new CustomException(KeywordErrorCode.KEYWORD_EMPTY);

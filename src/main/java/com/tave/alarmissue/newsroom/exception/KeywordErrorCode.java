@@ -10,7 +10,8 @@ public enum KeywordErrorCode implements ErrorCode {
     USER_NOT_FOUND("존재하지 않는 사용자입니다.", HttpStatus.NOT_FOUND),
     KEYWORD_NOT_FOUND("존재하지 않는 키워드입니다", HttpStatus.NOT_FOUND),
     KEYWORD_NOT_REGISTERED("등록되지 않은 키워드입니다: %s", HttpStatus.BAD_REQUEST),
-    UNAUTHORIZED_ACCESS("해당 키워드에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+    UNAUTHORIZED_ACCESS("해당 키워드에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN),
+    KEYWORD_LIMIT_EXCEEDED("키워드는 최대 3개까지 등록할 수 있습니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus httpStatus;

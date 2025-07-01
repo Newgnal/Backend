@@ -15,5 +15,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
 
     @Query("SELECT k FROM Keyword k WHERE k.user.id = :userId ORDER BY k.createdAt ASC ")
     List<Keyword> findByUserIdOrderByCreatedAtAsc(@Param("userId") Long userId);
+
+    int countByUserId(Long userId);
 }
 
