@@ -70,7 +70,7 @@ public class NewsController {
     }
 
     @Operation(summary = "테마별 뉴스 전체 조회")
-    @GetMapping("/{thema}")
+    @GetMapping("/thema/{thema}")
     public ResponseEntity<SliceResponseDto<NewsResponseDto>> getAllThemaNews(@RequestParam(defaultValue = "LATEST")NewsSortType sortType,@RequestParam(defaultValue = "0")int page, @RequestParam(defaultValue = "5") int size,@PathVariable Thema thema) {
         Pageable pageable= PageRequest.of(page,size,sortType.getSort());
         SliceResponseDto<NewsResponseDto> response = newsService.getAllThemaNews(sortType,thema,pageable);

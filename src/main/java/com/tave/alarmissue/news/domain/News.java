@@ -50,6 +50,7 @@ public class News {
     @Column
     private Double sentiment;
 
+
     @Column
     private Long view;
 

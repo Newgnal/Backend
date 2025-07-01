@@ -4,16 +4,14 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.vote.domain.VoteType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name="poll")
+@Table(name="news_vote")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class NewsVote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +27,9 @@ public class NewsVote {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private VoteType voteType;
+    private NewsVoteType voteType;
 
     @Column(nullable = false)
-    private String question;
+    private String question;    //"이 뉴스가 [반도체/AI]에 어떤 영향을 줄까요?"
 
 }

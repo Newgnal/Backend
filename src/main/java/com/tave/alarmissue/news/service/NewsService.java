@@ -96,19 +96,4 @@ public class NewsService {
 
     }
 
-
-//    public List<NewsResponseDto> getThemaNewsLatest(Thema thema) {
-//        return newsRepository.findByThemaOrderByDateDesc(thema)
-//                .stream()
-//                .map(newsConverter::toDto)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<NewsResponseDto> getThemaNewsViewst(Thema thema) {
-//        return newsRepository.findByThemaOrderByViewDesc(thema)
-//                .stream()
-//                .map(newsConverter::toDto)
-//                .collect(Collectors.toList());
-//    }
-
 }
