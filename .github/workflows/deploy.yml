@@ -1,0 +1,67 @@
+name: newgnal
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Load SSH private key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Set up Docker Buildx (optional, for advanced builds)
+        uses: docker/setup-buildx-action@v2
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Create firebase key file
+        run: |
+          mkdir -p src/main/resources/firebase
+          echo '${{ secrets.FIREBASE_KEY }}' > src/main/resources/firebase/firebaseAccountKey.json
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      - name: Docker Hub Login (for build & push)
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_NAME=limdodod/newgnal
+          TAG_SHA=${GITHUB_SHA::7}
+          docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${TAG_SHA} .
+          docker push ${IMAGE_NAME}:latest
+          docker push ${IMAGE_NAME}:${TAG_SHA}
+
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_CONTENT }}" > .env
+
+      - name: Copy docker-compose.yml and .env to server
+        run: |
+          scp docker-compose.yml .env ubuntu@${{ secrets.SERVER_IP }}:/home/ubuntu/newgnal/
+
+      - name: Deploy with docker-compose on server
+        run: |
+          ssh ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            cd /home/ubuntu/newgnal
+            docker-compose pull
+            docker-compose up -d --remove-orphans
+            docker image prune -f
+          EOF
