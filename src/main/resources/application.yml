@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    include: local, jwt, oauth, prod
+    include: local, jwt, oauth
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
