@@ -44,6 +44,9 @@ jobs:
           docker push ${IMAGE_NAME}:latest
           docker push ${IMAGE_NAME}:${TAG_SHA}
 
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_CONTENT }}" > .env
+
       - name: Copy docker-compose.yml and .env to server
         run: |
           scp docker-compose.yml .env ubuntu@${{ secrets.SERVER_IP }}:/home/ubuntu/newgnal/
