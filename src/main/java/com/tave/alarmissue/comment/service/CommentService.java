@@ -15,6 +15,8 @@ import com.tave.alarmissue.vote.domain.VoteType;
 import com.tave.alarmissue.vote.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,20 @@ public class CommentService {
     private final CommentConverter commentConverter;
     private final VoteRepository voteRepository;
 
+
+    public Page<CommentResponseDto> getComment(Long postId, Pageable pageable) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()->new CommentException(POST_ID_NOT_FOUND,"게시글이 존재하지 않습니다. "));
+
+        Page<Comment> comments = commentRepository.findByPost_PostId(postId,pageable);
+
+        if (comments.isEmpty()) {
+            throw new CommentException(COMMENT_NOT_FOUND);
+        }
+
+        return comments.map(CommentConverter::toCommentResponseDto);
+
+    }
 
     @Transactional
     public CommentResponseDto createComment(CommentCreateRequestDto dto, Long userId, Long postId) {
