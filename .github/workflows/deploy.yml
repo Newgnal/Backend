@@ -1,0 +1,50 @@
+name: newgnal
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Load SSH private key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Set up Docker Buildx (optional, for advanced builds)
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker Hub Login (for build & push)
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_NAME=limdodod/newgnal
+          TAG_SHA=${GITHUB_SHA::7}
+          docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${TAG_SHA} .
+          docker push ${IMAGE_NAME}:latest
+          docker push ${IMAGE_NAME}:${TAG_SHA}
+
+      - name: Copy docker-compose.yml and .env to server
+        run: |
+          scp docker-compose.yml .env ubuntu@${{ secrets.SERVER_IP }}:/home/ubuntu/newgnal/
+
+      - name: Deploy with docker-compose on server
+        run: |
+          ssh ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            cd /home/ubuntu/newgnal
+            docker-compose pull
+            docker-compose up -d --remove-orphans
+            docker image prune -f
+          EOF
