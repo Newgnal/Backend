@@ -46,23 +46,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
 
-    //Validation 에러 처리
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseError> handleValidationException(MethodArgumentNotValidException e,
-                                                                   HttpServletRequest request) {
-        String errorMessage = e.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.joining(", "));
-
-        ResponseError responseError = ResponseError.builder()
-                .messageDetail("입력값 검증에 실패했습니다.")
-                .errorDetail(errorMessage)
-                .path(request.getRequestURI())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
-    }
-    //-------- 아래 내 코드 ----
     // Bean Validation 오류 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseError> handleValidationException(MethodArgumentNotValidException e,

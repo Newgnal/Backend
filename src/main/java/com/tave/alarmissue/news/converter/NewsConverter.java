@@ -22,35 +22,16 @@ public class NewsConverter {
                 .imageUrl(news.getImageUrl())
                 .build();
     }
-
-    /**
-     * News 엔티티를 NewsDto로 변환
-     */
-    public static NewsDto toDto(News news) {
-        if (news == null) {
-            return null;
-        }
-
-        return NewsDto.builder()
-                .id(news.getId())
-                .title(news.getTitle())
-//                .thema(news.getThema())
-                .source(news.getSource())
-                .sentiment(news.getSentiment())
-                .date(news.getDate())
-                .build();
-    }
-
     /**
      * News 엔티티 리스트를 NewsDto 리스트로 변환
      */
-    public static List<NewsDto> toDtoList(List<News> newsList) {
+    public List<NewsResponseDto> toDtoList(List<News> newsList) {
         if (newsList == null || newsList.isEmpty()) {
             return new ArrayList<>();
         }
 
         return newsList.stream()
-                .map(NewsConverter::toDto)
+                .map(this::toDto)
                 .collect(Collectors.toList());
     }
 }

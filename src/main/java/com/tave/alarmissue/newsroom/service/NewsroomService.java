@@ -5,6 +5,7 @@ import com.tave.alarmissue.global.dto.response.PagedResponse;
 import com.tave.alarmissue.global.exception.CustomException;
 import com.tave.alarmissue.global.utils.PagenationUtils;
 import com.tave.alarmissue.news.converter.NewsConverter;
+import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.newsroom.converter.KeywordConverter;
 import com.tave.alarmissue.newsroom.dto.response.KeywordResponse;
 import com.tave.alarmissue.newsroom.entity.Keyword;
@@ -35,8 +36,10 @@ public class NewsroomService {
     private final KeywordRepository keywordRepository;
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
+    private final NewsConverter newsConverter;
 
     // 사용자별 키워드 추가
+    @Transactional
     public KeywordResponse addKeyword(Long userId, String keywordText) {
         // null 체크 및 trim
         if (keywordText == null || keywordText.trim().isEmpty()) {
@@ -120,13 +123,13 @@ public class NewsroomService {
         }
 
         // paginationResult.getData() : 실제 반환할 데이터만 dto로 변환 (newList X)
-        List<NewsDto> newsArticles = NewsConverter.toDtoList(paginationResult.getData());
+        List<NewsResponseDto> newsArticles = newsConverter.toDtoList(paginationResult.getData());
 
         // 전체 개수 조회
         long totalCount = newsRepository.countByKeyword(keywordText);
 
         // 페이지네이션 응답 생성
-        PagedResponse<NewsDto> pagedResponse = PagenationUtils.createPagedResponse(
+        PagedResponse<NewsResponseDto> pagedResponse = PagenationUtils.createPagedResponse(
                 newsArticles, paginationResult.isHasNext(), nextLastId, totalCount);
 
 
@@ -135,7 +138,6 @@ public class NewsroomService {
 
 
     // 키워드별 뉴스 개수 조회
-    //TODO : 페이지네이션 적용 할지 정하기 (읽지않은 알림 구현해보고)
     public Map<String, Long> getUserKeywordNewsCount(Long userId) {
         List<Keyword> keywords = keywordRepository.findByUserIdOrderByCreatedAtAsc(userId);
 
