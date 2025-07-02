@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
@@ -32,7 +33,6 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     Slice<News> findByThemaOrderByDateDesc(Thema thema,Pageable pageable);
     Slice<News> findByThemaOrderByViewDesc(Thema thema,Pageable pageable);
 
-
     // 키워드 포함 뉴스 개수
     @Query("SELECT COUNT(n) FROM News n WHERE LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     long countByKeyword(@Param("keyword") String keywordText);
@@ -45,4 +45,9 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     List<News> findByKeywordAndIdLessThanOrderByIdDesc(@Param("keyword") String keyword,
                                                        @Param("lastId") Long lastId,
                                                        Pageable pageable);
+
+    Optional<News> findByUrl(String url);
+    Optional<News> findByTitle(String title);
+
+
 }
