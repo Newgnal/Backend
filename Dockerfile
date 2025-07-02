@@ -33,7 +33,7 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
     apt-get install -y google-chrome-stable --no-install-recommends
 
 # ChromeDriver 설치
-ARG CHROMEDRIVER_VERSION=137.0.7151.119
+ARG CHROMEDRIVER_VERSION=138.0.7204.92
 RUN wget -N https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip && \
     unzip chromedriver_linux64.zip && \
     mv chromedriver /usr/bin/chromedriver && \
