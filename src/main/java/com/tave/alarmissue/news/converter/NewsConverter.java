@@ -1,7 +1,6 @@
 package com.tave.alarmissue.news.converter;
 
 import com.tave.alarmissue.news.domain.News;
-import com.tave.alarmissue.news.dto.response.NewsDto;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import org.springframework.stereotype.Component;
 
