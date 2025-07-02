@@ -50,7 +50,6 @@ public class News {
     @Column
     private Double sentiment;
 
-
     @Column
     private Long view;
 
@@ -83,8 +82,5 @@ public class News {
         this.view = view;
         this.commentNum = commentNum;
         this.voteNum = voteNum;
-    }
-    public void incrementView(){
-        this.view+=1;
     }
 }
