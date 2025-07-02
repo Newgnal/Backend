@@ -41,6 +41,7 @@ public class NewsroomService {
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
     private final NewsConverter newsConverter;
+    private final PopularKeywordService  popularKeywordService;
 
     // 사용자별 키워드 추가
     @Transactional
@@ -78,6 +79,10 @@ public class NewsroomService {
                 .build();
 
         Keyword savedKeyword = keywordRepository.save(keyword);
+
+        // 인기 키워드를 위해 카운팅
+        popularKeywordService.increaseKeywordScore(keywordText);
+
         return KeywordConverter.toResponse(savedKeyword);
     }
 
