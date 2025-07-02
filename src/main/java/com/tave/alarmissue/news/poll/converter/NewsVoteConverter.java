@@ -8,7 +8,7 @@ import com.tave.alarmissue.news.poll.dto.response.NewsVoteResponseDto;
 
 import java.util.List;
 
-public class NewVoteConverter {
+public class NewsVoteConverter {
 
     public static NewsVoteResponseDto toVoteResponseDto(News news, NewsVoteType newsVoteType,
                                                     List<NewsVoteCountResponse> counts) {
