@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
