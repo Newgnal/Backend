@@ -1,7 +1,6 @@
-package com.tave.alarmissue.news.poll.dto.response;
+package com.tave.alarmissue.news.dto.response;
 
-import com.tave.alarmissue.news.poll.domain.NewsVoteType;
-import com.tave.alarmissue.vote.domain.VoteType;
+import com.tave.alarmissue.news.domain.NewsVoteType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

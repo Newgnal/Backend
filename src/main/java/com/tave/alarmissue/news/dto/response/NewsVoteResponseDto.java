@@ -1,7 +1,8 @@
-package com.tave.alarmissue.news.poll.dto.response;
+package com.tave.alarmissue.news.dto.response;
 
-import com.tave.alarmissue.news.poll.domain.NewsVoteType;
-import com.tave.alarmissue.vote.domain.VoteType;
+import com.tave.alarmissue.news.domain.News;
+import com.tave.alarmissue.news.domain.NewsVoteType;
+import com.tave.alarmissue.news.domain.enums.Thema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,5 +19,7 @@ public class NewsVoteResponseDto {
         private Integer negativeCount;
         private Integer stronglyNegativeCount;
         private NewsVoteType voteType;
+//        private String question;
+        private Thema thema;
 
 }

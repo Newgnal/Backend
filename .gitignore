@@ -44,5 +44,5 @@ application-oauth.yml
 src/main/resources/firebase/*.json
 firebaseAccountKey.json
 
-# 크롤링 코드
+ # 크롤링 코드
 .env

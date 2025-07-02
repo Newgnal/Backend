@@ -1,4 +1,4 @@
-package com.tave.alarmissue.news.poll.domain;
+package com.tave.alarmissue.news.domain;
 
 public enum NewsVoteType {
     STRONGLY_POSITIVE,

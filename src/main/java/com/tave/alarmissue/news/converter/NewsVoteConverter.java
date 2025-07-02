@@ -1,9 +1,9 @@
-package com.tave.alarmissue.news.poll.converter;
+package com.tave.alarmissue.news.converter;
 
 import com.tave.alarmissue.news.domain.News;
-import com.tave.alarmissue.news.poll.domain.NewsVoteType;
-import com.tave.alarmissue.news.poll.dto.response.NewsVoteCountResponse;
-import com.tave.alarmissue.news.poll.dto.response.NewsVoteResponseDto;
+import com.tave.alarmissue.news.domain.NewsVoteType;
+import com.tave.alarmissue.news.dto.response.NewsVoteCountResponse;
+import com.tave.alarmissue.news.dto.response.NewsVoteResponseDto;
 
 
 import java.util.List;
@@ -26,17 +26,16 @@ public class NewsVoteConverter {
                 case NEUTRAL -> neutralCount = (int) c.getCount();
                 case NEGATIVE -> negativeCount = (int) c.getCount();
                 case STRONGLY_NEGATIVE -> strongly_negativeCount = (int) c.getCount();
-
             }
         }
-
         return NewsVoteResponseDto.builder()
                 .newsId(news.getId())
+                .thema(news.getThema())
                 .stronglyPositiveCount(strongly_positiveCount)
                 .positiveCount(positiveCount)
                 .neutralCount(neutralCount)
                 .negativeCount(negativeCount)
-                .stronglyNegativeCount(negativeCount)
+                .stronglyNegativeCount(strongly_negativeCount)
                 .voteType(newsVoteType)
                 .build();
     }

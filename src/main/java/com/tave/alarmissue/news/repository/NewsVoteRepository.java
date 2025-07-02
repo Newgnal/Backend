@@ -1,10 +1,8 @@
-package com.tave.alarmissue.news.poll.repository;
+package com.tave.alarmissue.news.repository;
 
 import com.tave.alarmissue.news.domain.News;
-import com.tave.alarmissue.news.poll.domain.NewsVote;
-import com.tave.alarmissue.news.poll.dto.response.NewsVoteCountResponse;
-import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.vote.dto.response.VoteCountResponse;
+import com.tave.alarmissue.news.domain.NewsVote;
+import com.tave.alarmissue.news.dto.response.NewsVoteCountResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
