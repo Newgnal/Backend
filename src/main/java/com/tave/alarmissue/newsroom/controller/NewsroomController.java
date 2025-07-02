@@ -101,7 +101,7 @@ public class NewsroomController {
     }
 
     //실시간 인기 키워드 조회
-    @GetMapping
+    @GetMapping("/popular-keywords")
     @Operation(summary = "인기 키워드 조회", description = "일일 인기 키워드를 지정된 개수만큼 조회합니다.(최소 5개 최대 10개)")
     public ResponseEntity<List<PopularKeywordResponse>> getPopularKeywords(
             @Parameter(description = "조회할 키워드 개수", example = "5")
