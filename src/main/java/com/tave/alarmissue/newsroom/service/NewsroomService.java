@@ -13,7 +13,6 @@ import com.tave.alarmissue.newsroom.dto.response.UserKeywordCountsResponse;
 import com.tave.alarmissue.newsroom.entity.Keyword;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.newsroom.dto.response.KeywordNewsResponse;
-import com.tave.alarmissue.news.dto.response.NewsDto;
 import com.tave.alarmissue.newsroom.exception.KeywordErrorCode;
 import com.tave.alarmissue.newsroom.repository.KeywordRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
