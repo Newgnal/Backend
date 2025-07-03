@@ -19,10 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-import static com.tave.alarmissue.comment.exception.CommentErrorCode.POST_ID_NOT_FOUND;
-import static com.tave.alarmissue.comment.exception.CommentErrorCode.USER_ID_NOT_FOUND;
+import static com.tave.alarmissue.comment.exception.CommentErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -59,5 +59,26 @@ public class CommentService {
 
         Comment saved = commentRepository.save(comment);
         return CommentConverter.toCommentResponseDto(saved);
+    }
+    @Transactional
+    public void deleteComment(Long commentId, Long userId, Long postId) {
+        UserEntity user = userRepository.findById(userId).
+                orElseThrow(()->new CommentException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
+
+        Post post= postRepository.findById(postId).
+                orElseThrow(()->new CommentException(POST_ID_NOT_FOUND, "postId:" + postId));
+
+        Comment comment = commentRepository.findById(commentId).
+                orElseThrow(()->new CommentException(COMMENT_ID_NOT_FOUND, "commentId: "+ commentId));
+
+        if(!Objects.equals(post.getPostId(),comment.getPost().getPostId())) {
+            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 postId: "+comment.getPost().getPostId() + " postId: " + post.getPostId());
+        }
+
+        if(!Objects.equals(comment.getUser().getId(), user.getId())) {
+            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+comment.getUser().getId() + " userId: " + user.getId());
+        }
+
+        commentRepository.delete(comment);
     }
 }
