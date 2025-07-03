@@ -3,13 +3,11 @@ package com.tave.alarmissue.comment.domain;
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.user.domain.UserEntity;
-import com.tave.alarmissue.vote.domain.Vote;
 import com.tave.alarmissue.vote.domain.VoteType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
 
 
 @Entity
