@@ -51,7 +51,7 @@ jobs:
 
       - name: Copy docker-compose.yml to server
         run: |
-          scp docker-compose.yml .env ubuntu@${{ secrets.SERVER_IP }}:/home/ubuntu/newgnal/
+          scp docker-compose.yml ubuntu@${{ secrets.SERVER_IP }}:/home/ubuntu/newgnal/
 
       - name: Deploy with docker-compose on server
         run: |
