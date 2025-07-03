@@ -22,7 +22,6 @@ public static LikeResponseDto toLikeResponseDto(Like like){
             .liked(like.isLiked())
             .build();
 
-
 }
 
 }
