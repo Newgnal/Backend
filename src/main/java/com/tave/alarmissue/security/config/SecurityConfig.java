@@ -37,6 +37,7 @@ public class SecurityConfig {
             "/login/**",
             "/auth/**",
             "/error",
+            "/actuator/health"
     };
 
 
