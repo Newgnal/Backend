@@ -24,4 +24,5 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     void deleteByUserAndPost(UserEntity currentUser, Post post);
 
     void deleteAllByPost(Post post);
+
 }

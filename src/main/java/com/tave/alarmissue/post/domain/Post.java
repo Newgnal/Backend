@@ -30,7 +30,7 @@ public class Post extends BaseTimeEntity {
     private Thema thema;
 
     @Column
-    private Boolean hasVote =false ;
+    private Boolean hasVote = false ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
