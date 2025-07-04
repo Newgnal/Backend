@@ -43,20 +43,25 @@ public class VoteService {
 
         //게시글에 투표가 없을때
         if (!post.getHasVote()) {
-            throw new VoteException(POST_NOT_VOTABLE, "postId: "+dto.getPostId());
+            throw new VoteException(POST_NOT_VOTABLE, "postId: "+ dto.getPostId());
         }
 
-        // 기존 투표가 있으면 삭제(재투표 가능하게)
-        voteRepository.deleteByUserAndPost(user, post);
+        // 기존 투표 조회
+        Vote newVote = voteRepository.findByUserAndPost(user, post)
+                .orElse(null);
 
-        // 새 투표 저장
-        Vote newVote = Vote.builder()
-                .user(user)
-                .post(post)
-                .voteType(dto.getVoteType())
-                .build();
+        if (newVote != null) {
+            // 기존 투표가 있다면 수정
+            newVote.updateVoteType(dto.getVoteType());
+        } else {
+            //없으면 새로 생성
+            newVote = Vote.builder()
+                    .user(user)
+                    .post(post)
+                    .voteType(dto.getVoteType())
+                    .build();
+        }
         voteRepository.save(newVote);
-
         //DB 접근을 최소화
         List<VoteCountResponse> voteCounts = voteRepository.countVotesByType(post);
 
