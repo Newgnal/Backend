@@ -85,4 +85,8 @@ public class News {
         this.commentNum = commentNum;
         this.voteNum = voteNum;
     }
+
+    public void incrementView(){
+        this.view+=1;
+    }
 }
