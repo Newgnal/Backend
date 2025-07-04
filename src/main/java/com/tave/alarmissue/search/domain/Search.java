@@ -24,4 +24,12 @@ public class Search {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
+
+
+    public static Search create(String content, UserEntity user) {
+        Search search = new Search();
+        search.content = content;
+        search.user = user;
+        return search;
+    }
 }
