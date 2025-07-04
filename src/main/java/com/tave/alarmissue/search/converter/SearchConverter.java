@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class SearchConverter {
 
     public static SearchListResponse toDto(Search search) {
-        return SearchListResponse.builder()ㅅ
+        return SearchListResponse.builder()
                 .content(search.getContent())
                 .build();
     }
