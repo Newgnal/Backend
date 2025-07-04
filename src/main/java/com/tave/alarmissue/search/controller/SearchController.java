@@ -21,16 +21,6 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @GetMapping("/history")
-    public ResponseEntity<List<SearchListResponse>> getSearchHistory(@AuthenticationPrincipal PrincipalUserDetails principal) {
-
-        Long userId = principal.getUserId();
-
-        List<SearchListResponse> responseDto = searchService.getSearchHistory(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-    }
-
-
     @GetMapping("")
     public ResponseEntity<SearchResultResponse> searchNews(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                            @RequestParam(value = "title", required = false) String title) {

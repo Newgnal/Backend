@@ -8,6 +8,5 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class SearchListResponse {
-    private Long id;
     private String content;
 }

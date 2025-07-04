@@ -9,8 +9,7 @@ import java.util.stream.Collectors;
 public class SearchConverter {
 
     public static SearchListResponse toDto(Search search) {
-        return SearchListResponse.builder()
-                .id(search.getId())
+        return SearchListResponse.builder()ㅅ
                 .content(search.getContent())
                 .build();
     }
