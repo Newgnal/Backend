@@ -9,4 +9,6 @@ public interface SearchRepository extends JpaRepository<Search, Long> {
 
     List<Search> findByUserIdOrderByIdDesc(Long userId);
 
+    boolean existsByUserIdAndContent(Long userId, String content);
+
 }

@@ -45,8 +45,11 @@ public class SearchService {
 
         // 로그인한 사용자
         if (userId!=null) {
-            Search search = Search.create(title, userRepository.getReferenceById(userId));
-            searchRepository.save(search);
+            boolean alreadyExists = searchRepository.existsByUserIdAndContent(userId, title);
+            if (!alreadyExists) {
+                Search search = Search.create(title, userRepository.getReferenceById(userId));
+                searchRepository.save(search);
+            }
         }
 
         // themaEnum 과 title -> newsRepository
