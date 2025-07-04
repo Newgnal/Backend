@@ -1,8 +1,7 @@
-package com.tave.alarmissue.news.poll.domain;
+package com.tave.alarmissue.news.domain;
 
-import com.tave.alarmissue.news.domain.News;
+import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.user.domain.UserEntity;
-import com.tave.alarmissue.vote.domain.VoteType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,8 +16,8 @@ public class NewsVote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)   //한 뉴스에 하나의 튜표
-    @JoinColumn(name="news_id")
+    @OneToOne
+    @JoinColumn(name = "news_id")
     private News news;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,7 +28,7 @@ public class NewsVote {
     @Column(nullable = false)
     private NewsVoteType voteType;
 
-    @Column(nullable = false)
-    private String question;    //"이 뉴스가 [반도체/AI]에 어떤 영향을 줄까요?"
+//    @Column(nullable = false)
+//    private String question;    //"이 뉴스가 [반도체/AI]에 어떤 영향을 줄까요?"
 
 }
