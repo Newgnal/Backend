@@ -10,6 +10,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,13 +23,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NaverNewsCrawlService {
 
-    int savedCount = 0;
-
     private final NewsRepository newsRepository;
     @Value("${chromedriver.path}")
     private String chromeDriverPath;
 
+    @Scheduled(cron = "0 */5 * * * *")
+    @Async
     public void crawlNaverEconomyNews() {
+        int savedCount = 0;
+
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 
         ChromeOptions options = new ChromeOptions();
