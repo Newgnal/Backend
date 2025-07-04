@@ -1,6 +1,8 @@
 package com.tave.alarmissue.news.service;
 
+import com.tave.alarmissue.news.controller.CrawlUtil;
 import com.tave.alarmissue.news.domain.News;
+import com.tave.alarmissue.news.domain.WebDriverFactory;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +23,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DaumNewsCrawlService {
 
-
     private final NewsRepository newsRepository;
-    @Value("${chromedriver.path}")
-    private String chromeDriverPath;
+    private final WebDriverFactory webDriverFactory;
 
     @Scheduled(cron = "0 */5 * * * *")
     @Async
     public void crawlDaumEconomyNews() {
         int savedCount= 0;
-        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
-
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = webDriverFactory.createHeadlessDriver();
         driver.get("https://news.daum.net/economy");
 
         try {
@@ -46,7 +42,7 @@ public class DaumNewsCrawlService {
             for (WebElement item : items) {
                 try {
                     WebElement linkElement = item.findElement(By.cssSelector("a.item_newsheadline2"));
-                    String url = linkElement.getAttribute("href");
+                    String url = CrawlUtil.safeGetAttr(driver, "a.item_newsheadline2", "href");
                     if (url != null && !url.isEmpty()) {
                         links.add(url);
                     }
@@ -58,11 +54,11 @@ public class DaumNewsCrawlService {
             for (int i = 0; i < Math.min(links.size(), 20); i++) {
                 String url = links.get(i);
                 driver.get(url);
-                Thread.sleep(1500);
+                CrawlUtil.sleep(1500);
 
-                String title = safeGetText(driver, "h3.tit_view");
-                String source = safeGetText(driver, "a#kakaoServiceLogo");
-                String dateStr = safeGetText(driver, "span.num_date");
+                String title = CrawlUtil.safeGetText(driver, "h3.tit_view");
+                String source = CrawlUtil.safeGetText(driver, "a#kakaoServiceLogo");
+                String dateStr = CrawlUtil.safeGetText(driver, "span.num_date");
 
                 LocalDateTime date = null;
                 if (dateStr != null && !dateStr.isEmpty()) {
@@ -80,8 +76,7 @@ public class DaumNewsCrawlService {
 
                 String imageUrl = null;
                 try {
-                    imageUrl = driver.findElement(By.cssSelector("img.thumb_g_article"))
-                            .getAttribute("data-org-src");
+                    imageUrl = CrawlUtil.safeGetAttr(driver, "img.thumb_g_article", "data-org-src");
                 } catch (Exception e) {
                     imageUrl = "";  // 빈 문자열로 처리
                 }
@@ -115,11 +110,4 @@ public class DaumNewsCrawlService {
         }
     }
 
-    private String safeGetText(WebDriver driver, String selector) {
-        try {
-            return driver.findElement(By.cssSelector(selector)).getText();
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }

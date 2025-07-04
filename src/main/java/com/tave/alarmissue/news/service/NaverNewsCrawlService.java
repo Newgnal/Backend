@@ -1,6 +1,8 @@
 package com.tave.alarmissue.news.service;
 
+import com.tave.alarmissue.news.controller.CrawlUtil;
 import com.tave.alarmissue.news.domain.News;
+import com.tave.alarmissue.news.domain.WebDriverFactory;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,30 +26,24 @@ import java.util.List;
 public class NaverNewsCrawlService {
 
     private final NewsRepository newsRepository;
-    @Value("${chromedriver.path}")
-    private String chromeDriverPath;
+    private final WebDriverFactory webDriverFactory;
 
     @Scheduled(cron = "0 */5 * * * *")
     @Async
     public void crawlNaverEconomyNews() {
         int savedCount = 0;
 
-        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
-
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
-
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = webDriverFactory.createHeadlessDriver();
         driver.get("https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=101"); // 경제 섹션
 
         try {
-            Thread.sleep(3000);
+            CrawlUtil.sleep(3000);
 
             //  기사 링크만 따로 수집
             List<WebElement> articleElements = driver.findElements(By.cssSelector("a.sa_text_title"));
             List<String> links = new ArrayList<>();
             for (WebElement el : articleElements) {
-                String href = el.getAttribute("href");
+                String href = CrawlUtil.safeGetAttr(driver, "a.sa_text_title", "href");
                 if (href != null && !href.isEmpty()) {
                     links.add(href);
                 }
@@ -57,21 +53,19 @@ public class NaverNewsCrawlService {
             for (int i = 0; i < Math.min(links.size(), 20); i++) {
                 String link = links.get(i);
                 driver.get(link);
-                Thread.sleep(2000);
+                CrawlUtil.sleep(2000);
 
-                String title = safeText(driver, "h2#title_area");
+                String title = CrawlUtil.safeGetText(driver, "h2#title_area");
 
                 String source = null;
                 try {
-                    source = driver.findElement(By.cssSelector("div.media_end_head_top img"))
-                            .getAttribute("alt");
+                    source = CrawlUtil.safeGetAttr(driver, "div.media_end_head_top img", "alt");
+
                 } catch (Exception ignored) {}
 
                 String dateStr = null;
                 try {
-                    dateStr = driver.findElement(By.cssSelector(
-                                    "span.media_end_head_info_datestamp_time._ARTICLE_DATE_TIME"))
-                            .getAttribute("data-date-time");
+                    dateStr = CrawlUtil.safeGetAttr(driver, "span.media_end_head_info_datestamp_time._ARTICLE_DATE_TIME", "data-date-time");
                 } catch (Exception ignored) {}
 
                 LocalDateTime date = null;
@@ -82,14 +76,14 @@ public class NaverNewsCrawlService {
 
                 String content = "";
                 try {
-                    content = driver.findElement(By.cssSelector("article#dic_area")).getText();
+                    content = CrawlUtil.safeGetText(driver, "article#dic_area");
                 } catch (Exception ignored) {}
 
                 String imageUrl = null;
                 try {
                     List<WebElement> images = driver.findElements(By.cssSelector("article#dic_area img"));
                     for (WebElement img : images) {
-                        String src = img.getAttribute("src");
+                        String src = CrawlUtil.safeGetAttr(driver, "article#dic_area img", "src");
                         if (src != null && !src.isEmpty()) {
                             imageUrl = src;
                             break;
@@ -130,11 +124,4 @@ public class NaverNewsCrawlService {
         }
     }
 
-    private String safeText(WebDriver driver, String selector) {
-        try {
-            return driver.findElement(By.cssSelector(selector)).getText();
-        } catch (Exception e) {
-            return "제목 없음";
-        }
-    }
 }
