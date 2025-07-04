@@ -4,6 +4,8 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.dto.response.RepresentativeNewsDto;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.newsroom.dto.response.PopularKeywordResponse;
+import com.tave.alarmissue.newsroom.exception.KeywordErrorCode;
+import com.tave.alarmissue.newsroom.exception.KeywordException;
 import com.tave.alarmissue.newsroom.utils.TimeAgoCalculator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,42 +40,34 @@ public class PopularKeywordService {
     public void resetDailyPopularKeywords() {
         log.info("일일 인기 키워드 초기화 시작");
 
-        try {
             Long currentCount = redisTemplate.opsForZSet().zCard(DAILY_KEY);
             log.info("초기화 전 DAILY_KEY 키워드 개수: {}", currentCount);
 
             Boolean deleted = redisTemplate.delete(DAILY_KEY);
             log.info("DAILY_KEY 초기화 결과: {}", deleted);
 
-            Long afterCount = redisTemplate.opsForZSet().zCard(DAILY_KEY);
-            log.info("초기화 후 DAILY_KEY 키워드 개수: {}", afterCount);
+            if (deleted == null || !deleted) {
+                throw new KeywordException(KeywordErrorCode.KEYWORD_RESET_FAILED);
+            }
 
-        } catch (Exception e) {
-            log.error("일일 인기 키워드 초기화 중 오류 발생", e);
-        }
+        log.info("DAILY_KEY 초기화 완료");
     }
 
     // 인기 키워드 Top N 조회 (실시간)
     public List<PopularKeywordResponse> getTopKeywords(int topN) {
-        log.info("인기 키워드 조회 시작, topN: {}", topN);
 
         // DAILY_KEY에서 직접 조회
         Set<ZSetOperations.TypedTuple<String>> result =
                 redisTemplate.opsForZSet().reverseRangeWithScores(DAILY_KEY, 0, topN - 1);
 
         if (result == null || result.isEmpty()) {
-            log.info("현재 등록된 인기 키워드가 없습니다.");
             return Collections.emptyList();
         }
-
-        log.info("조회된 키워드 개수: {}", result.size());
 
         return result.stream()
                 .map(tuple -> {
                     String keyword = tuple.getValue();
                     Long keywordCount = tuple.getScore().longValue();
-                    log.info("처리 중인 키워드: {}, 점수: {}", keyword, keywordCount);
-
                     RepresentativeNewsDto representativeNews = getRepresentativeNews(keyword);
                     return new PopularKeywordResponse(keyword, keywordCount, representativeNews);
                 })
