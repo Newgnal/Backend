@@ -80,7 +80,7 @@ public class NewsroomService {
         Keyword savedKeyword = keywordRepository.save(keyword);
 
         // 인기 키워드를 위해 카운팅
-        popularKeywordService.increaseKeywordScore(keywordText);
+        popularKeywordService.increaseKeywordScore(trimmedKeyword);
 
         return KeywordConverter.toResponse(savedKeyword);
     }
