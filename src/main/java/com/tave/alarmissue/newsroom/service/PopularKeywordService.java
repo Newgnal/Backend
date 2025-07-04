@@ -6,6 +6,7 @@ import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.newsroom.dto.response.PopularKeywordResponse;
 import com.tave.alarmissue.newsroom.utils.TimeAgoCalculator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,52 +21,61 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PopularKeywordService {
 
     private final NewsRepository newsRepository;
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String RAW_KEY = "popular_keywords_raw";
     private static final String DAILY_KEY = "popular_keywords_daily";
 
 
-    // 실시간 이벤트 발생 시 호출
+    // 실시간 키워드 점수 증가
     public void increaseKeywordScore(String keyword) {
-        redisTemplate.opsForZSet().incrementScore(RAW_KEY, keyword, 1);
+        redisTemplate.opsForZSet().incrementScore(DAILY_KEY, keyword, 1);
     }
 
-    // 하루마다 상위 N개만 별도 Sorted Set에 저장 (배치/스케줄러에서 호출)
-    @Transactional
-    public void updateDailyPopularKeywords(int topN) {
-        // 상위 N개 키워드 조회
-        Set<ZSetOperations.TypedTuple<String>> topKeywords =
-                redisTemplate.opsForZSet().reverseRangeWithScores(RAW_KEY, 0, topN - 1);
+    // 매일 0시에 초기화만 수행
+    public void resetDailyPopularKeywords() {
+        log.info("일일 인기 키워드 초기화 시작");
 
-        // 기존 daily set 초기화
-        redisTemplate.delete(DAILY_KEY);
+        try {
+            Long currentCount = redisTemplate.opsForZSet().zCard(DAILY_KEY);
+            log.info("초기화 전 DAILY_KEY 키워드 개수: {}", currentCount);
 
-        // 상위 N개만 저장
-        if (topKeywords != null && !topKeywords.isEmpty()) {
-            for (ZSetOperations.TypedTuple<String> tuple : topKeywords) {
-                redisTemplate.opsForZSet().add(DAILY_KEY, tuple.getValue(), tuple.getScore());
-            }
+            Boolean deleted = redisTemplate.delete(DAILY_KEY);
+            log.info("DAILY_KEY 초기화 결과: {}", deleted);
+
+            Long afterCount = redisTemplate.opsForZSet().zCard(DAILY_KEY);
+            log.info("초기화 후 DAILY_KEY 키워드 개수: {}", afterCount);
+
+        } catch (Exception e) {
+            log.error("일일 인기 키워드 초기화 중 오류 발생", e);
         }
-
-        redisTemplate.delete(RAW_KEY);
     }
 
-    // 인기 키워드 Top N 조회 (API에서 호출)
+    // 인기 키워드 Top N 조회 (실시간)
     public List<PopularKeywordResponse> getTopKeywords(int topN) {
+        log.info("인기 키워드 조회 시작, topN: {}", topN);
+
+        // DAILY_KEY에서 직접 조회
         Set<ZSetOperations.TypedTuple<String>> result =
                 redisTemplate.opsForZSet().reverseRangeWithScores(DAILY_KEY, 0, topN - 1);
 
-        if (result == null) return Collections.emptyList();
+        if (result == null || result.isEmpty()) {
+            log.info("현재 등록된 인기 키워드가 없습니다.");
+            return Collections.emptyList();
+        }
+
+        log.info("조회된 키워드 개수: {}", result.size());
 
         return result.stream()
-                .map(tuple ->{
-                        String keyword = tuple.getValue();
-                Long count = tuple.getScore().longValue();
-                RepresentativeNewsDto representativeNews = getRepresentativeNews(keyword);
-                return new PopularKeywordResponse(keyword, count, representativeNews);
+                .map(tuple -> {
+                    String keyword = tuple.getValue();
+                    Long keywordCount = tuple.getScore().longValue();
+                    log.info("처리 중인 키워드: {}, 점수: {}", keyword, keywordCount);
+
+                    RepresentativeNewsDto representativeNews = getRepresentativeNews(keyword);
+                    return new PopularKeywordResponse(keyword, keywordCount, representativeNews);
                 })
                 .collect(Collectors.toList());
     }

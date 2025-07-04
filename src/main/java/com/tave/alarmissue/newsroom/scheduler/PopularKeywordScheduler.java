@@ -12,9 +12,9 @@ public class PopularKeywordScheduler {
     private final PopularKeywordService popularKeywordService;
     private static final int DEFAULT_TOP_COUNT = 10;
 
-    // 하루 마다 실행 (매일 00시)
+    // 매일 0시에 초기화만 수행
     @Scheduled(cron = "0 0 0 * * *")
-    public void updatePopularKeywordsDaily() {
-        popularKeywordService.updateDailyPopularKeywords(DEFAULT_TOP_COUNT);
+    public void resetDailyPopularKeywords() {
+        popularKeywordService.resetDailyPopularKeywords();
     }
 }
