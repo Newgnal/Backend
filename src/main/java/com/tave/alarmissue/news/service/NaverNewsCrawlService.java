@@ -51,13 +51,37 @@ public class NaverNewsCrawlService {
                 }
             }
 
-            //  각 링크마다 크롤링 진행
+            // 타이틀과 유효 링크만 우선 수집
+            List<String> titles = new ArrayList<>();
+            List<String> validLinks = new ArrayList<>();
             for (int i = 0; i < Math.min(links.size(), 20); i++) {
                 String link = links.get(i);
                 driver.get(link);
                 CrawlUtil.sleep(2000);
 
                 String title = CrawlUtil.safeGetText(driver, "h2#title_area");
+                if (title != null && !title.isEmpty()) {
+                    titles.add(title);
+                    validLinks.add(link);
+                }
+            }
+                // 이미 저장된 타이틀 한꺼번에 조회
+                List<String> existingTitles = newsRepository.findAllTitlesByTitleIn(titles);
+
+                List<News> newsToSave = new ArrayList<>();
+
+                // 중복 아닌 뉴스만 상세 내용 크롤링 후 저장
+                for (int i = 0; i < titles.size(); i++) {
+                    String title = titles.get(i);
+
+                    if (existingTitles.contains(title)) {
+                        log.info("[NAVER] 이미 저장된 기사 제목: {}", title);
+                        continue;
+                    }
+
+                    String link = validLinks.get(i);
+                    driver.get(link);
+                    CrawlUtil.sleep(2000);
 
                 String source = null;
                 try {
@@ -114,11 +138,12 @@ public class NaverNewsCrawlService {
                         .view(0L)
                         .build();
 
-                newsRepository.save(news);
-                savedCount++;
-                log.info("[NAVER] 저장 완료 ({}): {}", savedCount, title);
+                    newsToSave.add(news);
 
             }
+            newsRepository.saveAll(newsToSave);
+            savedCount += newsToSave.size();
+            log.info("[NAVER] 저장 완료 ({})", savedCount);
 
         } catch (Exception e) {
             e.printStackTrace();

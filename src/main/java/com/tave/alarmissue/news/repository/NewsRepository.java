@@ -51,6 +51,9 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     int deleteByDateBefore(LocalDateTime date);
 
+    @Query("SELECT n.title FROM News n WHERE n.title IN :titles")
+    List<String> findAllTitlesByTitleIn(@Param("titles") List<String> titles);
+
 
 
 }
