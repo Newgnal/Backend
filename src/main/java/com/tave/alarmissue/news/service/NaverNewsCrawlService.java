@@ -43,7 +43,7 @@ public class NaverNewsCrawlService {
             List<WebElement> articleElements = driver.findElements(By.cssSelector("a.sa_text_title"));
             List<String> links = new ArrayList<>();
             for (WebElement el : articleElements) {
-                String href = CrawlUtil.safeGetAttr(driver, "a.sa_text_title", "href");
+                String href = el.getAttribute("href");
                 if (href != null && !href.isEmpty()) {
                     links.add(href);
                 }

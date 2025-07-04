@@ -42,7 +42,7 @@ public class DaumNewsCrawlService {
             for (WebElement item : items) {
                 try {
                     WebElement linkElement = item.findElement(By.cssSelector("a.item_newsheadline2"));
-                    String url = CrawlUtil.safeGetAttr(driver, "a.item_newsheadline2", "href");
+                    String url = linkElement.getAttribute("href");
                     if (url != null && !url.isEmpty()) {
                         links.add(url);
                     }
