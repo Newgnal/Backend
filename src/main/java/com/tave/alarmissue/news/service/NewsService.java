@@ -1,15 +1,15 @@
 package com.tave.alarmissue.news.service;
 
-import com.tave.alarmissue.news.controller.NewsController;
 import com.tave.alarmissue.news.converter.NewsConverter;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.dto.request.NewsSortType;
+import com.tave.alarmissue.news.dto.response.NewsDetailResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.news.dto.response.SliceResponseDto;
 import com.tave.alarmissue.news.repository.NewsRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -89,21 +89,11 @@ public class NewsService {
         return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
     }
 
+    public NewsDetailResponseDto getDetailNews(Long newsId) {
+        News news=newsRepository.findById(newsId).orElseThrow(()->new EntityNotFoundException("뉴스를 찾을 수 없습니다. ID: "+newsId));
+        news.incrementView();
+        return newsConverter.toDetailDto(news);
 
-
-
-//    public List<NewsResponseDto> getThemaNewsLatest(Thema thema) {
-//        return newsRepository.findByThemaOrderByDateDesc(thema)
-//                .stream()
-//                .map(newsConverter::toDto)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<NewsResponseDto> getThemaNewsViewst(Thema thema) {
-//        return newsRepository.findByThemaOrderByViewDesc(thema)
-//                .stream()
-//                .map(newsConverter::toDto)
-//                .collect(Collectors.toList());
-//    }
+    }
 
 }
