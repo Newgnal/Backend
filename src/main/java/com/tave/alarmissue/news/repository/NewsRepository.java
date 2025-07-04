@@ -49,5 +49,8 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     Optional<News> findByUrl(String url);
     Optional<News> findByTitle(String title);
 
+    int deleteByDateBefore(LocalDateTime date);
+
+
 
 }

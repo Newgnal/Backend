@@ -6,6 +6,7 @@ import com.tave.alarmissue.news.domain.WebDriverFactory;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NaverNewsCrawlService {
 
     private final NewsRepository newsRepository;
@@ -97,7 +99,7 @@ public class NaverNewsCrawlService {
                 boolean exists = newsRepository.findByUrl(link).isPresent()
                         || newsRepository.findByTitle(title).isPresent();
                 if (exists) {
-                    System.out.println("[NAVER] 이미 저장된 기사: " + title);
+                    log.info("[NAVER] 이미 저장된 기사: {}", title);
                     continue;
                 }
 
@@ -114,7 +116,8 @@ public class NaverNewsCrawlService {
 
                 newsRepository.save(news);
                 savedCount++;
-                System.out.println("[NAVER] 저장 완료 (" + savedCount + "): " + title);
+                log.info("[NAVER] 저장 완료 ({}): {}", savedCount, title);
+
             }
 
         } catch (Exception e) {

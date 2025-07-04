@@ -6,6 +6,7 @@ import com.tave.alarmissue.news.domain.WebDriverFactory;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DaumNewsCrawlService {
 
     private final NewsRepository newsRepository;
@@ -47,7 +49,7 @@ public class DaumNewsCrawlService {
                         links.add(url);
                     }
                 } catch (Exception e) {
-                    System.out.println("링크 추출 에러: " + e.getMessage());
+                    log.error("링크 추출 에러: {}", e.getMessage());
                 }
             }
 
@@ -83,7 +85,7 @@ public class DaumNewsCrawlService {
 
                 // 중복 체크
                 if (newsRepository.findByUrl(url).isPresent() || newsRepository.findByTitle(title).isPresent()) {
-                    System.out.println("이미 저장된 기사: " + title);
+                    log.info("[DAUM] 이미 저장된 기사: {}", title);
                     continue;
                 }
 
@@ -100,7 +102,8 @@ public class DaumNewsCrawlService {
 
                 newsRepository.save(news);
                 savedCount++;
-                System.out.println("DAUM 저장 완료 (" + savedCount + "): " + title);
+                log.info("[DAUM] 저장 완료 ({}): {}", savedCount, title);
+
             }
 
         } catch (Exception e) {
