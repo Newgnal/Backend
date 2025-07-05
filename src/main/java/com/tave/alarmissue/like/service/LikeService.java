@@ -39,7 +39,7 @@ public class LikeService {
                 orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND,"postId:" + postId));
+                .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND," postId: " + postId));
 
         // 기존 좋아요가 존재하는지 확인
         Optional<Like> existingLike = likeRepository.findByUserAndPost(user, post);
@@ -51,7 +51,7 @@ public class LikeService {
         }
 
         // 없으면 좋아요 생성
-        Like like = likeConverter.toPostLike(dto, user, post,dto.getLikeType());
+        Like like = likeConverter.toPostLike(dto, user, post, dto.getLikeType());
         Like saved = likeRepository.save(like);
         return LikeConverter.toLikeResponseDto(saved);
     }
@@ -65,10 +65,10 @@ public class LikeService {
                 .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND,"postId:" + postId));
 
         Comment comment = commentRepository.findById(commentId).
-                orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND,"commentId: "+ commentId));
+                orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND,"commentId: " + commentId));
 
         if(!comment.getPost().getPostId().equals(post.getPostId())) {
-            throw new LikeException(DIFFERENT_POST_ID_COMMENT_ID,"postId: "+ post.getPostId() +"comment의 postId: "+ comment.getPost().getPostId());
+            throw new LikeException(POST_ID_MIXMATCH,"postId: "+ post.getPostId() +"comment의 postId: "+ comment.getPost().getPostId());
         }
 
 
