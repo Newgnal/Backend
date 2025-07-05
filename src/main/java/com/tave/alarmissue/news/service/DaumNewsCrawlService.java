@@ -1,13 +1,18 @@
 package com.tave.alarmissue.news.service;
 
+import com.tave.alarmissue.news.controller.CrawlUtil;
 import com.tave.alarmissue.news.domain.News;
+import com.tave.alarmissue.news.domain.WebDriverFactory;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,21 +22,18 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DaumNewsCrawlService {
 
-    int savedCount=0;
-
     private final NewsRepository newsRepository;
-    @Value("${chromedriver.path}")
-    private String chromeDriverPath;
+    private final WebDriverFactory webDriverFactory;
 
+    @Scheduled(cron = "0 */5 * * * *")
+    @Async
     public void crawlDaumEconomyNews() {
-        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+        int savedCount = 0;
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
-
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = webDriverFactory.createHeadlessDriver();
         driver.get("https://news.daum.net/economy");
 
         try {
@@ -47,25 +49,52 @@ public class DaumNewsCrawlService {
                         links.add(url);
                     }
                 } catch (Exception e) {
-                    System.out.println("링크 추출 에러: " + e.getMessage());
+                    log.error("링크 추출 에러: {}", e.getMessage());
                 }
             }
 
+            List<String> titles = new ArrayList<>();
+            List<String> validLinks = new ArrayList<>();
+
+            // 링크별 제목 수집
             for (int i = 0; i < Math.min(links.size(), 20); i++) {
                 String url = links.get(i);
                 driver.get(url);
-                Thread.sleep(1500);
+                CrawlUtil.sleep(1500);
 
-                String title = safeGetText(driver, "h3.tit_view");
-                String source = safeGetText(driver, "a#kakaoServiceLogo");
-                String dateStr = safeGetText(driver, "span.num_date");
+                String title = CrawlUtil.safeGetText(driver, "h3.tit_view");
+                if (title != null && !title.isEmpty()) {
+                    titles.add(title);
+                    validLinks.add(url);
+                }
+            }
+
+            // DB에 이미 저장된 타이틀들 가져오기
+            List<String> existingTitles = newsRepository.findAllTitlesByTitleIn(titles);
+
+            List<News> newsToSave = new ArrayList<>();
+
+            // 중복 아닌 뉴스만 크롤링 후 저장 준비
+            for (int i = 0; i < titles.size(); i++) {
+                String title = titles.get(i);
+
+                if (existingTitles.contains(title)) {
+                    log.info("[DAUM] 이미 저장된 기사 제목: {}", title);
+                    continue;
+                }
+
+                String url = validLinks.get(i);
+                driver.get(url);
+                CrawlUtil.sleep(1500);
+
+                String source = CrawlUtil.safeGetText(driver, "a#kakaoServiceLogo");
+                String dateStr = CrawlUtil.safeGetText(driver, "span.num_date");
 
                 LocalDateTime date = null;
                 if (dateStr != null && !dateStr.isEmpty()) {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy. M. d. HH:mm");
                     date = LocalDateTime.parse(dateStr, formatter);
                 }
-
 
                 List<WebElement> paras = driver.findElements(By.cssSelector("p[dmcf-ptype='general']"));
                 StringBuilder contentBuilder = new StringBuilder();
@@ -74,18 +103,11 @@ public class DaumNewsCrawlService {
                     if (!txt.isBlank()) contentBuilder.append(txt).append("\n");
                 }
 
-                String imageUrl = null;
+                String imageUrl = "";
                 try {
-                    imageUrl = driver.findElement(By.cssSelector("img.thumb_g_article"))
-                            .getAttribute("data-org-src");
+                    imageUrl = CrawlUtil.safeGetAttr(driver, "img.thumb_g_article", "data-org-src");
                 } catch (Exception e) {
-                    imageUrl = "";  // 빈 문자열로 처리
-                }
-
-                // 중복 체크
-                if (newsRepository.findByUrl(url).isPresent() || newsRepository.findByTitle(title).isPresent()) {
-                    System.out.println("이미 저장된 기사: " + title);
-                    continue;
+                    // 빈 문자열 유지
                 }
 
                 News news = News.builder()
@@ -95,27 +117,22 @@ public class DaumNewsCrawlService {
                         .content(contentBuilder.toString())
                         .url(url)
                         .imageUrl(imageUrl)
-                        .thema(Thema.ETC) // 일단 기본값 ETC
+                        .thema(Thema.ETC) // 기본값 ETC
                         .view(0L)
                         .build();
 
-                newsRepository.save(news);
-                savedCount++;
-                System.out.println("DAUM 저장 완료 (" + savedCount + "): " + title);
+                newsToSave.add(news);
             }
 
+            newsRepository.saveAll(newsToSave);
+            savedCount += newsToSave.size();
+            log.info("[DAUM] 저장 완료 ({})", savedCount);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("뉴스 크롤링 중 에러 발생", e);
         } finally {
             driver.quit();
         }
     }
 
-    private String safeGetText(WebDriver driver, String selector) {
-        try {
-            return driver.findElement(By.cssSelector(selector)).getText();
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }

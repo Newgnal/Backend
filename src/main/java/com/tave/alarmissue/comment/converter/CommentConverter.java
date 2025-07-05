@@ -29,6 +29,4 @@ public class CommentConverter {
                 .voteTypeSnapshot(voteType)
                 .build();
     }
-
-
 }
