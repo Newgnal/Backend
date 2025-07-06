@@ -2,6 +2,7 @@ package com.tave.alarmissue.newsroom.service;
 
 import com.tave.alarmissue.global.dto.request.PagenationRequest;
 import com.tave.alarmissue.global.dto.response.PagedResponse;
+import com.tave.alarmissue.global.exception.CustomException;
 import com.tave.alarmissue.global.utils.PagenationUtils;
 import com.tave.alarmissue.news.converter.NewsConverter;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
@@ -12,8 +13,8 @@ import com.tave.alarmissue.newsroom.dto.response.UserKeywordCountsResponse;
 import com.tave.alarmissue.newsroom.entity.Keyword;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.newsroom.dto.response.KeywordNewsResponse;
+import com.tave.alarmissue.news.dto.response.NewsDto;
 import com.tave.alarmissue.newsroom.exception.KeywordErrorCode;
-import com.tave.alarmissue.newsroom.exception.KeywordException;
 import com.tave.alarmissue.newsroom.repository.KeywordRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
@@ -40,7 +41,6 @@ public class NewsroomService {
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
     private final NewsConverter newsConverter;
-    private final PopularKeywordService  popularKeywordService;
 
     // 사용자별 키워드 추가
     @Transactional
@@ -49,27 +49,27 @@ public class NewsroomService {
         // 키워드 개수 제한 검사 (3개 제한)
         int currentKeywordCount = keywordRepository.countByUserId(userId);
         if (currentKeywordCount >= 3) {
-            throw new KeywordException(KeywordErrorCode.KEYWORD_LIMIT_EXCEEDED);
+            throw new CustomException(KeywordErrorCode.KEYWORD_LIMIT_EXCEEDED);
         }
 
         // null 체크 및 trim
         if (keywordText == null || keywordText.trim().isEmpty()) {
-            throw new KeywordException(KeywordErrorCode.KEYWORD_EMPTY);
+            throw new CustomException(KeywordErrorCode.KEYWORD_EMPTY);
         }
 
         String trimmedKeyword = keywordText.trim();
 
         // 길이 검사
         if (trimmedKeyword.length() < 2 || trimmedKeyword.length() > 10) {
-            throw new KeywordException(KeywordErrorCode.KEYWORD_LENGTH_INVALID);
+            throw new CustomException(KeywordErrorCode.KEYWORD_LENGTH_INVALID);
         }
 
         if (keywordRepository.existsByUserIdAndKeyword(userId, keywordText)) {
-            throw new KeywordException(KeywordErrorCode.KEYWORD_ALREADY_EXISTS, trimmedKeyword);
+            throw new CustomException(KeywordErrorCode.KEYWORD_ALREADY_EXISTS, trimmedKeyword);
         }
 
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() ->new KeywordException(KeywordErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() ->new CustomException(KeywordErrorCode.USER_NOT_FOUND));
 
         Keyword keyword = Keyword.builder()
                 .keyword(trimmedKeyword)
@@ -78,10 +78,6 @@ public class NewsroomService {
                 .build();
 
         Keyword savedKeyword = keywordRepository.save(keyword);
-
-        // 인기 키워드를 위해 카운팅
-        popularKeywordService.increaseKeywordScore(trimmedKeyword);
-
         return KeywordConverter.toResponse(savedKeyword);
     }
 
@@ -89,11 +85,11 @@ public class NewsroomService {
     @Transactional
     public void removeKeyword(Long userId, Long keywordId) {
         Keyword keyword = keywordRepository.findById(keywordId)
-                .orElseThrow(() -> new KeywordException(KeywordErrorCode.KEYWORD_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(KeywordErrorCode.KEYWORD_NOT_FOUND));
 
         // 사용자 확인
         if (!keyword.getUser().getId().equals(userId)) {
-            throw new KeywordException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
+            throw new CustomException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
         }
 
         keywordRepository.deleteById(keywordId);
@@ -103,11 +99,11 @@ public class NewsroomService {
     // 키워드별 뉴스 조회
     public KeywordNewsResponse getNewsByKeyword(Long userId, Long keywordId, PagenationRequest pagenationRequest) {
         Keyword keyword = keywordRepository.findById(keywordId)
-                .orElseThrow(() -> new KeywordException(KeywordErrorCode.KEYWORD_NOT_FOUND, keywordId.toString()));
+                .orElseThrow(() -> new CustomException(KeywordErrorCode.KEYWORD_NOT_FOUND, keywordId.toString()));
 
         // 사용자 확인
         if (!keyword.getUser().getId().equals(userId)) {
-            throw new KeywordException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
+            throw new CustomException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
         }
 
         String keywordText = keyword.getKeyword();
@@ -184,7 +180,7 @@ public class NewsroomService {
 
         for (Keyword keyword : keywords) {
             if (!keyword.getUser().getId().equals(userId)) {
-                throw new KeywordException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
+                throw new CustomException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
             }
         }
 

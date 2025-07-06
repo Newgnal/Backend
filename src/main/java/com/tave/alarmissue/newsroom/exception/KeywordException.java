@@ -1,17 +1,15 @@
 package com.tave.alarmissue.newsroom.exception;
 
-import com.tave.alarmissue.global.exception.CustomException;
-
-public class KeywordException extends CustomException {
+public class KeywordException extends RuntimeException {
     private final KeywordErrorCode errorCode;
 
     public KeywordException(KeywordErrorCode errorCode) {
-        super(errorCode);
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 
     public KeywordException(KeywordErrorCode errorCode, Object... args) {
-        super(errorCode);
+        super(errorCode.getFormattedMessage(args));
         this.errorCode = errorCode;
     }
 
