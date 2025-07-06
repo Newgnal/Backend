@@ -1,7 +1,6 @@
 package com.tave.alarmissue.newsroom.dto.response;
 
-import com.tave.alarmissue.global.dto.response.PagedResponse;
-import com.tave.alarmissue.news.dto.response.NewsResponseDto;
+import com.tave.alarmissue.news.dto.response.RepresentativeNewsDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeywordNewsResponse {
+public class PopularKeywordResponse {
     private String keyword;
-    private PagedResponse<NewsResponseDto> newsData;
+    private Long count;
+    private RepresentativeNewsDto representativeNews;
 }
