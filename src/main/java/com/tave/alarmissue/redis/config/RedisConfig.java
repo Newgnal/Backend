@@ -19,6 +19,8 @@ public class RedisConfig {
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());      // 키는 문자열로 저장
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // 객체를 JSON으로 저장
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new StringRedisSerializer());
         return template;
     }
 }
