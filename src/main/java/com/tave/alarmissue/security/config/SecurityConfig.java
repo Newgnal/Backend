@@ -38,6 +38,9 @@ public class SecurityConfig {
             "/auth/**",
             "/error",
             "/newsroom/v1/popular-keywords",
+            "/actuator/health",
+            "/news/v1/**"
+
     };
 
 
@@ -68,7 +71,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 프론트엔드 주소
+        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://newgnal.site"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
