@@ -42,7 +42,7 @@ public class LikeService {
                 .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND," postId: " + postId));
 
         // 기존 좋아요가 존재하는지 확인
-        Optional<Like> existingLike = likeRepository.findByUserAndPost(user, post);
+        Optional<Like> existingLike = likeRepository.findPostLike(user, post);
         if (existingLike.isPresent()) {
            Long LikeId = existingLike.get().getLikeId();
            LikeType likeType = existingLike.get().getLikeType();
@@ -65,14 +65,14 @@ public class LikeService {
                 .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND,"postId:" + postId));
 
         Comment comment = commentRepository.findById(commentId).
-                orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND,"commentId: " + commentId));
+                orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND," commentId: " + commentId));
 
         if(!comment.getPost().getPostId().equals(post.getPostId())) {
             throw new LikeException(POST_ID_MIXMATCH,"postId: "+ post.getPostId() +"comment의 postId: "+ comment.getPost().getPostId());
         }
 
 
-        Optional<Like> existingLike = likeRepository.findByUserAndComment(user,comment);
+        Optional<Like> existingLike = likeRepository.findCommentLike(user,comment);
         if (existingLike.isPresent()) {
             Long LikeId = existingLike.get().getLikeId();
             LikeType likeType = existingLike.get().getLikeType();
