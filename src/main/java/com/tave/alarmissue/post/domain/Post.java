@@ -1,7 +1,7 @@
 package com.tave.alarmissue.post.domain;
 
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
-import com.tave.alarmissue.news.enums.Thema;
+import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
