@@ -12,6 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
+    
+
     @Query("SELECT l FROM Like l WHERE l.user = :user AND l.post = :post AND l.comment IS NULL")
     Optional<Like> findPostLike(@Param("user") UserEntity user, @Param("post") Post post);
 
@@ -19,4 +21,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     @Query("SELECT l FROM Like l WHERE l.user = :user AND l.comment = :comment")
     Optional<Like> findCommentLike(@Param("user") UserEntity user, @Param("comment") Comment comment);
 
+    void deleteAllByPost(Post post);
+    void deleteAllByComment(Comment comment);
 }
