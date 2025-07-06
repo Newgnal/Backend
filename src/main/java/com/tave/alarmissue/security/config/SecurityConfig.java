@@ -37,10 +37,8 @@ public class SecurityConfig {
             "/login/**",
             "/auth/**",
             "/error",
-            "/newsroom/v1/popular-keywords",
             "/actuator/health",
             "/news/v1/**"
-
     };
 
 
