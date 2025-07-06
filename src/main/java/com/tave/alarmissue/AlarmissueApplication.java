@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableScheduling
 @RequiredArgsConstructor
 @EnableScheduling
 @EnableAsync
