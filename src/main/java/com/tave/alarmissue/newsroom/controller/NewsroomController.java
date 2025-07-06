@@ -6,8 +6,10 @@ import com.tave.alarmissue.newsroom.dto.request.KeywordOrderRequest;
 import com.tave.alarmissue.newsroom.dto.request.KeywordRequest;
 import com.tave.alarmissue.newsroom.dto.response.KeywordResponse;
 import com.tave.alarmissue.newsroom.dto.response.KeywordNewsResponse;
+import com.tave.alarmissue.newsroom.dto.response.PopularKeywordResponse;
 import com.tave.alarmissue.newsroom.dto.response.UserKeywordCountsResponse;
 import com.tave.alarmissue.newsroom.service.NewsroomService;
+import com.tave.alarmissue.newsroom.service.PopularKeywordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,8 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.attribute.UserPrincipal;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/newsroom/v1")
@@ -32,6 +33,7 @@ import java.util.Map;
 public class NewsroomController {
 
     private final NewsroomService newsroomService;
+    private final PopularKeywordService popularKeywordService;
 
     // 키워드 등록
     @PostMapping("/keywords")
@@ -96,5 +98,15 @@ public class NewsroomController {
         Long userId = principal.getUserId();
         newsroomService.updateKeywordOrder(userId, request.getKeywordIds());
         return ResponseEntity.ok().build();
+    }
+
+    //실시간 인기 키워드 조회
+    @GetMapping("/popular-keywords")
+    @Operation(summary = "인기 키워드 조회", description = "일일 인기 키워드를 지정된 개수만큼 조회합니다.(최소 5개 최대 10개)")
+    public ResponseEntity<List<PopularKeywordResponse>> getPopularKeywords(
+            @Parameter(description = "조회할 키워드 개수", example = "5")
+            @RequestParam(defaultValue = "10") @Min(5) @Max(10) int count) {
+        List<PopularKeywordResponse> keywords = popularKeywordService.getTopKeywords(count);
+        return ResponseEntity.ok(keywords);
     }
 }
