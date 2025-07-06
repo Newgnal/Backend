@@ -11,6 +11,7 @@ public class SearchConverter {
     public static SearchListResponse toDto(Search search) {
         return SearchListResponse.builder()
                 .content(search.getContent())
+                .searchId(search.getId())
                 .build();
     }
 
