@@ -39,7 +39,8 @@ public class SecurityConfig {
             "/error",
             "/newsroom/v1/popular-keywords",
             "/actuator/health",
-            "/news/v1/**"
+            "/news/v1/**",
+            "/search/v1/**"
     };
 
 
