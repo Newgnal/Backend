@@ -49,6 +49,9 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     Optional<News> findByUrl(String url);
     Optional<News> findByTitle(String title);
 
+    List<News> findByTitleContainingIgnoreCase(String title);
+
+
     @Query("SELECT n FROM News n WHERE LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "ORDER BY COALESCE(n.view, 0) DESC, n.date DESC")
     List<News> findTopNewsByKeyword(String keyword, Pageable pageable);
