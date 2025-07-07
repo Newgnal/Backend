@@ -32,7 +32,7 @@ public class LikeController {
 
         Long userId = principal.getUserId();
 
-        com.tave.alarmissue.like.dto.response.LikeResponseDto responseDto = likeService.commentLike(dto,userId,postId,commentId);
+        LikeResponseDto responseDto = likeService.commentLike(dto,userId,postId,commentId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
     }
