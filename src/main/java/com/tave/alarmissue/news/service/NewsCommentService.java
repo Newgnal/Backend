@@ -17,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.tave.alarmissue.news.exceptions.NewsCommentErrorCode.NEWS_ID_NOT_FOUND;
 import static com.tave.alarmissue.news.exceptions.NewsCommentErrorCode.USER_ID_NOT_FOUND;
 
@@ -44,5 +47,12 @@ public class NewsCommentService {
         Long totalCommentCount=newsCommentRepository.countByNewsId(newsId);
 
         return NewsCommentConverter.toCommentCreateResponseDto(saved,totalCommentCount);
+    }
+
+    public List<NewsCommentResponseDto> getCommentsByNewsId(Long newsId) {
+        List<NewsComment> comments=newsCommentRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
+        return comments.stream()
+                .map(NewsCommentConverter::toCommentResponseDto)
+                .collect(Collectors.toList());
     }
 }
