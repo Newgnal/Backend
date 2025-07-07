@@ -1,15 +1,20 @@
 package com.tave.alarmissue.news.service;
 
+import com.tave.alarmissue.news.controller.CrawlUtil;
 import com.tave.alarmissue.news.domain.News;
+import com.tave.alarmissue.news.domain.WebDriverFactory;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,25 +24,22 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NaverNewsCrawlService {
 
-    int savedCount = 0;
-
     private final NewsRepository newsRepository;
-    @Value("${chromedriver.path}")
-    private String chromeDriverPath;
+    private final WebDriverFactory webDriverFactory;
 
+    @Scheduled(cron = "0 */5 * * * *")
+    @Async
     public void crawlNaverEconomyNews() {
-        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+        int savedCount = 0;
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
-
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = webDriverFactory.createHeadlessDriver();
         driver.get("https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=101"); // 경제 섹션
 
         try {
-            Thread.sleep(3000);
+            CrawlUtil.sleep(3000);
 
             //  기사 링크만 따로 수집
             List<WebElement> articleElements = driver.findElements(By.cssSelector("a.sa_text_title"));
@@ -49,25 +51,47 @@ public class NaverNewsCrawlService {
                 }
             }
 
-            //  각 링크마다 크롤링 진행
+            // 타이틀과 유효 링크만 우선 수집
+            List<String> titles = new ArrayList<>();
+            List<String> validLinks = new ArrayList<>();
             for (int i = 0; i < Math.min(links.size(), 20); i++) {
                 String link = links.get(i);
                 driver.get(link);
-                Thread.sleep(2000);
+                CrawlUtil.sleep(2000);
 
-                String title = safeText(driver, "h2#title_area");
+                String title = CrawlUtil.safeGetText(driver, "h2#title_area");
+                if (title != null && !title.isEmpty()) {
+                    titles.add(title);
+                    validLinks.add(link);
+                }
+            }
+                // 이미 저장된 타이틀 한꺼번에 조회
+                List<String> existingTitles = newsRepository.findAllTitlesByTitleIn(titles);
+
+                List<News> newsToSave = new ArrayList<>();
+
+                // 중복 아닌 뉴스만 상세 내용 크롤링 후 저장
+                for (int i = 0; i < titles.size(); i++) {
+                    String title = titles.get(i);
+
+                    if (existingTitles.contains(title)) {
+                        log.info("[NAVER] 이미 저장된 기사 제목: {}", title);
+                        continue;
+                    }
+
+                    String link = validLinks.get(i);
+                    driver.get(link);
+                    CrawlUtil.sleep(2000);
 
                 String source = null;
                 try {
-                    source = driver.findElement(By.cssSelector("div.media_end_head_top img"))
-                            .getAttribute("alt");
+                    source = CrawlUtil.safeGetAttr(driver, "div.media_end_head_top img", "alt");
+
                 } catch (Exception ignored) {}
 
                 String dateStr = null;
                 try {
-                    dateStr = driver.findElement(By.cssSelector(
-                                    "span.media_end_head_info_datestamp_time._ARTICLE_DATE_TIME"))
-                            .getAttribute("data-date-time");
+                    dateStr = CrawlUtil.safeGetAttr(driver, "span.media_end_head_info_datestamp_time._ARTICLE_DATE_TIME", "data-date-time");
                 } catch (Exception ignored) {}
 
                 LocalDateTime date = null;
@@ -78,14 +102,14 @@ public class NaverNewsCrawlService {
 
                 String content = "";
                 try {
-                    content = driver.findElement(By.cssSelector("article#dic_area")).getText();
+                    content = CrawlUtil.safeGetText(driver, "article#dic_area");
                 } catch (Exception ignored) {}
 
                 String imageUrl = null;
                 try {
                     List<WebElement> images = driver.findElements(By.cssSelector("article#dic_area img"));
                     for (WebElement img : images) {
-                        String src = img.getAttribute("src");
+                        String src = CrawlUtil.safeGetAttr(driver, "article#dic_area img", "src");
                         if (src != null && !src.isEmpty()) {
                             imageUrl = src;
                             break;
@@ -99,7 +123,7 @@ public class NaverNewsCrawlService {
                 boolean exists = newsRepository.findByUrl(link).isPresent()
                         || newsRepository.findByTitle(title).isPresent();
                 if (exists) {
-                    System.out.println("[NAVER] 이미 저장된 기사: " + title);
+                    log.info("[NAVER] 이미 저장된 기사: {}", title);
                     continue;
                 }
 
@@ -114,10 +138,12 @@ public class NaverNewsCrawlService {
                         .view(0L)
                         .build();
 
-                newsRepository.save(news);
-                savedCount++;
-                System.out.println("[NAVER] 저장 완료 (" + savedCount + "): " + title);
+                    newsToSave.add(news);
+
             }
+            newsRepository.saveAll(newsToSave);
+            savedCount += newsToSave.size();
+            log.info("[NAVER] 저장 완료 ({})", savedCount);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,11 +152,4 @@ public class NaverNewsCrawlService {
         }
     }
 
-    private String safeText(WebDriver driver, String selector) {
-        try {
-            return driver.findElement(By.cssSelector(selector)).getText();
-        } catch (Exception e) {
-            return "제목 없음";
-        }
-    }
 }

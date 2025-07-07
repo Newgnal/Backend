@@ -13,4 +13,13 @@ public enum Thema {
     EXCHANGE_RATE,
     RAW_MATERIAL_METALS,
     ETC;
+
+    // string -> enum 변환
+    public static Thema fromStringOrNull(String thema) {
+        try {
+            return Thema.valueOf(thema.toUpperCase());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
