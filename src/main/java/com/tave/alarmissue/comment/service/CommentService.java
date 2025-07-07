@@ -6,6 +6,7 @@ import com.tave.alarmissue.comment.dto.request.CommentCreateRequestDto;
 import com.tave.alarmissue.comment.dto.response.CommentResponseDto;
 import com.tave.alarmissue.comment.exception.CommentException;
 import com.tave.alarmissue.comment.repository.CommentRepository;
+import com.tave.alarmissue.like.repository.LikeRepository;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.repository.PostRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
@@ -35,7 +36,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentConverter commentConverter;
     private final VoteRepository voteRepository;
-
+    private final LikeRepository likeRepository;
 
     @Transactional
     public CommentResponseDto createComment(CommentCreateRequestDto dto, Long userId, Long postId) {
@@ -78,7 +79,7 @@ public class CommentService {
         if(!Objects.equals(comment.getUser().getId(), user.getId())) {
             throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+comment.getUser().getId() + " userId: " + user.getId());
         }
-
+        likeRepository.deleteAllByComment(comment);
         commentRepository.delete(comment);
     }
 }
