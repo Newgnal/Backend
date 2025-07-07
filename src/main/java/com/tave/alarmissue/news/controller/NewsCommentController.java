@@ -1,7 +1,8 @@
 package com.tave.alarmissue.news.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
-import com.tave.alarmissue.news.dto.request.NewsCommentRequestDto;
+import com.tave.alarmissue.news.dto.request.NewsCommentCreateRequestDto;
+import com.tave.alarmissue.news.dto.response.NewsCommentCreateResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.service.NewsCommentService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,9 @@ public class NewsCommentController {
     private final NewsCommentService newsCommentService;
 
     @PostMapping
-    public ResponseEntity<NewsCommentResponseDto> createComment(@RequestBody NewsCommentRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long newsId) {
+    public ResponseEntity<NewsCommentCreateResponseDto> createComment(@RequestBody NewsCommentCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long newsId) {
         Long userId = principal.getUserId();
-        NewsCommentResponseDto responseDto = newsCommentService.createComment(dto,userId,newsId);
+        NewsCommentCreateResponseDto responseDto = newsCommentService.createComment(dto,userId,newsId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 }
