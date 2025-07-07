@@ -8,6 +8,7 @@ import com.tave.alarmissue.comment.exception.CommentException;
 import com.tave.alarmissue.comment.repository.CommentRepository;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.repository.PostRepository;
+import com.tave.alarmissue.reply.repository.ReplyRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
 import com.tave.alarmissue.vote.domain.Vote;

@@ -5,7 +5,6 @@ import com.tave.alarmissue.comment.dto.request.CommentCreateRequestDto;
 import com.tave.alarmissue.comment.dto.response.CommentResponseDto;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.user.domain.UserEntity;
-import com.tave.alarmissue.vote.domain.Vote;
 import com.tave.alarmissue.vote.domain.VoteType;
 import org.springframework.stereotype.Component;
 
