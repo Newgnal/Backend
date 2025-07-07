@@ -1,4 +1,4 @@
-package com.tave.alarmissue.news.domain.enums;
+package com.tave.alarmissue.news.enums;
 
 public enum Thema {
     SEMICONDUCTOR_AI,
