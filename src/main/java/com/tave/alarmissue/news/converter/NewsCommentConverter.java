@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class NewsCommentConverter {
     public static NewsCommentResponseDto toCommentResponseDto(NewsComment newsComment){
         return NewsCommentResponseDto.builder()
-                .newsId(newsComment.getId())
+                .newsId(newsComment.getNews().getId())
                 .commentContent(newsComment.getCommentContent())
                 .nickName(newsComment.getUser().getNickName())
                 .createdAt(newsComment.getCreatedAt())
