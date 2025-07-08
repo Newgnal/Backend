@@ -21,21 +21,21 @@ public static LikeResponseDto toLikeResponseDto(Like like){
 
 }
 
-    public Like toPostLike(LikeCreateRequestDto dto, UserEntity user, Post post ,LikeType likeType){
+    public Like toPostLike(LikeCreateRequestDto dto, UserEntity user, Post post){
         return Like.builder().
                 liked(dto.isLiked()).
                 user(user).
                 post(post).
-                likeType(likeType).
+                likeType(dto.getLikeType()).
                 build();
     }
-    public Like toCommentLike(LikeCreateRequestDto dto, UserEntity user, Post post,Comment comment,LikeType likeType){
+    public Like toCommentLike(LikeCreateRequestDto dto, UserEntity user, Post post,Comment comment){
         return Like.builder().
                 liked(dto.isLiked()).
                 user(user).
                 post(post).
                 comment(comment).
-                likeType(likeType).
+                likeType(dto.getLikeType()).
                 build();
     }
 }

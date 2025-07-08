@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class LikeCreateRequestDto {
-    boolean liked;
+    private boolean liked;
     private LikeType likeType;
 }

@@ -51,7 +51,7 @@ public class LikeService {
         }
 
         // 없으면 좋아요 생성
-        Like like = likeConverter.toPostLike(dto, user, post, dto.getLikeType());
+        Like like = likeConverter.toPostLike(dto, user, post);
         Like saved = likeRepository.save(like);
         return LikeConverter.toLikeResponseDto(saved);
     }
@@ -80,7 +80,7 @@ public class LikeService {
             return new LikeResponseDto(LikeId,false,likeType);
         }
         // 없으면 좋아요 생성
-        Like like = likeConverter.toCommentLike(dto, user, post, comment, dto.getLikeType());
+        Like like = likeConverter.toCommentLike(dto, user, post, comment);
         Like saved = likeRepository.save(like);
         return LikeConverter.toLikeResponseDto(saved);
 
