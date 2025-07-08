@@ -43,11 +43,11 @@ public class NewsCommentConverter {
                 .build();
     }
 
-    // 댓글 개수 응답 DTO 변환 메서드 추가
-//    public static NewsCommentCountResponseDto toCommentCountResponseDto(Long newsId, Long count) {
-//        return NewsCommentCountResponseDto.builder()
-//                .newsId(newsId)
-//                .count(count)
-//                .build();
-//    }
+//     댓글 개수 응답 DTO 변환 메서드 추가
+    public static NewsCommentCountResponseDto toCommentCountResponseDto(Long newsId, Long count) {
+        return NewsCommentCountResponseDto.builder()
+                .newsId(newsId)
+                .count(count)
+                .build();
+    }
 }

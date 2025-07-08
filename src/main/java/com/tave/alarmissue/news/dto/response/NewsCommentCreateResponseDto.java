@@ -16,5 +16,5 @@ public class NewsCommentCreateResponseDto {
     private NewsCommentResponseDto comment;
 
     @Schema(description = "해당 뉴스의 총 댓글 개수")
-    private Long totalCommentCount;
+    private Long totalCommentCount;       //댓글 생성했을 때 댓글 수를 받아오기 위함
 }

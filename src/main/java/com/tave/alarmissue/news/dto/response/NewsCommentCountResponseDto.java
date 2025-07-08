@@ -17,5 +17,5 @@ public class NewsCommentCountResponseDto {
 //    @Schema(description = "댓글 ID", example = "1")
 //    private Long commentId;
     @Schema(description = "댓글 개수", example = "15")
-    private Long count;
+    private Long count;    //댓글 삭제했을 때 댓글 개수를 받아오기 위해.
 }
