@@ -33,6 +33,7 @@ public class ReportConverter {
                 reportType(dto.getReportType()).
                 user(user).
                 post(post).
+                comment(comment).
                 build();
     }
 }
