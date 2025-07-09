@@ -22,5 +22,6 @@ public class NewsCommentResponseDto {
     private NewsVoteType voteType;
     private String nickName;
     private LocalDateTime createdAt;
+    private String timeAgo;
 //    private LocalDateTime updatedAt;
 }
