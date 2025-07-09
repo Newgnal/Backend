@@ -22,7 +22,7 @@ public class Like {
     private Long LikeId;
 
     @JoinColumn
-    private boolean liked=false;
+    private Liked liked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -41,7 +41,7 @@ public class Like {
     private LikeType likeType;
 
     @Builder
-    public Like(boolean liked, UserEntity user, Post post,Comment comment, LikeType likeType) {
+    public Like(Liked liked, UserEntity user, Post post,Comment comment, LikeType likeType) {
         this.liked = liked;
         this.user = user;
         this.post = post;

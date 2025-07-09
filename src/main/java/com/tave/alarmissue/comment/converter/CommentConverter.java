@@ -15,6 +15,7 @@ public class CommentConverter {
         return CommentResponseDto.builder()
                 .commentId(comment.getCommentId())
             .commentContent(comment.getCommentContent())
+                .likeCount(comment.getLikeCount())
             .nickname(comment.getUser().getNickName())
             .createdAt(comment.getCreatedAt())
             .updatedAt(comment.getUpdatedAt())
@@ -27,6 +28,7 @@ public class CommentConverter {
                 .user(user)
                 .post(post)
                 .voteTypeSnapshot(voteType)
+                .likeCount(0L)
                 .build();
     }
 

@@ -25,6 +25,9 @@ public class Comment extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String commentContent;
 
+    @Column(nullable = false)
+    private Long likeCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
@@ -38,9 +41,10 @@ public class Comment extends BaseTimeEntity {
     private VoteType voteTypeSnapshot;
 
     @Builder
-    public Comment(Long commentId, String commentContent, UserEntity user, Post post,VoteType voteTypeSnapshot) {
+    public Comment(Long commentId, String commentContent, Long likeCount, UserEntity user, Post post,VoteType voteTypeSnapshot) {
         this.commentId = commentId;
         this.commentContent = commentContent;
+        this.likeCount = likeCount;
         this.user = user;
         this.post = post;
         this.voteTypeSnapshot = voteTypeSnapshot;

@@ -3,9 +3,20 @@ package com.tave.alarmissue.comment.repository;
 import com.tave.alarmissue.comment.domain.Comment;
 import com.tave.alarmissue.post.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     void deleteAllByPost(Post post);
+    @Modifying
+    @Query("UPDATE Comment c SET c.likeCount = c.likeCount + 1 WHERE c.commentId = :commentId")
+    void incrementLikeCount(@Param("commentId") Long commentId);
+
+    @Modifying
+    @Query("UPDATE Comment c SET c.likeCount = c.likeCount - 1 WHERE c.commentId = :commentId AND c.likeCount > 0")
+    void decrementLikeCount(@Param("commentId") Long commentId);
+
 }
