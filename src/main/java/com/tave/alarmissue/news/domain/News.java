@@ -89,4 +89,14 @@ public class News {
     public void incrementView(){
         this.view+=1;
     }
+
+    public void incrementCommentCount(){
+        this.commentNum+=1;
+    }
+
+    public void decrementCommentCount(){
+        if(this.commentNum>0) {
+            this.commentNum-=1;
+        }
+    }
 }

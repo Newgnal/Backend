@@ -29,7 +29,7 @@ public class NewsComment extends BaseTimeEntity {
     private UserEntity user;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String commentContent;
+    private String comment;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)

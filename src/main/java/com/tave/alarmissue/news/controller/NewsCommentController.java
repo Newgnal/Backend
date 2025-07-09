@@ -2,7 +2,6 @@ package com.tave.alarmissue.news.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.news.dto.request.NewsCommentCreateRequestDto;
-import com.tave.alarmissue.news.dto.response.NewsCommentCreateResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.service.NewsCommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,11 +23,26 @@ public class NewsCommentController {
 
     private final NewsCommentService newsCommentService;
 
+//    @PostMapping
+//    @Operation(summary = "댓글 작성", description = "특정 뉴스에 댓글 작성합니다.")
+//    public ResponseEntity<NewsCommentCreateResponseDto> createComment(@RequestBody NewsCommentCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal) {
+//        Long userId = principal.getUserId();
+//        NewsCommentCreateResponseDto responseDto = newsCommentService.createComment(dto,userId, dto.getNewsId());
+//        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+//    }
+//
+//    @GetMapping
+//    @Operation(summary = "댓글 목록 조회", description = "특정 뉴스의 모든 댓글을 최신순으로 조회합니다.")
+//    public ResponseEntity<List<NewsCommentResponseDto>> getComments(@PathVariable Long newsId){
+//        List<NewsCommentResponseDto> comments=newsCommentService.getCommentsByNewsId(newsId);
+//        return ResponseEntity.ok(comments);
+//    }
+
     @PostMapping
     @Operation(summary = "댓글 작성", description = "특정 뉴스에 댓글 작성합니다.")
-    public ResponseEntity<NewsCommentCreateResponseDto> createComment(@RequestBody NewsCommentCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long newsId) {
+    public ResponseEntity<NewsCommentResponseDto> createComment(@RequestBody NewsCommentCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
-        NewsCommentCreateResponseDto responseDto = newsCommentService.createComment(dto,userId,newsId);
+        NewsCommentResponseDto responseDto = newsCommentService.createComment(dto,userId, dto.getNewsId());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 

@@ -11,5 +11,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "댓글 생성 요청")
 public class NewsCommentCreateRequestDto {
     @Schema(description = "생성된 댓글 정보")
-    private String commentContent;
+    private String comment;
+    private Long newsId;
+
 }
