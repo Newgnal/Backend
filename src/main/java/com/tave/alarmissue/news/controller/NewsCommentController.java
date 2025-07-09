@@ -54,4 +54,26 @@ public class NewsCommentController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{commentId}")
+    @Operation(summary = "댓글 삭제", description = "특정 댓글을 삭제합니다. (작성자만 가능)")
+    public ResponseEntity<Void>deleteComment(@PathVariable Long newsId, @PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
+        Long userId=principal.getUserId();
+        newsCommentService.deleteComment(commentId,userId,newsId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    }
+
+
+//    @DeleteMapping("/{commentId}/with-count")
+//    @Operation(summary = "댓글 삭제(개수 포함)",description = "댓글 삭제하고 업데이트 된 댓글 개수를 반환홥니다.")
+//    public ResponseEntity<NewsCommentResponseDto>deleteCommentWithCount(@PathVariable Long newsId, @PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
+//        Long userId=principal.getUserId();
+//        NewsCommentResponseDto responseDto=newsCommentService.deleteCommentAndGetCount(commentId,userId);
+//
+//        return ResponseEntity.ok(responseDto);
+//    }
+
+
+
 }

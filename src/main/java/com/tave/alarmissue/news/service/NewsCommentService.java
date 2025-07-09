@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tave.alarmissue.comment.exception.CommentErrorCode.COMMENT_ID_NOT_FOUND;
 import static com.tave.alarmissue.news.exceptions.NewsCommentErrorCode.*;
 
 
@@ -60,6 +61,60 @@ public class NewsCommentService {
 
         return NewsCommentConverter.toCommentListResponseDto(newsId,totalCount,comments);
     }
+
+//    @Transactional
+//    public void deleteComment(Long commentId, Long userId, Long newsId) {
+//        UserEntity user=userRepository.findById(userId).orElseThrow(()->new NewsCommentException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
+//        News news=newsRepository.findById(newsId).orElseThrow(()->new NewsCommentException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
+//
+//        //댓글 존재 확인
+//        NewsComment comment = newsCommentRepository.findById(commentId)
+//                .orElseThrow(() -> new NewsCommentException(COMMENT_ID_NOT_FOUND, "댓글을 찾을 수 없습니다."));
+//
+//        //작성자 본인인지 확인
+//        if(!comment.getUser().getId().equals(userId)){
+//            throw new NewsCommentException(UNAUTHORIZED_DELETE,"본인이 작성한 댓글만 삭제할 수 있습니다.");
+//        }
+//        //댓글 삭제
+//        newsCommentRepository.delete(comment);
+//        news.decrementCommentCount();
+//    }
+
+    @Transactional
+    public void deleteComment(Long commentId, Long userId, Long newsId) {
+        // 해당 뉴스의 해당 사용자가 작성한 댓글만 조회
+        NewsComment comment = newsCommentRepository.findByIdAndNewsIdAndUserId(commentId, newsId, userId)
+                .orElseThrow(() -> new NewsCommentException(COMMENT_ID_NOT_FOUND,
+                        "해당 뉴스에서 본인이 작성한 댓글을 찾을 수 없습니다."));
+
+        News news = comment.getNews();
+
+        // 댓글 삭제
+        newsCommentRepository.delete(comment);
+
+        // 댓글 개수 감소
+        news.decrementCommentCount();
+    }
+
+//    @Transactional
+//    public NewsCommentResponseDto deleteCommentAndGetCount(Long commentId, Long userId){
+//        //댓글 조회
+//        NewsComment comment=newsCommentRepository.findById(commentId).orElseThrow(()->new NewsCommentException(COMMENT_ID_NOT_FOUND,"댓글을 찾을 수 없습니다."));
+//        Long newsId=comment.getNews().getId();
+//
+//        //작성자 본인 확인
+//        if(!comment.getUser().getId().equals(userId)){
+//            throw new NewsCommentException(UNAUTHORIZED_DELETE, "본인이 작성한 댓글만 삭제할 수 있습니다.");
+//        }
+//        //댓글 삭제
+//        newsCommentRepository.delete(comment);
+////        Long updatedCount=newsCommentRepository.countByNewsId(newsId);
+//        News news=comment.getNews();
+//        news.decrementCommentCount();
+//
+//        return NewsCommentConverter.toCommentResponseDto(newsId);
+//
+//    }
 
 
 }
