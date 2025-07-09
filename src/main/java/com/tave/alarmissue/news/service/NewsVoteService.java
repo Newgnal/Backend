@@ -8,18 +8,17 @@ import com.tave.alarmissue.news.dto.response.NewsVoteCountResponse;
 import com.tave.alarmissue.news.dto.response.NewsVoteResponseDto;
 import com.tave.alarmissue.news.repository.NewsVoteRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
-import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
-import com.tave.alarmissue.vote.exception.VoteException;
+import com.tave.alarmissue.post.exception.VoteException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.tave.alarmissue.vote.exception.VoteErrorCode.POST_ID_NOT_FOUND;
-import static com.tave.alarmissue.vote.exception.VoteErrorCode.USER_ID_NOT_FOUND;
+import static com.tave.alarmissue.post.exception.VoteErrorCode.POST_ID_NOT_FOUND;
+import static com.tave.alarmissue.post.exception.VoteErrorCode.USER_ID_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

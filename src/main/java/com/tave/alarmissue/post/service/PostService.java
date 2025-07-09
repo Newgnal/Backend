@@ -1,7 +1,7 @@
 package com.tave.alarmissue.post.service;
 
-import com.tave.alarmissue.comment.repository.CommentRepository;
-import com.tave.alarmissue.like.repository.LikeRepository;
+import com.tave.alarmissue.post.repository.CommentRepository;
+import com.tave.alarmissue.post.repository.LikeRepository;
 import com.tave.alarmissue.post.converter.PostConverter;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
@@ -11,7 +11,7 @@ import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.post.repository.PostRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
-import com.tave.alarmissue.vote.repository.VoteRepository;
+import com.tave.alarmissue.post.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

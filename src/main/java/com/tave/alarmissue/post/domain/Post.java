@@ -23,7 +23,7 @@ public class Post extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String postContent;
 
-    @Column(nullable = false)
+    @Column
     private Long likeCount;
 
     @Column
