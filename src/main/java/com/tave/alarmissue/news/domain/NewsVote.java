@@ -1,5 +1,6 @@
 package com.tave.alarmissue.news.domain;
 
+import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,8 +16,8 @@ public class NewsVote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="news_id")
+    @OneToOne
+    @JoinColumn(name = "news_id")
     private News news;
 
     @ManyToOne(fetch = FetchType.LAZY)

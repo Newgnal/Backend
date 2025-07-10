@@ -1,4 +1,5 @@
 server:
+  address: 0.0.0.0
   port: 8080
 
 spring:
@@ -13,7 +14,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: ${SPRING_DATA_REDIS_HOST}
       port: 6379
 
   jpa:
@@ -29,6 +30,15 @@ spring:
 
 chromedriver:
   path: ${CHROMEDRIVER_PATH}
+
+management:
+  endpoint:
+    health:
+      show-details: never
+  health:
+    db:
+      enabled: false
+
 
 jwt:
   expiration:

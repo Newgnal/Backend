@@ -1,7 +1,7 @@
 package com.tave.alarmissue.news.converter;
 
 import com.tave.alarmissue.news.domain.News;
-import com.tave.alarmissue.news.domain.NewsVoteType;
+import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.news.dto.response.NewsVoteCountResponse;
 import com.tave.alarmissue.news.dto.response.NewsVoteResponseDto;
 
