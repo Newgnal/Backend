@@ -11,11 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.tave.alarmissue.user.exception.UserErrorCode.NICKNAME_ALREADY_EXISTS;
 import static com.tave.alarmissue.user.exception.UserErrorCode.USER_ID_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class UserService {
 
     private final RefreshTokenRedisService refreshTokenRedisService;
@@ -31,6 +33,10 @@ public class UserService {
     public NicknameResponse changeNickname(Long userId,String nickname) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_ID_NOT_FOUND,"User not found: " + userId));
+
+        if (userRepository.existsByNickName(nickname)){
+            throw new UserException(NICKNAME_ALREADY_EXISTS, "Nickname already in use: " + nickname);
+        }
 
         user.changeNickname(nickname);
         userRepository.save(user);
