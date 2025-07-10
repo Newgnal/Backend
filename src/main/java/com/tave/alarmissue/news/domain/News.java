@@ -35,7 +35,6 @@ public class News {
     private String imageUrl;
 
     @Column(columnDefinition = "LONGTEXT")
-    @Lob
     private String content;
 
     @Column(nullable = false, length = 100)
