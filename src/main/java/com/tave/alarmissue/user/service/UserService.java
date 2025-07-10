@@ -11,8 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.tave.alarmissue.user.exception.UserErrorCode.NICKNAME_ALREADY_EXISTS;
-import static com.tave.alarmissue.user.exception.UserErrorCode.USER_ID_NOT_FOUND;
+import static com.tave.alarmissue.user.exception.UserErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
