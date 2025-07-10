@@ -3,6 +3,7 @@ package com.tave.alarmissue.post.controller;
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
 import com.tave.alarmissue.post.dto.request.PostUpdateRequestDto;
+import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -47,6 +49,14 @@ public class PostController {
         Long userId = principal.getUserId();
         postService.deletePost(postId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    //게시글 상세조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDetailResponseDto> getPostDetail(@PathVariable Long postId){
+        PostDetailResponseDto responseDto = postService.getPostDetail(postId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+
     }
 
 }

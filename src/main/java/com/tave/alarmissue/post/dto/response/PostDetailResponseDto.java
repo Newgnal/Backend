@@ -1,0 +1,15 @@
+package com.tave.alarmissue.post.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.List;
+
+@Getter
+@AllArgsConstructor
+@Builder
+public class PostDetailResponseDto {
+    private PostResponseDto post;
+    private List<CommentResponseDto> comments;
+}

@@ -8,6 +8,9 @@ import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.post.domain.VoteType;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class CommentConverter {
     public static CommentResponseDto toCommentResponseDto(Comment comment) {
@@ -30,4 +33,9 @@ public class CommentConverter {
                 .build();
     }
 
+    public static List<CommentResponseDto> toCommentResponseDto(List<Comment> comments) {
+        return comments.stream()
+                .map(CommentConverter::toCommentResponseDto)
+                .collect(Collectors.toList());
+    }
 }

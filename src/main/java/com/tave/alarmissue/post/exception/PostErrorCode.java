@@ -14,7 +14,6 @@ public enum PostErrorCode implements ErrorCode {
     POST_EDIT_FORBIDDEN(HttpStatus.FORBIDDEN, "게시글 수정 권한이 없습니다."),
     POST_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "게시글 삭제 권한이 없습니다.");
 
-
     private final HttpStatus httpStatus;
     private final String message;
 }

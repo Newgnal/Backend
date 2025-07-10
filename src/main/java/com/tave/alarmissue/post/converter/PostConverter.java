@@ -1,14 +1,22 @@
 package com.tave.alarmissue.post.converter;
 
+import com.tave.alarmissue.post.domain.Comment;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
+import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.user.domain.UserEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import com.tave.alarmissue.post.dto.response.CommentResponseDto;
+import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class
 PostConverter {
+
+    private final CommentConverter commentConverter;
 
     public static PostResponseDto toPostResponseDto(Post post) {
         return PostResponseDto.builder()
@@ -22,6 +30,17 @@ PostConverter {
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .hasVote(post.getHasVote())
+                .build();
+    }
+
+    public static PostDetailResponseDto toPostDetailResponseDto(Post post, List<Comment> comments) {
+        PostResponseDto postResponseDto = toPostResponseDto(post);
+
+        List<CommentResponseDto> commentResponseDto = CommentConverter.toCommentResponseDto(comments);
+
+        return PostDetailResponseDto.builder()
+                .post(postResponseDto)
+                .comments(commentResponseDto)
                 .build();
     }
 

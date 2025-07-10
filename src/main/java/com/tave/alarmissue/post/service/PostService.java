@@ -1,5 +1,7 @@
 package com.tave.alarmissue.post.service;
 
+import com.tave.alarmissue.post.domain.Comment;
+import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
 import com.tave.alarmissue.post.repository.CommentRepository;
 import com.tave.alarmissue.post.repository.LikeRepository;
 import com.tave.alarmissue.post.converter.PostConverter;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.tave.alarmissue.post.exception.PostErrorCode.*;
@@ -90,4 +93,14 @@ public class PostService {
     }
 
 
+    public PostDetailResponseDto getPostDetail(Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ postId));
+
+        List<Comment> comments = commentRepository.findAllByPost(post);
+
+        return PostConverter.toPostDetailResponseDto(post,comments);
+        //대댓글 추가예정ㅎ
+    }
 }
