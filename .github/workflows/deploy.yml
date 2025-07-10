@@ -19,7 +19,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Add server to known_hosts
-        run: ssh-keyscan -v -H 3.34.136.208 >> ~/.ssh/known_hosts || true
+        run: ssh-keyscan -v -H 13.124.84.252 >> ~/.ssh/known_hosts
 
       - name: Set up Docker Buildx (optional, for advanced builds)
         uses: docker/setup-buildx-action@v2
