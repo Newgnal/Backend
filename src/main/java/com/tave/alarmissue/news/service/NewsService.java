@@ -89,6 +89,7 @@ public class NewsService {
         return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
     }
 
+    @Transactional
     public NewsDetailResponseDto getDetailNews(Long newsId) {
         News news=newsRepository.findById(newsId).orElseThrow(()->new EntityNotFoundException("뉴스를 찾을 수 없습니다. ID: "+newsId));
         news.incrementView();

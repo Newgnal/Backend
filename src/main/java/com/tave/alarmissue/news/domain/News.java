@@ -88,4 +88,8 @@ public class News {
     public void incrementView(){
         this.view+=1;
     }
+
+    public void incrementVoteCount(){
+        this.voteNum+=1;
+    }
 }
