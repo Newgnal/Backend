@@ -22,21 +22,6 @@ public class NewsCommentController {
 
     private final NewsCommentService newsCommentService;
 
-//    @PostMapping
-//    @Operation(summary = "댓글 작성", description = "특정 뉴스에 댓글 작성합니다.")
-//    public ResponseEntity<NewsCommentCreateResponseDto> createComment(@RequestBody NewsCommentCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal) {
-//        Long userId = principal.getUserId();
-//        NewsCommentCreateResponseDto responseDto = newsCommentService.createComment(dto,userId, dto.getNewsId());
-//        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-//    }
-//
-//    @GetMapping
-//    @Operation(summary = "댓글 목록 조회", description = "특정 뉴스의 모든 댓글을 최신순으로 조회합니다.")
-//    public ResponseEntity<List<NewsCommentResponseDto>> getComments(@PathVariable Long newsId){
-//        List<NewsCommentResponseDto> comments=newsCommentService.getCommentsByNewsId(newsId);
-//        return ResponseEntity.ok(comments);
-//    }
-
     @PostMapping
     @Operation(summary = "댓글 작성", description = "특정 뉴스에 댓글 작성합니다.")
     public ResponseEntity<NewsCommentResponseDto> createComment(@RequestBody NewsCommentRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal) {
@@ -62,6 +47,16 @@ public class NewsCommentController {
 
     }
 
+    @PutMapping("/{commentId}")
+    @Operation(summary = "댓글 수정", description = "특정 댓글을 수정합니다. (작성자만 가능)")
+    public ResponseEntity<NewsCommentResponseDto> updateComment(@RequestBody NewsCommentCreateRequestDto dto,
+                                                               @PathVariable Long commentId,
+                                                               @AuthenticationPrincipal PrincipalUserDetails principal){
+        Long userId = principal.getUserId();
+        NewsCommentResponseDto response = newsCommentService.updateComment(commentId, userId, dto);
+
+        return ResponseEntity.ok(response);
+    }
 
 //    @DeleteMapping("/{commentId}/with-count")
 //    @Operation(summary = "댓글 삭제(개수 포함)",description = "댓글 삭제하고 업데이트 된 댓글 개수를 반환홥니다.")
