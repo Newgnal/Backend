@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/posts/v1/{postId}/likes")
+@RequestMapping("/posts/v1")
 public class LikeController {
 
     private final LikeService likeService;
     //게시글 좋아요
-    @PatchMapping()
+    @PatchMapping("/{postId}/likes")
     public ResponseEntity<LikeResponseDto> postLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long postId) {
 
         Long userId = principal.getUserId();
@@ -26,7 +26,7 @@ public class LikeController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
-    @PatchMapping("{commentId}")
+    @PatchMapping("/{commentId}/likes")
     public ResponseEntity<LikeResponseDto> commentLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long commentId) {
 
         Long userId = principal.getUserId();
