@@ -1,7 +1,6 @@
-package com.tave.alarmissue.report.domain;
+package com.tave.alarmissue.post.domain;
 
-import com.tave.alarmissue.comment.domain.Comment;
-import com.tave.alarmissue.post.domain.Post;
+import com.tave.alarmissue.post.domain.Comment;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;

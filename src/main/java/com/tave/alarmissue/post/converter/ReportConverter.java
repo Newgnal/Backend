@@ -1,10 +1,10 @@
-package com.tave.alarmissue.report.converter;
+package com.tave.alarmissue.post.converter;
 
-import com.tave.alarmissue.comment.domain.Comment;
+import com.tave.alarmissue.post.domain.Comment;
 import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.report.domain.Report;
-import com.tave.alarmissue.report.dto.requestdto.ReportCreateRequestDto;
-import com.tave.alarmissue.report.dto.responsedto.ReportResponseDto;
+import com.tave.alarmissue.post.domain.Report;
+import com.tave.alarmissue.post.dto.request.ReportCreateRequestDto;
+import com.tave.alarmissue.post.dto.response.ReportResponseDto;
 import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.stereotype.Component;
 

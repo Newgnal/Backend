@@ -1,4 +1,4 @@
-package com.tave.alarmissue.report.exception;
+package com.tave.alarmissue.post.exception;
 
 import com.tave.alarmissue.global.exception.CustomException;
 import com.tave.alarmissue.global.exception.ErrorCode;

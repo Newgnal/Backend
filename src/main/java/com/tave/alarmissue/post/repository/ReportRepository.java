@@ -1,8 +1,8 @@
-package com.tave.alarmissue.report.repository;
+package com.tave.alarmissue.post.repository;
 
-import com.tave.alarmissue.comment.domain.Comment;
+import com.tave.alarmissue.post.domain.Comment;
 import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.report.domain.Report;
+import com.tave.alarmissue.post.domain.Report;
 import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

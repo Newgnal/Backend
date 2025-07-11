@@ -1,4 +1,4 @@
-package com.tave.alarmissue.report.domain;
+package com.tave.alarmissue.post.domain;
 
 public enum ReportType {
     POST,
