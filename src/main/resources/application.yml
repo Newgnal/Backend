@@ -32,13 +32,13 @@ chromedriver:
   path: ${CHROMEDRIVER_PATH}
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: health
   endpoint:
     health:
-      show-details: always
+      show-details: never
+  health:
+    db:
+      enabled: false
+
 
 jwt:
   expiration:

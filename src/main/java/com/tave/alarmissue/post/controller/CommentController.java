@@ -3,15 +3,12 @@ package com.tave.alarmissue.post.controller;
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.post.dto.request.CommentCreateRequestDto;
 import com.tave.alarmissue.post.dto.response.CommentResponseDto;
-import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
 import com.tave.alarmissue.post.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
