@@ -19,7 +19,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @Table(name = "`user`")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE \"user\" SET deleted_at = NOW() WHERE id = ?")
+@SQLDelete(sql = "UPDATE `user` SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class UserEntity extends BaseTimeEntityWithDeletion {
     @Id
