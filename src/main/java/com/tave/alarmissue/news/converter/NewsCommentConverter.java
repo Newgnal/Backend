@@ -4,16 +4,19 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.news.dto.request.NewsCommentCreateRequestDto;
+import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.util.TimeAgoUtil;
 import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class NewsCommentConverter {
     public static NewsCommentResponseDto toCommentResponseDto(NewsComment newsComment){
         return NewsCommentResponseDto.builder()
-                .newsId(newsComment.getNews().getId())
                 .commentId(newsComment.getId())
                 .comment(newsComment.getComment())
                 .nickName(newsComment.getUser().getNickName())
@@ -33,11 +36,16 @@ public class NewsCommentConverter {
 
     }
 
-    // 댓글 개수 응답 DTO 변환 메서드 추가
-//    public static NewsCommentCountResponseDto toCommentCountResponseDto(Long newsId, Long count) {
-//        return NewsCommentCountResponseDto.builder()
-//                .newsId(newsId)
-//                .count(count)
-//                .build();
-//    }
+    //댓글 목록 변환
+    public static NewsCommentListResponseDto toCommentListResponseDto(Long newsId, Long totalCount, List<NewsComment> comments) {
+        List<NewsCommentResponseDto> commentResponseDtos = comments.stream()
+                .map(NewsCommentConverter::toCommentResponseDto)
+                .collect(Collectors.toList());
+
+        return NewsCommentListResponseDto.builder()
+                .newsId(newsId)
+                .totalCount(totalCount)
+                .comments(commentResponseDtos)
+                .build();
+    }
 }

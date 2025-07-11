@@ -5,6 +5,7 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.news.dto.request.NewsCommentCreateRequestDto;
+import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.exceptions.NewsCommentErrorCode;
 import com.tave.alarmissue.news.exceptions.NewsCommentException;
@@ -51,11 +52,13 @@ public class NewsCommentService {
         return NewsCommentConverter.toCommentResponseDto(saved);
     }
 
-    public List<NewsCommentResponseDto> getCommentsByNewsId(Long newsId) {
+    public NewsCommentListResponseDto getCommentsByNewsId(Long newsId) {
         List<NewsComment> comments=newsCommentRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
-        return comments.stream()
-                .map(NewsCommentConverter::toCommentResponseDto)
-                .collect(Collectors.toList());
+        News news = newsRepository.findById(newsId).orElseThrow(() -> new NewsCommentException(NEWS_ID_NOT_FOUND, "뉴스를 찾을 수 없습니다."));
+
+        Long totalCount=news.getCommentNum();
+
+        return NewsCommentConverter.toCommentListResponseDto(newsId,totalCount,comments);
     }
 
 

@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class NewsCommentResponseDto {
-    private Long newsId;
     @Schema(description = "댓글 ID")
     private Long commentId;
 //    @Schema(description = "댓글 개수")
@@ -23,5 +22,4 @@ public class NewsCommentResponseDto {
     private String nickName;
     private LocalDateTime createdAt;
     private String timeAgo;
-//    private LocalDateTime updatedAt;
 }
