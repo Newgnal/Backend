@@ -119,6 +119,8 @@ public class DaumNewsCrawlService {
                         .imageUrl(imageUrl)
                         .thema(Thema.ETC) // 기본값 ETC
                         .view(0L)
+                        .commentNum(0L)
+                        .voteNum(0L)
                         .build();
 
                 newsToSave.add(news);
