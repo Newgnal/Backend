@@ -43,7 +43,7 @@ public class Like {
     private LikeType likeType;
 
     @Builder
-    public Like( UserEntity user, Post post,Comment comment,Reply reply, LikeType likeType,boolean liked) {
+    public Like( UserEntity user, Post post,Comment comment,Reply reply, LikeType likeType, boolean liked) {
         this.user = user;
         this.post = post;
         this.comment = comment;
