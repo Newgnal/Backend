@@ -1,16 +1,14 @@
 package com.tave.alarmissue.post.service;
 
-import com.tave.alarmissue.comment.repository.CommentRepository;
+import com.tave.alarmissue.post.repository.*;
 import com.tave.alarmissue.post.converter.PostConverter;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
 import com.tave.alarmissue.post.dto.request.PostUpdateRequestDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.post.exception.PostException;
-import com.tave.alarmissue.post.repository.PostRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
-import com.tave.alarmissue.vote.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +28,8 @@ public class PostService {
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
-
+    private final LikeRepository likeRepository;
+    private final ReplyRepository replyRepository;
 
     @Transactional
     public PostResponseDto createPost(PostCreateRequestDto dto, Long userId) {
@@ -80,10 +79,12 @@ public class PostService {
         if(!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new PostException(POST_DELETE_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());
         }
-
-        commentRepository.deleteAllByPost(post);
-        voteRepository.deleteAllByPost(post);
-        postRepository.delete(post);
+        
+        likeRepository.deleteAllByPost(post); //좋아요삭제
+        replyRepository.deleteAllByPost(post); //대댓글 삭제
+        commentRepository.deleteAllByPost(post); //댓글 삭제
+        voteRepository.deleteAllByPost(post); //투표 삭제
+        postRepository.delete(post); //글 삭제
 
     }
 
