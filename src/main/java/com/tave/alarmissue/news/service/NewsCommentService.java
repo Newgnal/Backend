@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tave.alarmissue.comment.exception.CommentErrorCode.COMMENT_ID_NOT_FOUND;
 import static com.tave.alarmissue.news.exceptions.NewsCommentErrorCode.*;
 
 
