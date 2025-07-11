@@ -1,5 +1,6 @@
 package com.tave.alarmissue.news.repository;
 
+import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,6 +16,7 @@ public interface NewsCommentRepository extends JpaRepository<NewsComment,Long> {
 
 
     Optional<NewsComment> findByIdAndNewsIdAndUserId(Long commentId, Long newsId, Long userId);
+    Optional<NewsComment> findByIdAndUserId(Long commentId, Long userId);
     Optional<NewsComment> findByIdAndNewsId(Long commentId, Long newsId);
 
 }

@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tave.alarmissue.comment.exception.CommentErrorCode.COMMENT_ID_NOT_FOUND;
 import static com.tave.alarmissue.news.exceptions.NewsCommentErrorCode.*;
 
 
@@ -38,7 +37,7 @@ public class NewsCommentService {
     private final NewsCommentConverter newsCommentConverter;
 
     @Transactional
-    public NewsCommentResponseDto createComment(NewsCommentCreateRequestDto dto, Long userId, Long newsId){
+    public NewsCommentResponseDto createComment(NewsCommentRequestDto dto, Long userId, Long newsId){
         UserEntity user=userRepository.findById(userId).orElseThrow(()->new NewsCommentException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
         News news=newsRepository.findById(newsId).orElseThrow(()->new NewsCommentException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
 
@@ -81,9 +80,9 @@ public class NewsCommentService {
 //    }
 
     @Transactional
-    public void deleteComment(Long commentId, Long userId, Long newsId) {
+    public void deleteComment(Long commentId, Long userId) {
         // 해당 뉴스의 해당 사용자가 작성한 댓글만 조회
-        NewsComment comment = newsCommentRepository.findByIdAndNewsIdAndUserId(commentId, newsId, userId)
+        NewsComment comment = newsCommentRepository.findByIdAndUserId(commentId, userId)
                 .orElseThrow(() -> new NewsCommentException(COMMENT_ID_NOT_FOUND,
                         "해당 뉴스에서 본인이 작성한 댓글을 찾을 수 없습니다."));
 
