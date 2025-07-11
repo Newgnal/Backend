@@ -1,5 +1,6 @@
 package com.tave.alarmissue.post.dto.request;
 
+
 import com.tave.alarmissue.news.domain.enums.Thema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
