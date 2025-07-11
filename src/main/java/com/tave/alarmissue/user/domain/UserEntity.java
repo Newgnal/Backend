@@ -39,4 +39,8 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Keyword> keywords = new ArrayList<>();
+
+    public void changeNickname(String nickname) {
+        this.nickName = nickname;
+    }
 }

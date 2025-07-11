@@ -1,17 +1,16 @@
 package com.tave.alarmissue.user.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
+import com.tave.alarmissue.user.dto.request.NicknameRequest;
 import com.tave.alarmissue.user.dto.response.LogoutResponse;
+import com.tave.alarmissue.user.dto.response.NicknameResponse;
 import com.tave.alarmissue.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,15 +22,25 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<LogoutResponse> logout(
             @AuthenticationPrincipal PrincipalUserDetails principal
-
     ) {
 
         Long userId = principal.getUserId();
-
         LogoutResponse response = userService.logout(userId);
-
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PatchMapping("/nickname")
+    public ResponseEntity<NicknameResponse> changeNickname(
+            @AuthenticationPrincipal PrincipalUserDetails principal,
+            @RequestBody NicknameRequest dto
+    ) {
+
+        Long userId = principal.getUserId();
+        NicknameResponse response = userService.changeNickname(userId,dto.getNickname());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
 
 
 }
