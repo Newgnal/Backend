@@ -14,6 +14,7 @@ public class NewsCommentConverter {
     public static NewsCommentResponseDto toCommentResponseDto(NewsComment newsComment){
         return NewsCommentResponseDto.builder()
                 .newsId(newsComment.getNews().getId())
+                .commentId(newsComment.getId())
                 .comment(newsComment.getComment())
                 .nickName(newsComment.getUser().getNickName())
                 .createdAt(newsComment.getCreatedAt())

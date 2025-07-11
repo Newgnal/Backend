@@ -16,8 +16,8 @@ public class NewsCommentResponseDto {
     private Long newsId;
     @Schema(description = "댓글 ID")
     private Long commentId;
-    @Schema(description = "댓글 개수")
-    private Long count;
+//    @Schema(description = "댓글 개수")
+//    private Long count;
     private String comment;
     private NewsVoteType voteType;
     private String nickName;
