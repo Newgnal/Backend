@@ -1,7 +1,9 @@
 package com.tave.alarmissue.user.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
+import com.tave.alarmissue.user.dto.request.NicknameRequest;
 import com.tave.alarmissue.user.dto.response.LogoutResponse;
+import com.tave.alarmissue.user.dto.response.NicknameResponse;
 import com.tave.alarmissue.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +30,17 @@ public class UserController {
         Long userId = principal.getUserId();
 
         LogoutResponse response = userService.logout(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
+    @PatchMapping("/nickname")
+    public ResponseEntity<NicknameResponse> changeNickname(
+            @AuthenticationPrincipal PrincipalUserDetails principal,
+            @RequestBody NicknameRequest dto
+    ) {
+
+        Long userId = principal.getUserId();
+        NicknameResponse response = userService.changeNickname(userId,dto.getNickname());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

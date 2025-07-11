@@ -44,4 +44,8 @@ public class UserEntity extends BaseTimeEntityWithDeletion {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Keyword> keywords = new ArrayList<>();
+
+    public void changeNickname(String nickname) {
+        this.nickName = nickname;
+    }
 }

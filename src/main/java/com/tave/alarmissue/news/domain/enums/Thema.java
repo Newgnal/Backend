@@ -14,6 +14,7 @@ public enum Thema {
     RAW_MATERIAL_METALS,
     ETC;
 
+
     // string -> enum 변환
     public static Thema fromStringOrNull(String thema) {
         try {
