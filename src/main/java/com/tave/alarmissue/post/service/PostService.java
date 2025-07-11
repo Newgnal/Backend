@@ -1,5 +1,6 @@
 package com.tave.alarmissue.post.service;
 
+import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.post.domain.Comment;
 import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
 import com.tave.alarmissue.post.repository.CommentRepository;
@@ -107,15 +108,25 @@ public class PostService {
         return PostConverter.toPostDetailResponseDto(post,comments);
         //대댓글 추가예정
     }
-
+    //전체 게시글 조회
     public Page<PostResponseDto> getAllPost(Pageable pageable) {
 
      Page<Post> posts= postRepository.findAll(pageable);
      return PostConverter.toPostResponseDtos(posts);
     }
-
+    //게시글 조회 조회순
     public Page<PostResponseDto> getHotPost(Pageable pageable) {
         Page<Post> posts= postRepository.findAll(pageable);
+        return PostConverter.toPostResponseDtos(posts);
+    }
+    //테마별 조회
+    public Page<PostResponseDto> getPostByThema(Thema thema,Pageable pageable) {
+        Page <Post> posts= postRepository.findAllByThema(thema,pageable);
+        return PostConverter.toPostResponseDtos(posts);
+    }
+    //테마별 조회 인기순
+    public Page<PostResponseDto> getHotPostByThema(Thema thema,Pageable pageable) {
+        Page <Post> posts= postRepository.findAllByThema(thema,pageable);
         return PostConverter.toPostResponseDtos(posts);
     }
 }

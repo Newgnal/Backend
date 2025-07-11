@@ -1,12 +1,14 @@
 package com.tave.alarmissue.post.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
+import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
 import com.tave.alarmissue.post.dto.request.PostUpdateRequestDto;
 import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -62,6 +64,7 @@ public class PostController {
     //게시글 전체 조회(최신순)
     @GetMapping
     public ResponseEntity<Page<PostResponseDto>> getAllPost(
+            @ParameterObject
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
@@ -69,8 +72,9 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     //게시글 전체 조회(인기순=조회수순)
-    @GetMapping("hot")
+    @GetMapping("/hot")
     public ResponseEntity<Page<PostResponseDto>> getHotPost(
+            @ParameterObject
             @PageableDefault(size = 10, sort = "viewCount", direction = Sort.Direction.DESC)
             Pageable pageable)
     {
@@ -78,7 +82,29 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     //게시글 테마별 조회(최신순)
+    @GetMapping("/thema/{thema}")
+    public ResponseEntity<Page<PostResponseDto>> getPostByThema(
+            @PathVariable Thema thema,
+            @ParameterObject
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<PostResponseDto> responseDto = postService.getPostByThema(thema,pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
     //게시글 테마별 조회(인기순=조회수순)
+    @GetMapping("/thema/hot/{thema}")
+    public ResponseEntity<Page<PostResponseDto>> getHotPostByThema(
+            @PathVariable Thema thema,
+            @ParameterObject
+            @PageableDefault(size = 10, sort = "viewCount", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<PostResponseDto> responseDto = postService.getHotPostByThema(thema,pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
     //홈화면 조회
 
 }

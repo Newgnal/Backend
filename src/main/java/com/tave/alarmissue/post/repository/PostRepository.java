@@ -1,6 +1,9 @@
 package com.tave.alarmissue.post.repository;
 
+import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.post.domain.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +23,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Modifying
     @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.postId = :postId")
     void incrementViewCount(@Param("postId") Long postId);
+
+    Page<Post> findAllByThema(Thema thema,Pageable pageable);
 }
