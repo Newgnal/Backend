@@ -16,9 +16,12 @@ import com.tave.alarmissue.user.repository.UserRepository;
 import com.tave.alarmissue.post.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,15 +95,27 @@ public class PostService {
 
     }
 
-
+    @Transactional
     public PostDetailResponseDto getPostDetail(Long postId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ postId));
 
-        List<Comment> comments = commentRepository.findAllByPost(post);
 
+        postRepository.incrementViewCount(postId); //조회수 증가
+        List<Comment> comments = commentRepository.findAllByPost(post);
         return PostConverter.toPostDetailResponseDto(post,comments);
-        //대댓글 추가예정ㅎ
+        //대댓글 추가예정
+    }
+
+    public Page<PostResponseDto> getAllPost(Pageable pageable) {
+
+     Page<Post> posts= postRepository.findAll(pageable);
+     return PostConverter.toPostResponseDtos(posts);
+    }
+
+    public Page<PostResponseDto> getHotPost(Pageable pageable) {
+        Page<Post> posts= postRepository.findAll(pageable);
+        return PostConverter.toPostResponseDtos(posts);
     }
 }

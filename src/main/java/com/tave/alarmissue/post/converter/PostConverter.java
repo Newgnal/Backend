@@ -7,9 +7,11 @@ import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import com.tave.alarmissue.post.dto.response.CommentResponseDto;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -30,18 +32,36 @@ PostConverter {
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .hasVote(post.getHasVote())
+                .viewCount(post.getViewCount())
                 .build();
     }
 
     public static PostDetailResponseDto toPostDetailResponseDto(Post post, List<Comment> comments) {
         PostResponseDto postResponseDto = toPostResponseDto(post);
 
-        List<CommentResponseDto> commentResponseDto = CommentConverter.toCommentResponseDto(comments);
+        List<CommentResponseDto> commentResponseDto = CommentConverter.toCommentResponseDtos(comments);
 
         return PostDetailResponseDto.builder()
                 .post(postResponseDto)
                 .comments(commentResponseDto)
                 .build();
+    }
+
+    public static Page<PostResponseDto> toPostResponseDtos(Page<Post> posts) {
+        return posts.map(post -> PostResponseDto.builder()
+                .postId(post.getPostId())
+                .postTitle(post.getPostTitle())
+                .postContent(post.getPostContent())
+                .likeCount(post.getLikeCount())
+                .articleUrl(post.getArticleUrl())
+                .thema(post.getThema())
+                .nickname(post.getUser().getNickName())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .hasVote(post.getHasVote())
+                .viewCount(post.getViewCount())
+                .build()
+        );
     }
 
     public Post toPost(PostCreateRequestDto dto, UserEntity user) {
@@ -52,6 +72,7 @@ PostConverter {
                 .thema(dto.getThema())
                 .hasVote(dto.isHasVote())
                 .likeCount(0L)
+                .viewCount(0L)
                 .user(user)
                 .build();
     }

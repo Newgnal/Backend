@@ -7,13 +7,14 @@ import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
 import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -58,5 +59,26 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
+    //게시글 전체 조회(최신순)
+    @GetMapping
+    public ResponseEntity<Page<PostResponseDto>> getAllPost(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<PostResponseDto> responseDto = postService.getAllPost(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+    //게시글 전체 조회(인기순=조회수순)
+    @GetMapping("hot")
+    public ResponseEntity<Page<PostResponseDto>> getHotPost(
+            @PageableDefault(size = 10, sort = "viewCount", direction = Sort.Direction.DESC)
+            Pageable pageable)
+    {
+        Page<PostResponseDto> responseDto =  postService.getHotPost(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+    //게시글 테마별 조회(최신순)
+    //게시글 테마별 조회(인기순=조회수순)
+    //홈화면 조회
 
 }

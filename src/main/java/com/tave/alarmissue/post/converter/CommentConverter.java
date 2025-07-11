@@ -33,7 +33,7 @@ public class CommentConverter {
                 .build();
     }
 
-    public static List<CommentResponseDto> toCommentResponseDto(List<Comment> comments) {
+    public static List<CommentResponseDto> toCommentResponseDtos(List<Comment> comments) {
         return comments.stream()
                 .map(CommentConverter::toCommentResponseDto)
                 .collect(Collectors.toList());
