@@ -16,6 +16,7 @@ public class PostResponseDto {
     private String postTitle;
     private String postContent;
     private String articleUrl;
+    private Long likeCount;
     private Thema thema;
     private String nickname;
     private LocalDateTime createdAt;

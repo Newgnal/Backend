@@ -24,6 +24,9 @@ public class Post extends BaseTimeEntity {
     private String postContent;
 
     @Column
+    private Long likeCount;
+
+    @Column
     private String articleUrl; //기사 url
 
     @Column
@@ -38,9 +41,10 @@ public class Post extends BaseTimeEntity {
 
 
     @Builder
-    public Post(String postTitle, String postContent, String articleUrl, Thema thema, UserEntity user, boolean hasVote) {
+    public Post(String postTitle, String postContent, Long likeCount, String articleUrl, Thema thema, UserEntity user, boolean hasVote) {
         this.postTitle = postTitle;
         this.postContent = postContent;
+        this.likeCount = likeCount;
         this.articleUrl = articleUrl;
         this.thema = thema;
         this.user = user;
