@@ -4,7 +4,7 @@ import com.tave.alarmissue.news.converter.NewsCommentConverter;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
-import com.tave.alarmissue.news.dto.request.NewsCommentCreateRequestDto;
+import com.tave.alarmissue.news.dto.request.NewsCommentRequestDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.exceptions.NewsCommentErrorCode;
