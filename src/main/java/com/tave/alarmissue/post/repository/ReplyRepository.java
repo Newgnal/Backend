@@ -12,8 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReplyRepository extends JpaRepository<PostReply, Long> {
 
-    void deleteAllByPostComment(PostComment postComment);
-
     @Modifying
     @Query("UPDATE PostReply c SET c.likeCount = c.likeCount + 1 WHERE c.replyId = :replyId")
     void incrementLikeCount(@Param("replyId") Long replyId);
