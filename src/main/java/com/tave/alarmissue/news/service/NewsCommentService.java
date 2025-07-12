@@ -95,6 +95,22 @@ public class NewsCommentService {
         news.decrementCommentCount();
     }
 
+    @Transactional
+    public NewsCommentResponseDto updateComment(Long commentId, Long userId, NewsCommentRequestDto dto) {
+        NewsComment comment = newsCommentRepository.findByIdAndNewsIdAndUserId(commentId, dto.getNewsId(), userId)
+                .orElseThrow(() -> new NewsCommentException(COMMENT_ID_NOT_FOUND,
+                        "해당 뉴스에서 본인이 작성한 댓글을 찾을 수 없습니다."));
+
+        //댓글 내용 업데이트
+        comment.updateContent(dto.getComment().trim());
+
+        return NewsCommentConverter.toCommentResponseDto(comment);
+
+    }
+
+
+
+
 //    @Transactional
 //    public NewsCommentResponseDto deleteCommentAndGetCount(Long commentId, Long userId){
 //        //댓글 조회
