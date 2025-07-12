@@ -20,6 +20,4 @@ public class AlarmissueApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AlarmissueApplication.class, args);
 	}
-
-
 }

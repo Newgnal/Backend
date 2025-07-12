@@ -136,6 +136,8 @@ public class NaverNewsCrawlService {
                         .imageUrl(imageUrl)
                         .thema(Thema.ETC)
                         .view(0L)
+                        .commentNum(0L)
+                        .voteNum(0L)
                         .build();
 
                     newsToSave.add(news);
