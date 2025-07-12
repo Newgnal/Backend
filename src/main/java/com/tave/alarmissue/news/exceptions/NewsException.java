@@ -3,12 +3,12 @@ package com.tave.alarmissue.news.exceptions;
 import com.tave.alarmissue.global.exception.CustomException;
 import com.tave.alarmissue.global.exception.ErrorCode;
 
-public class NewsVoteException extends CustomException {
+public class NewsException extends CustomException {
 
-    public NewsVoteException(ErrorCode errorCode) {
+    public NewsException(ErrorCode errorCode) {
         super(errorCode);
     }
-    public NewsVoteException(ErrorCode errorCode, String message) {
+    public NewsException(ErrorCode errorCode, String message) {
         super(errorCode, message);
     }
 }
