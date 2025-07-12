@@ -6,7 +6,6 @@ import com.tave.alarmissue.post.dto.request.ReplyCreateRequest;
 import com.tave.alarmissue.post.dto.response.CommentResponse;
 import com.tave.alarmissue.post.dto.response.ReplyResponse;
 import com.tave.alarmissue.post.service.CommentService;
-import com.tave.alarmissue.post.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private final CommentService commentService;
-    private final ReplyService replyService;
 
     // 댓글 작성
     @PostMapping("{postId}")
@@ -49,7 +47,7 @@ public class CommentController {
                                                      @AuthenticationPrincipal PrincipalUserDetails principal){
         Long userId = principal.getUserId();
 
-        ReplyResponse responseDto = replyService.createReply(dto,commentId,userId);
+        ReplyResponse responseDto = commentService.createReply(dto,commentId,userId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
@@ -60,7 +58,7 @@ public class CommentController {
 
         Long userId = principal.getUserId();
 
-        replyService.deleteReply(replyId,userId);
+        commentService.deleteReply(replyId,userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
