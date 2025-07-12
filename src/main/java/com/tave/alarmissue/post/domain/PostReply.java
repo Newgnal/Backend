@@ -6,6 +6,9 @@ import com.tave.alarmissue.post.domain.enums.VoteType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,6 +32,9 @@ public class PostReply extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = false)
     private PostComment postComment;
+
+    @OneToMany(mappedBy = "postReply", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> likes = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)

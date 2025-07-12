@@ -58,6 +58,7 @@ public class VoteService {
                     .build();
         }
         voteRepository.save(newVote);
+
         //DB 접근을 최소화
         List<VoteCountResponse> voteCounts = voteRepository.countVotesByType(post);
 

@@ -31,22 +31,23 @@ public class LikeService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
 
-
+    // 게시글 좋아요
     @Transactional
     public LikeResponse postLike(Long userId, Long postId) {
 
-        UserEntity user = userRepository.findById(userId).
-                orElseThrow(() -> new PostException(USER_ID_NOT_FOUND,"유저가 없습니다."));
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND," postId: " + postId));
+        UserEntity user = getUserById(userId);
+        Post post = getPostById(postId);
 
         // 기존 좋아요가 존재하는지 확인
         Optional<PostLike> existingLike = likeRepository.findPostLike(user, post);
+
         if (existingLike.isPresent()) {
-           Long LikeId = existingLike.get().getLikeId();
+
+            Long LikeId = existingLike.get().getLikeId();
+
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             postRepository.decrementLikeCount(postId);
+
             return new LikeResponse(LikeId,false, LikeType.POST);
         }
     else {
@@ -54,51 +55,44 @@ public class LikeService {
             PostLike like = likeConverter.toPostLike(user, post);
             PostLike saved = likeRepository.save(like);
             postRepository.incrementLikeCount(postId);
+
             return PostLikeConverter.toLikeResponseDto(saved);
         }
     }
 
+    // 댓글 좋아요
     @Transactional
     public LikeResponse commentLike(Long userId,Long commentId) {
-        UserEntity user = userRepository.findById(userId).
-                orElseThrow(() -> new PostException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
-
-        PostComment postComment = commentRepository.findById(commentId).
-                orElseThrow(()->new PostException(COMMENT_ID_NOT_FOUND," commentId: " + commentId));
-
-
-        Post post = postRepository.findById(postComment.getPost().getPostId())
-                .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND,"postId:" + postComment.getPost().getPostId()));
+        UserEntity user = getUserById(userId);
+        PostComment postComment = getPostCommentById(commentId);
 
         Optional<PostLike> existingLike = likeRepository.findCommentLike(user, postComment);
+
         if (existingLike.isPresent()) {
             Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             commentRepository.decrementLikeCount(commentId);
             return new LikeResponse(LikeId,false,LikeType.COMMENT);
         }
+
         // 없으면 좋아요 생성
         else {
-            PostLike like = likeConverter.toCommentLike(user, post, postComment);
+
+            PostLike like = likeConverter.toCommentLike(user, postComment);
             PostLike saved = likeRepository.save(like);
             commentRepository.incrementLikeCount(commentId);
             return PostLikeConverter.toLikeResponseDto(saved);
         }
     }
+
+
+    // 대댓글 좋아요
     @Transactional
     public LikeResponse replyLike(Long userId, Long replyId) {
-        UserEntity user = userRepository.findById(userId).
-                orElseThrow(() -> new PostException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
-        PostReply reply = replyRepository.findById(replyId).
-                orElseThrow(() -> new PostException(REPLY_ID_NOT_FOUND," replyId: " + replyId));
-
-        Post post = postRepository.findById(reply.getPost().getPostId())
-                .orElseThrow(()->new PostException(POST_ID_NOT_FOUND," postId: " + reply.getPost().getPostId()));
-
-        PostComment postComment = commentRepository.findById(reply.getPostComment().getCommentId())
-                .orElseThrow(()->new PostException(COMMENT_ID_NOT_FOUND," commentId: " + reply.getPostComment().getCommentId()));
+        UserEntity user = getUserById(userId);
+        PostReply reply = getPostReplyById(replyId);
 
         Optional<PostLike> existingLike = likeRepository.findReplyLike(user,reply);
         if (existingLike.isPresent()) {
@@ -109,11 +103,36 @@ public class LikeService {
         }
         // 없으면 좋아요 생성
         else {
-            PostLike like = likeConverter.toReplyLike(user, post, postComment, reply);
+            PostLike like = likeConverter.toReplyLike(user,reply);
             PostLike saved = likeRepository.save(like);
             replyRepository.incrementLikeCount(replyId);
             return PostLikeConverter.toLikeResponseDto(saved);
         }
     }
 
+
+    /*
+    private method 분리
+     */
+    private UserEntity getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "userId"+userId));
+    }
+
+    private Post getPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND," postId: " + postId));
+    }
+
+    private PostComment getPostCommentById(Long commentId) {
+
+        return commentRepository.findById(commentId).
+                orElseThrow(() -> new PostException(COMMENT_ID_NOT_FOUND, " commentId: " + commentId));
+    }
+
+    private PostReply getPostReplyById(Long replyId){
+        return replyRepository.findById(replyId).
+                orElseThrow(() -> new PostException(REPLY_ID_NOT_FOUND," replyId: " + replyId));
+    }
 }
+

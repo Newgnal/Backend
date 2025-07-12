@@ -24,7 +24,6 @@ public interface LikeRepository extends JpaRepository<PostLike, Long> {
     @Query("SELECT l FROM PostLike l WHERE l.user = :user AND l.postReply = :reply")
     Optional<PostLike> findReplyLike(@Param("user")UserEntity user, @Param("reply") PostReply reply);
 
-    void deleteAllByPost(Post post);
     void deleteAllByComment(PostComment postComment);
     void deleteAllByPostReply(PostReply reply);
 

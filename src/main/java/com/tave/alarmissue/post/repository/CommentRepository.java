@@ -10,7 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CommentRepository extends JpaRepository<PostComment, Long> {
-    void deleteAllByPost(Post post);
+
+
     @Modifying
     @Query("UPDATE PostComment c SET c.likeCount = c.likeCount + 1 WHERE c.commentId = :commentId")
     void incrementLikeCount(@Param("commentId") Long commentId);

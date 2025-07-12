@@ -31,11 +31,11 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final ReplyRepository replyRepository;
 
+    // 게시글 생성
     @Transactional
     public PostResponse createPost(PostCreateRequest dto, Long userId) {
 
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+        UserEntity user = getUserById(userId);
 
         Post post = postConverter.toPost(dto, user);
         Post saved = postRepository.save(post);
@@ -45,48 +45,62 @@ public class PostService {
     }
 
     //게시글 수정
-
     @Transactional
     public PostResponse updatePost(Long postId, PostUpdateRequest dto, Long userId) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ postId));
+        UserEntity user = getUserById(userId);
+
+        Post post = getPostById(postId);
 
         if(!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new PostException(POST_EDIT_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());
         }
 
-        post.Update(dto.getPostTitle(),dto.getPostContent(),dto.getArticleUrl(),dto.getThema(),dto.isHasVote());
+        post.Update(dto.getPostTitle(),
+                dto.getPostContent(),
+                dto.getArticleUrl(),
+                dto.getThema(),
+                dto.isHasVote());
 
         //투표기능끄면 post와 연관된 vote DB삭제
         if(!post.getHasVote()) voteRepository.deleteAllByPost(post);
-        Post saved = postRepository.save(post);
-        return PostConverter.toPostResponseDto(saved);
 
+        Post saved = postRepository.save(post);
+
+        return PostConverter.toPostResponseDto(saved);
     }
+
     //게시글 삭제
     @Transactional
     public void deletePost(Long postId, Long userId){
 
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+        UserEntity user = getUserById(userId);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ postId));
+        Post post = getPostById(postId);
 
         if(!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new PostException(POST_DELETE_FORBIDDEN,"post의 userId: "+ post.getUser().getId() + " userId: "+ user.getId());
         }
-        
-        likeRepository.deleteAllByPost(post); //좋아요삭제
-        replyRepository.deleteAllByPost(post); //대댓글 삭제
-        commentRepository.deleteAllByPost(post); //댓글 삭제
+
         voteRepository.deleteAllByPost(post); //투표 삭제
+
         postRepository.delete(post); //글 삭제
 
     }
+
+    /*
+   private method 분리
+    */
+    private UserEntity getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "userId"+userId));
+    }
+
+    private Post getPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND," postId: " + postId));
+    }
+
 
 
 }

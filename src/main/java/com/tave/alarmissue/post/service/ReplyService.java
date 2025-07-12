@@ -60,27 +60,19 @@ public class ReplyService {
     }
 
     @Transactional
-    public void deleteReply(Long replyId, Long commentId, Long userId) {
+    public void deleteReply(Long replyId, Long userId) {
+
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(()->new PostException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
-
-        PostComment postComment = commentRepository.findById(commentId).
-                orElseThrow(()->new PostException(COMMENT_ID_NOT_FOUND, "commentId: "+ commentId));
-
-        Post post= postRepository.findById(postComment.getPost().getPostId()).
-                orElseThrow(()->new PostException(POST_ID_NOT_FOUND, "postId:" + postComment.getPost().getPostId()));
 
         PostReply reply = replyRepository.findById(replyId).
                 orElseThrow(()-> new PostException(REPLY_ID_NOT_FOUND, "replyId:" + replyId));
 
-        if(!Objects.equals(postComment.getCommentId(),reply.getPostComment().getCommentId())) {
-            throw new PostException(COMMENT_ID_MISMATCH," Reply의 commentId: "+reply.getPostComment().getCommentId() + " commentId: " + postComment.getCommentId());
-        }
-
         if(!Objects.equals(reply.getUser().getId(),user.getId())) {
             throw new PostException(REPLY_DELETE_FORBIDDEN,"Reply의 userId: "+reply.getUser().getId()+ " userId: " + user.getId());
         }
-        likeRepository.deleteAllByPostReply(reply); //좋아요 삭제
+
         replyRepository.delete(reply); //대댓글 삭제
+
     }
 }

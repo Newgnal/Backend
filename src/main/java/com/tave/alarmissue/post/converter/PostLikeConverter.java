@@ -26,20 +26,17 @@ public static LikeResponse toLikeResponseDto(PostLike like){
                 liked(true).
                 build();
     }
-    public PostLike toCommentLike(UserEntity user, Post post, PostComment postComment){
+    public PostLike toCommentLike(UserEntity user, PostComment postComment){
         return PostLike.builder().
                 user(user).
-                post(post).
                 comment(postComment).
                 likeType(LikeType.COMMENT).
                 liked(true).
                 build();
     }
-    public PostLike toReplyLike(UserEntity user, Post post, PostComment postComment, PostReply postReply){
+    public PostLike toReplyLike(UserEntity user, PostReply postReply){
     return PostLike.builder().
             user(user).
-            post(post).
-            comment(postComment).
             postReply(postReply).
             likeType(LikeType.REPLY).
             liked(true).

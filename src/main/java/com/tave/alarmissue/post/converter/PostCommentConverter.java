@@ -22,7 +22,7 @@ public class PostCommentConverter {
     }
     public PostComment toComment(CommentCreateRequest dto, UserEntity user, Post post, VoteType voteType) {
         return PostComment.builder()
-                .commentContent(dto.getCommentContent())
+                .commentContent(dto.getComment())
                 .user(user)
                 .post(post)
                 .voteTypeSnapshot(voteType)
