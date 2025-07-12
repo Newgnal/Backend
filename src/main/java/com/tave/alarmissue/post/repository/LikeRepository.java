@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
-
 public interface LikeRepository extends JpaRepository<PostLike, Long> {
 
     @Query("SELECT l FROM PostLike l WHERE l.user = :user AND l.post = :post AND l.comment IS NULL AND l.postReply IS NULL")

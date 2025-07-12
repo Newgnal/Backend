@@ -21,7 +21,7 @@ public class PostComment extends BaseTimeEntity {
     private Long commentId;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String commentContent;
+    private String comment;
 
     @Column
     private Long likeCount;
@@ -42,15 +42,15 @@ public class PostComment extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)
-    private VoteType voteTypeSnapshot;
+    private VoteType voteType;
 
     @Builder
-    public PostComment(Long commentId, String commentContent, Long likeCount, UserEntity user, Post post, VoteType voteTypeSnapshot) {
+    public PostComment(Long commentId, String comment, Long likeCount, UserEntity user, Post post, VoteType voteType) {
         this.commentId = commentId;
-        this.commentContent = commentContent;
+        this.comment = comment;
         this.likeCount = likeCount;
         this.user = user;
         this.post = post;
-        this.voteTypeSnapshot = voteTypeSnapshot;
+        this.voteType = voteType;
     }
 }

@@ -13,19 +13,19 @@ public class PostCommentConverter {
     public static CommentResponse toCommentResponseDto(PostComment postComment) {
         return CommentResponse.builder()
                 .commentId(postComment.getCommentId())
-            .commentContent(postComment.getCommentContent())
+            .commentContent(postComment.getComment())
                 .likeCount(postComment.getLikeCount())
             .nickname(postComment.getUser().getNickName())
             .createdAt(postComment.getCreatedAt())
-                .voteType(postComment.getVoteTypeSnapshot() != null ? postComment.getVoteTypeSnapshot() : null)
+                .voteType(postComment.getVoteType() != null ? postComment.getVoteType() : null)
                 .build();
     }
     public PostComment toComment(CommentCreateRequest dto, UserEntity user, Post post, VoteType voteType) {
         return PostComment.builder()
-                .commentContent(dto.getComment())
+                .comment(dto.getComment())
                 .user(user)
                 .post(post)
-                .voteTypeSnapshot(voteType)
+                .voteType(voteType)
                 .likeCount(0L)
                 .build();
     }
