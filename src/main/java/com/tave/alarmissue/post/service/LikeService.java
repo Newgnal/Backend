@@ -5,7 +5,7 @@ import com.tave.alarmissue.post.domain.enums.LikeType;
 import com.tave.alarmissue.post.repository.CommentRepository;
 import com.tave.alarmissue.post.converter.PostLikeConverter;
 import com.tave.alarmissue.post.dto.response.LikeResponse;
-import com.tave.alarmissue.post.exception.LikeException;
+import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.post.repository.LikeRepository;
 import com.tave.alarmissue.post.repository.PostRepository;
 import com.tave.alarmissue.post.repository.ReplyRepository;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
-import static com.tave.alarmissue.post.exception.LikeErrorCode.*;
+import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -36,10 +36,10 @@ public class LikeService {
     public LikeResponse postLike(Long userId, Long postId) {
 
         UserEntity user = userRepository.findById(userId).
-                orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
+                orElseThrow(() -> new PostException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND," postId: " + postId));
+                .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND," postId: " + postId));
 
         // 기존 좋아요가 존재하는지 확인
         Optional<PostLike> existingLike = likeRepository.findPostLike(user, post);
@@ -61,15 +61,15 @@ public class LikeService {
     @Transactional
     public LikeResponse commentLike(Long userId,Long commentId) {
         UserEntity user = userRepository.findById(userId).
-                orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
+                orElseThrow(() -> new PostException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
 
         PostComment postComment = commentRepository.findById(commentId).
-                orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND," commentId: " + commentId));
+                orElseThrow(()->new PostException(COMMENT_ID_NOT_FOUND," commentId: " + commentId));
 
 
         Post post = postRepository.findById(postComment.getPost().getPostId())
-                .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND,"postId:" + postComment.getPost().getPostId()));
+                .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND,"postId:" + postComment.getPost().getPostId()));
 
         Optional<PostLike> existingLike = likeRepository.findCommentLike(user, postComment);
         if (existingLike.isPresent()) {
@@ -89,16 +89,16 @@ public class LikeService {
     @Transactional
     public LikeResponse replyLike(Long userId, Long replyId) {
         UserEntity user = userRepository.findById(userId).
-                orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
+                orElseThrow(() -> new PostException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
         PostReply reply = replyRepository.findById(replyId).
-                orElseThrow(() -> new LikeException(REPLY_ID_NOT_FOUND," replyId: " + replyId));
+                orElseThrow(() -> new PostException(REPLY_ID_NOT_FOUND," replyId: " + replyId));
 
         Post post = postRepository.findById(reply.getPost().getPostId())
-                .orElseThrow(()->new LikeException(POST_ID_NOT_FOUND," postId: " + reply.getPost().getPostId()));
+                .orElseThrow(()->new PostException(POST_ID_NOT_FOUND," postId: " + reply.getPost().getPostId()));
 
         PostComment postComment = commentRepository.findById(reply.getPostComment().getCommentId())
-                .orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND," commentId: " + reply.getPostComment().getCommentId()));
+                .orElseThrow(()->new PostException(COMMENT_ID_NOT_FOUND," commentId: " + reply.getPostComment().getCommentId()));
 
         Optional<PostLike> existingLike = likeRepository.findReplyLike(user,reply);
         if (existingLike.isPresent()) {

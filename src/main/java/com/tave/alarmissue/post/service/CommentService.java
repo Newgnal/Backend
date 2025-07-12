@@ -4,7 +4,7 @@ import com.tave.alarmissue.post.converter.PostCommentConverter;
 import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.dto.request.CommentCreateRequest;
 import com.tave.alarmissue.post.dto.response.CommentResponse;
-import com.tave.alarmissue.post.exception.CommentException;
+import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.post.repository.*;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.user.domain.UserEntity;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
-import static com.tave.alarmissue.post.exception.CommentErrorCode.*;
+import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -37,10 +37,10 @@ public class CommentService {
     @Transactional
     public CommentResponse createComment(CommentCreateRequest dto, Long userId, Long postId) {
         UserEntity user = userRepository.findById(userId).
-                orElseThrow(()-> new CommentException(USER_ID_NOT_FOUND,"사용자가 없습니다"));
+                orElseThrow(()-> new PostException(USER_ID_NOT_FOUND,"사용자가 없습니다"));
 
         Post post= postRepository.findById(postId).
-                orElseThrow(()->new CommentException(POST_ID_NOT_FOUND, "postId:" + postId));
+                orElseThrow(()->new PostException(POST_ID_NOT_FOUND, "postId:" + postId));
 
         
         PostVote vote = null;
@@ -60,20 +60,20 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId, Long userId, Long postId) {
         UserEntity user = userRepository.findById(userId).
-                orElseThrow(()->new CommentException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
+                orElseThrow(()->new PostException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
 
         Post post= postRepository.findById(postId).
-                orElseThrow(()->new CommentException(POST_ID_NOT_FOUND, "postId:" + postId));
+                orElseThrow(()->new PostException(POST_ID_NOT_FOUND, "postId:" + postId));
 
         PostComment postComment = commentRepository.findById(commentId).
-                orElseThrow(()->new CommentException(COMMENT_ID_NOT_FOUND, "commentId: "+ commentId));
+                orElseThrow(()->new PostException(COMMENT_ID_NOT_FOUND, "commentId: "+ commentId));
 
         if(!Objects.equals(post.getPostId(), postComment.getPost().getPostId())) {
-            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 postId: "+ postComment.getPost().getPostId() + " postId: " + post.getPostId());
+            throw new PostException(COMMENT_DELETE_FORBIDDEN, "comment의 postId: "+ postComment.getPost().getPostId() + " postId: " + post.getPostId());
         }
 
         if(!Objects.equals(postComment.getUser().getId(), user.getId())) {
-            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+ postComment.getUser().getId() + " userId: " + user.getId());
+            throw new PostException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+ postComment.getUser().getId() + " userId: " + user.getId());
         }
         likeRepository.deleteAllByComment(postComment); //좋아요 삭제
         replyRepository.deleteAllByPostComment(postComment); //대댓글 삭제
