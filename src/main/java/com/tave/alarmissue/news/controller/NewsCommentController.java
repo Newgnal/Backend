@@ -49,7 +49,7 @@ public class NewsCommentController {
 
     @PutMapping("/{commentId}")
     @Operation(summary = "댓글 수정", description = "특정 댓글을 수정합니다. (작성자만 가능)")
-    public ResponseEntity<NewsCommentResponseDto> updateComment(@RequestBody NewsCommentCreateRequestDto dto,
+    public ResponseEntity<NewsCommentResponseDto> updateComment(@RequestBody NewsCommentRequestDto dto,
                                                                @PathVariable Long commentId,
                                                                @AuthenticationPrincipal PrincipalUserDetails principal){
         Long userId = principal.getUserId();
