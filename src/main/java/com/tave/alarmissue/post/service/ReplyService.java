@@ -31,7 +31,6 @@ public class ReplyService {
     private final CommentRepository commentRepository;
     private final PostReplyConverter replyConverter;
     private final VoteRepository voteRepository;
-    private final LikeRepository likeRepository ;
 
     @Transactional
     public ReplyResponse createReply(ReplyCreateRequest dto, Long commentId, Long userId) {

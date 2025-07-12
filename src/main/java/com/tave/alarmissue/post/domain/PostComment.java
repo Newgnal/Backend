@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Getter
@@ -31,6 +34,12 @@ public class PostComment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+    @OneToMany(mappedBy = "postComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostReply> replies = new ArrayList<>();
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> likes = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)

@@ -24,12 +24,11 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostResponse> createPost(@RequestBody PostCreateRequest dto,
                                                    @AuthenticationPrincipal PrincipalUserDetails principal)
-
     {
         Long userId = principal.getUserId();
 
         PostResponse responseDto = postService.createPost(dto, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
 

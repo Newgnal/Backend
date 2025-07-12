@@ -17,7 +17,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping
+    @PostMapping("{postId}")
     public ResponseEntity<CommentResponse> createComment(@RequestBody CommentCreateRequest dto,
                                                          @AuthenticationPrincipal PrincipalUserDetails principal,
                                                          @PathVariable Long postId) {

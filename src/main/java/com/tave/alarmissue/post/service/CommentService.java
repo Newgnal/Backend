@@ -31,8 +31,6 @@ public class CommentService {
     private final PostRepository postRepository;
     private final PostCommentConverter commentConverter;
     private final VoteRepository voteRepository;
-    private final LikeRepository likeRepository;
-   private final ReplyRepository replyRepository;
 
     @Transactional
     public CommentResponse createComment(CommentCreateRequest dto, Long userId, Long postId) {
@@ -73,8 +71,6 @@ public class CommentService {
             throw new PostException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+ postComment.getUser().getId() + " userId: " + user.getId());
         }
 
-        likeRepository.deleteAllByComment(postComment); //좋아요 삭제
-        replyRepository.deleteAllByPostComment(postComment); //대댓글 삭제
         commentRepository.delete(postComment); //댓글 삭제
     }
 

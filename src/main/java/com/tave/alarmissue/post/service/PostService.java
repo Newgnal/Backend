@@ -27,9 +27,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
-    private final CommentRepository commentRepository;
-    private final LikeRepository likeRepository;
-    private final ReplyRepository replyRepository;
 
     // 게시글 생성
     @Transactional
