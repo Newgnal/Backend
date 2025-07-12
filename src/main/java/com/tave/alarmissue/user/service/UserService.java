@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.tave.alarmissue.user.exception.UserErrorCode.*;
 
@@ -19,14 +20,24 @@ import static com.tave.alarmissue.user.exception.UserErrorCode.*;
 @Transactional(readOnly = true)
 public class UserService {
 
-    private final RefreshTokenRedisService refreshTokenRedisService;
     private final UserRepository userRepository;
+    private final RefreshTokenRedisService refreshTokenRedisService;
 
     public LogoutResponse logout(Long userId) {
         boolean isDeleted = refreshTokenRedisService.deleteRefreshToken(userId);
         String message = isDeleted ? "Logout successful" : "Logout failed: User not found";
         return new LogoutResponse(message);
     }
+
+    // 회원 탈퇴 (softdelete)
+    @Transactional
+    public void softDeleteUser(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_ID_NOT_FOUND, "User not found: " + userId));
+
+        userRepository.delete(user);
+    }
+
 
     @Transactional
     public NicknameResponse changeNickname(Long userId,String nickname) {

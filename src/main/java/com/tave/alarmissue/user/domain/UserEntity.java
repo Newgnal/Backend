@@ -1,8 +1,11 @@
 package com.tave.alarmissue.user.domain;
 
+import com.tave.alarmissue.global.domain.BaseTimeEntityWithDeletion;
 import com.tave.alarmissue.newsroom.entity.Keyword;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +19,9 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @Table(name = "`user`")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserEntity {
+@SQLDelete(sql = "UPDATE `user` SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
+public class UserEntity extends BaseTimeEntityWithDeletion {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
