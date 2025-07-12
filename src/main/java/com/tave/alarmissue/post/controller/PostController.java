@@ -22,7 +22,8 @@ public class PostController {
     private final PostService postService;
     //게시글 작성
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(@RequestBody PostCreateRequest dto, @AuthenticationPrincipal PrincipalUserDetails principal)
+    public ResponseEntity<PostResponse> createPost(@RequestBody PostCreateRequest dto,
+                                                   @AuthenticationPrincipal PrincipalUserDetails principal)
 
     {
         Long userId = principal.getUserId();
@@ -31,9 +32,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
     }
+
     //게시글 수정
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId , @RequestBody PostUpdateRequest dto , @AuthenticationPrincipal PrincipalUserDetails principal)
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId ,
+                                                   @RequestBody PostUpdateRequest dto ,
+                                                   @AuthenticationPrincipal PrincipalUserDetails principal)
     {
         Long userId = principal.getUserId();
         PostResponse responseDto = postService.updatePost(postId, dto, userId);
@@ -43,8 +47,10 @@ public class PostController {
 
     //게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId, @AuthenticationPrincipal PrincipalUserDetails principal){
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId,
+                                           @AuthenticationPrincipal PrincipalUserDetails principal){
         Long userId = principal.getUserId();
+
         postService.deletePost(postId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

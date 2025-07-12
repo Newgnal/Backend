@@ -17,13 +17,15 @@ public class VoteController {
 
     private final VoteService voteService;
 
-    @PostMapping //투표
+    // 투표
+    @PostMapping
     public ResponseEntity<VoteResponse> createVoteAndGetResult(@RequestBody VoteRequest dto,
                                                                @AuthenticationPrincipal PrincipalUserDetails principal) {
+
         Long userId = principal.getUserId();
         VoteResponse voteResponseDto = voteService.createVoteAndGetResult(dto, userId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(voteResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(voteResponseDto);
     }
 
 }

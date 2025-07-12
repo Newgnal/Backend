@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 public class LikeController {
 
     private final LikeService likeService;
+
     //게시글 좋아요
     @PatchMapping("/{postId}/likes")
-    public ResponseEntity<LikeResponse> postLike(@AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long postId) {
+    public ResponseEntity<LikeResponse> postLike(@AuthenticationPrincipal PrincipalUserDetails principal,
+                                                 @PathVariable Long postId) {
 
         Long userId = principal.getUserId();
 
@@ -26,8 +28,10 @@ public class LikeController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
-    @PatchMapping("/comments/{commentId}/likes")
-    public ResponseEntity<LikeResponse> commentLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long commentId) {
+
+    @PatchMapping("/{commentId}/likes")
+    public ResponseEntity<LikeResponse> commentLike(@AuthenticationPrincipal PrincipalUserDetails principal,
+                                                    @PathVariable Long commentId) {
 
         Long userId = principal.getUserId();
 
@@ -35,8 +39,10 @@ public class LikeController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    @PatchMapping("/replies/{replyId}/likes")
-    public ResponseEntity<LikeResponse> replyLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long replyId) {
+    @PatchMapping("/{replyId}/likes")
+    public ResponseEntity<LikeResponse> replyLike(@AuthenticationPrincipal PrincipalUserDetails principal,
+                                                  @PathVariable Long replyId) {
+
         Long userId = principal.getUserId();
 
         LikeResponse responseDto = likeService.replyLike(userId,replyId);

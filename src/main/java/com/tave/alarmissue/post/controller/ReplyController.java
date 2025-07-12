@@ -13,23 +13,29 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/posts/v1/comments/{commentId}/replies")
+@RequestMapping("/posts/v1/reply")
 public class ReplyController {
 
     private final ReplyService replyService;
 
-    @PostMapping
-    public ResponseEntity<ReplyResponse> createReply(@RequestBody ReplyCreateRequest dto, @PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
+    @PostMapping("/{commentId}")
+    public ResponseEntity<ReplyResponse> createReply(@RequestBody ReplyCreateRequest dto,
+                                                     @PathVariable Long commentId,
+                                                     @AuthenticationPrincipal PrincipalUserDetails principal){
         Long userId = principal.getUserId();
 
         ReplyResponse responseDto = replyService.createReply(dto,commentId,userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
+
     @DeleteMapping("{replyId}")
-    public ResponseEntity<Void> deleteReply(@PathVariable Long replyId , @PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
+    public ResponseEntity<Void> deleteReply(@PathVariable Long replyId ,
+                                            @AuthenticationPrincipal PrincipalUserDetails principal){
+
         Long userId = principal.getUserId();
 
-        replyService.deleteReply(replyId,commentId,userId);
+        replyService.deleteReply(replyId,userId);
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
