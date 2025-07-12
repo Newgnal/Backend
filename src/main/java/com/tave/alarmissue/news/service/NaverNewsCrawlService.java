@@ -10,9 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,7 +27,7 @@ public class NaverNewsCrawlService {
     private final NewsRepository newsRepository;
     private final WebDriverFactory webDriverFactory;
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     @Async
     public void crawlNaverEconomyNews() {
         int savedCount = 0;
