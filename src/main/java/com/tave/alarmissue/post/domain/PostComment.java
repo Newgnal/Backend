@@ -1,6 +1,7 @@
 package com.tave.alarmissue.post.domain;
 
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
+import com.tave.alarmissue.post.domain.enums.VoteType;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,7 +12,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Comment extends BaseTimeEntity {
+public class PostComment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +37,7 @@ public class Comment extends BaseTimeEntity {
     private VoteType voteTypeSnapshot;
 
     @Builder
-    public Comment(Long commentId, String commentContent, Long likeCount, UserEntity user, Post post,VoteType voteTypeSnapshot) {
+    public PostComment(Long commentId, String commentContent, Long likeCount, UserEntity user, Post post, VoteType voteTypeSnapshot) {
         this.commentId = commentId;
         this.commentContent = commentContent;
         this.likeCount = likeCount;

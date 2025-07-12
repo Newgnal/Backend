@@ -4,8 +4,8 @@ import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.repository.PostRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
-import com.tave.alarmissue.post.converter.VoteConverter;
-import com.tave.alarmissue.post.domain.Vote;
+import com.tave.alarmissue.post.converter.PostVoteConverter;
+import com.tave.alarmissue.post.domain.PostVote;
 import com.tave.alarmissue.post.dto.request.VoteRequestDto;
 import com.tave.alarmissue.post.dto.response.VoteCountResponse;
 import com.tave.alarmissue.post.dto.response.VoteResponseDto;
@@ -43,7 +43,7 @@ public class VoteService {
         }
 
         // 기존 투표 조회
-        Vote newVote = voteRepository.findByUserAndPost(user, post)
+        PostVote newVote = voteRepository.findByUserAndPost(user, post)
                 .orElse(null);
 
         if (newVote != null) {
@@ -51,7 +51,7 @@ public class VoteService {
             newVote.updateVoteType(dto.getVoteType());
         } else {
             //없으면 새로 생성
-            newVote = Vote.builder()
+            newVote = PostVote.builder()
                     .user(user)
                     .post(post)
                     .voteType(dto.getVoteType())
@@ -61,7 +61,7 @@ public class VoteService {
         //DB 접근을 최소화
         List<VoteCountResponse> voteCounts = voteRepository.countVotesByType(post);
 
-        VoteResponseDto response = VoteConverter.toVoteResponseDto(post, newVote.getVoteType(), voteCounts);
+        VoteResponseDto response = PostVoteConverter.toVoteResponseDto(post, newVote.getVoteType(), voteCounts);
 
         return response;
     }

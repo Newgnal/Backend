@@ -1,14 +1,15 @@
 package com.tave.alarmissue.post.converter;
 
 import com.tave.alarmissue.post.domain.*;
+import com.tave.alarmissue.post.domain.enums.LikeType;
 import com.tave.alarmissue.post.dto.response.LikeResponseDto;
 import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LikeConverter {
+public class PostLikeConverter {
 
-public static LikeResponseDto toLikeResponseDto(Like like){
+public static LikeResponseDto toLikeResponseDto(PostLike like){
     return LikeResponseDto.builder()
             .likeId(like.getLikeId())
             .likeType(like.getLikeType())
@@ -17,29 +18,29 @@ public static LikeResponseDto toLikeResponseDto(Like like){
 
 }
 
-    public Like toPostLike(UserEntity user, Post post){
-        return Like.builder().
+    public PostLike toPostLike(UserEntity user, Post post){
+        return PostLike.builder().
                 user(user).
                 post(post).
                 likeType(LikeType.POST).
                 liked(true).
                 build();
     }
-    public Like toCommentLike(UserEntity user, Post post,Comment comment){
-        return Like.builder().
+    public PostLike toCommentLike(UserEntity user, Post post, PostComment postComment){
+        return PostLike.builder().
                 user(user).
                 post(post).
-                comment(comment).
+                comment(postComment).
                 likeType(LikeType.COMMENT).
                 liked(true).
                 build();
     }
-    public Like toReplyLike(UserEntity user, Post post, Comment comment, Reply reply){
-    return Like.builder().
+    public PostLike toReplyLike(UserEntity user, Post post, PostComment postComment, PostReply postReply){
+    return PostLike.builder().
             user(user).
             post(post).
-            comment(comment).
-            reply(reply).
+            comment(postComment).
+            reply(postReply).
             likeType(LikeType.REPLY).
             liked(true).
             build();

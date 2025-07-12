@@ -1,7 +1,7 @@
 package com.tave.alarmissue.post.service;
 
-import com.tave.alarmissue.post.converter.CommentConverter;
-import com.tave.alarmissue.post.domain.Comment;
+import com.tave.alarmissue.post.converter.PostCommentConverter;
+import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.dto.request.CommentCreateRequestDto;
 import com.tave.alarmissue.post.dto.response.CommentResponseDto;
 import com.tave.alarmissue.post.exception.CommentException;
@@ -9,8 +9,8 @@ import com.tave.alarmissue.post.repository.*;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
-import com.tave.alarmissue.post.domain.Vote;
-import com.tave.alarmissue.post.domain.VoteType;
+import com.tave.alarmissue.post.domain.PostVote;
+import com.tave.alarmissue.post.domain.enums.VoteType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final CommentConverter commentConverter;
+    private final PostCommentConverter commentConverter;
     private final VoteRepository voteRepository;
     private final LikeRepository likeRepository;
    private final ReplyRepository replyRepository;
@@ -43,7 +43,7 @@ public class CommentService {
                 orElseThrow(()->new CommentException(POST_ID_NOT_FOUND, "postId:" + postId));
 
         
-        Vote vote = null;
+        PostVote vote = null;
         VoteType voteType = null;
         //게시글에 투표가 있고 실제 유저가 투표했을경우 voteType 넣기
         if (post.getHasVote()) { 
@@ -51,11 +51,11 @@ public class CommentService {
             voteType = (vote != null) ? vote.getVoteType() : null;
         }
 
-        Comment comment = commentConverter.toComment(dto, user, post, voteType);
+        PostComment postComment = commentConverter.toComment(dto, user, post, voteType);
 
 
-        Comment saved = commentRepository.save(comment);
-        return CommentConverter.toCommentResponseDto(saved);
+        PostComment saved = commentRepository.save(postComment);
+        return PostCommentConverter.toCommentResponseDto(saved);
     }
     @Transactional
     public void deleteComment(Long commentId, Long userId, Long postId) {
@@ -65,18 +65,18 @@ public class CommentService {
         Post post= postRepository.findById(postId).
                 orElseThrow(()->new CommentException(POST_ID_NOT_FOUND, "postId:" + postId));
 
-        Comment comment = commentRepository.findById(commentId).
+        PostComment postComment = commentRepository.findById(commentId).
                 orElseThrow(()->new CommentException(COMMENT_ID_NOT_FOUND, "commentId: "+ commentId));
 
-        if(!Objects.equals(post.getPostId(),comment.getPost().getPostId())) {
-            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 postId: "+comment.getPost().getPostId() + " postId: " + post.getPostId());
+        if(!Objects.equals(post.getPostId(), postComment.getPost().getPostId())) {
+            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 postId: "+ postComment.getPost().getPostId() + " postId: " + post.getPostId());
         }
 
-        if(!Objects.equals(comment.getUser().getId(), user.getId())) {
-            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+comment.getUser().getId() + " userId: " + user.getId());
+        if(!Objects.equals(postComment.getUser().getId(), user.getId())) {
+            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+ postComment.getUser().getId() + " userId: " + user.getId());
         }
-        likeRepository.deleteAllByComment(comment); //좋아요 삭제
-        replyRepository.deleteAllByComment(comment); //대댓글 삭제
-        commentRepository.delete(comment); //댓글 삭제
+        likeRepository.deleteAllByComment(postComment); //좋아요 삭제
+        replyRepository.deleteAllByPostComment(postComment); //대댓글 삭제
+        commentRepository.delete(postComment); //댓글 삭제
     }
 }

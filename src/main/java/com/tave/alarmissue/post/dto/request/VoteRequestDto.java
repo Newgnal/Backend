@@ -1,6 +1,6 @@
 package com.tave.alarmissue.post.dto.request;
 
-import com.tave.alarmissue.post.domain.VoteType;
+import com.tave.alarmissue.post.domain.enums.VoteType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

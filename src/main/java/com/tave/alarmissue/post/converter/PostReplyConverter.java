@@ -1,17 +1,18 @@
 package com.tave.alarmissue.post.converter;
 
-import com.tave.alarmissue.post.domain.Comment;
+import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.post.domain.Reply;
+import com.tave.alarmissue.post.domain.PostReply;
+import com.tave.alarmissue.post.domain.PostReply;
 import com.tave.alarmissue.post.dto.request.ReplyCreateRequestDto;
 import com.tave.alarmissue.post.dto.response.ReplyResponseDto;
 import com.tave.alarmissue.user.domain.UserEntity;
-import com.tave.alarmissue.post.domain.VoteType;
+import com.tave.alarmissue.post.domain.enums.VoteType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ReplyConverter {
-    public static ReplyResponseDto toReplyResponseDto(Reply reply) {
+public class PostReplyConverter {
+    public static ReplyResponseDto toReplyResponseDto(PostReply reply) {
         return ReplyResponseDto.builder()
                 .replyId(reply.getReplyId())
                 .replyContent(reply.getReplyContent())
@@ -23,12 +24,12 @@ public class ReplyConverter {
 
 
     }
-   public Reply toReply(ReplyCreateRequestDto dto, UserEntity user, Post post, Comment comment, VoteType voteType) {
-        return Reply.builder().
+   public PostReply toReply(ReplyCreateRequestDto dto, UserEntity user, Post post, PostComment postComment, VoteType voteType) {
+        return PostReply.builder().
                 replyContent(dto.getReplyContent()).
                 user(user).
                 post(post).
-                comment(comment).
+                postComment(postComment).
                 voteTypeSnapshot(voteType).
                 likeCount(0L).
                 build();

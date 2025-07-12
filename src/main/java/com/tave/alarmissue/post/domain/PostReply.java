@@ -1,16 +1,15 @@
 package com.tave.alarmissue.post.domain;
 
-import com.tave.alarmissue.post.domain.Comment;
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
 import com.tave.alarmissue.user.domain.UserEntity;
-import com.tave.alarmissue.post.domain.VoteType;
+import com.tave.alarmissue.post.domain.enums.VoteType;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reply extends BaseTimeEntity {
+public class PostReply extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +28,7 @@ public class Reply extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = false)
-    private Comment comment;
+    private PostComment postComment;
 
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)
@@ -39,11 +38,11 @@ public class Reply extends BaseTimeEntity {
     private Long likeCount;
 
     @Builder
-    public Reply (String replyContent, UserEntity user, Post post, Comment comment, VoteType voteTypeSnapshot, Long likeCount) {
+    public PostReply (String replyContent, UserEntity user, Post post, PostComment postComment, VoteType voteTypeSnapshot, Long likeCount) {
         this.replyContent = replyContent;
         this.user = user;
         this.post = post;
-        this.comment = comment;
+        this.postComment = postComment;
         this.voteTypeSnapshot = voteTypeSnapshot;
         this.likeCount = likeCount;
     }

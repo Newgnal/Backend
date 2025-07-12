@@ -1,8 +1,9 @@
 package com.tave.alarmissue.post.service;
 
 import com.tave.alarmissue.post.domain.*;
+import com.tave.alarmissue.post.domain.enums.LikeType;
 import com.tave.alarmissue.post.repository.CommentRepository;
-import com.tave.alarmissue.post.converter.LikeConverter;
+import com.tave.alarmissue.post.converter.PostLikeConverter;
 import com.tave.alarmissue.post.dto.response.LikeResponseDto;
 import com.tave.alarmissue.post.exception.LikeException;
 import com.tave.alarmissue.post.repository.LikeRepository;
@@ -26,7 +27,7 @@ public class LikeService {
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
-    private final LikeConverter likeConverter;
+    private final PostLikeConverter likeConverter;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
 
@@ -41,19 +42,19 @@ public class LikeService {
                 .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND," postId: " + postId));
 
         // 기존 좋아요가 존재하는지 확인
-        Optional<Like> existingLike = likeRepository.findPostLike(user, post);
+        Optional<PostLike> existingLike = likeRepository.findPostLike(user, post);
         if (existingLike.isPresent()) {
            Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             postRepository.decrementLikeCount(postId);
-            return new LikeResponseDto(LikeId,false,LikeType.POST);
+            return new LikeResponseDto(LikeId,false, LikeType.POST);
         }
     else {
             // 없으면 좋아요 생성
-            Like like = likeConverter.toPostLike(user, post);
-            Like saved = likeRepository.save(like);
+            PostLike like = likeConverter.toPostLike(user, post);
+            PostLike saved = likeRepository.save(like);
             postRepository.incrementLikeCount(postId);
-            return LikeConverter.toLikeResponseDto(saved);
+            return PostLikeConverter.toLikeResponseDto(saved);
         }
     }
 
@@ -63,14 +64,14 @@ public class LikeService {
                 orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
 
-        Comment comment = commentRepository.findById(commentId).
+        PostComment postComment = commentRepository.findById(commentId).
                 orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND," commentId: " + commentId));
 
 
-        Post post = postRepository.findById(comment.getPost().getPostId())
-                .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND,"postId:" + comment.getPost().getPostId()));
+        Post post = postRepository.findById(postComment.getPost().getPostId())
+                .orElseThrow(() -> new LikeException(POST_ID_NOT_FOUND,"postId:" + postComment.getPost().getPostId()));
 
-        Optional<Like> existingLike = likeRepository.findCommentLike(user,comment);
+        Optional<PostLike> existingLike = likeRepository.findCommentLike(user, postComment);
         if (existingLike.isPresent()) {
             Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
@@ -79,10 +80,10 @@ public class LikeService {
         }
         // 없으면 좋아요 생성
         else {
-            Like like = likeConverter.toCommentLike(user, post, comment);
-            Like saved = likeRepository.save(like);
+            PostLike like = likeConverter.toCommentLike(user, post, postComment);
+            PostLike saved = likeRepository.save(like);
             commentRepository.incrementLikeCount(commentId);
-            return LikeConverter.toLikeResponseDto(saved);
+            return PostLikeConverter.toLikeResponseDto(saved);
         }
     }
     @Transactional
@@ -90,16 +91,16 @@ public class LikeService {
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
-        Reply reply = replyRepository.findById(replyId).
+        PostReply reply = replyRepository.findById(replyId).
                 orElseThrow(() -> new LikeException(REPLY_ID_NOT_FOUND," replyId: " + replyId));
 
         Post post = postRepository.findById(reply.getPost().getPostId())
                 .orElseThrow(()->new LikeException(POST_ID_NOT_FOUND," postId: " + reply.getPost().getPostId()));
 
-        Comment comment = commentRepository.findById(reply.getComment().getCommentId())
-                .orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND," commentId: " + reply.getComment().getCommentId()));
+        PostComment postComment = commentRepository.findById(reply.getPostComment().getCommentId())
+                .orElseThrow(()->new LikeException(COMMENT_ID_NOT_FOUND," commentId: " + reply.getPostComment().getCommentId()));
 
-        Optional<Like> existingLike = likeRepository.findReplyLike(user,reply);
+        Optional<PostLike> existingLike = likeRepository.findReplyLike(user,reply);
         if (existingLike.isPresent()) {
             Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
@@ -108,10 +109,10 @@ public class LikeService {
         }
         // 없으면 좋아요 생성
         else {
-            Like like = likeConverter.toReplyLike(user, post, comment, reply);
-            Like saved = likeRepository.save(like);
+            PostLike like = likeConverter.toReplyLike(user, post, postComment, reply);
+            PostLike saved = likeRepository.save(like);
             replyRepository.incrementLikeCount(replyId);
-            return LikeConverter.toLikeResponseDto(saved);
+            return PostLikeConverter.toLikeResponseDto(saved);
         }
     }
 

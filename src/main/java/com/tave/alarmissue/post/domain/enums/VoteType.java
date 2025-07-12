@@ -1,4 +1,4 @@
-package com.tave.alarmissue.post.domain;
+package com.tave.alarmissue.post.domain.enums;
 
 public enum VoteType {
     BUY,    // 매수
