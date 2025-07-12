@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 //댓글 생성 요청 DTO
 @Schema(description = "댓글 생성 요청")
-public class NewsCommentCreateRequestDto {
+public class NewsCommentRequestDto {
     @Schema(description = "생성된 댓글 정보")
     private String comment;
     private Long newsId;
