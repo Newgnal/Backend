@@ -1,19 +1,20 @@
 package com.tave.alarmissue.post.service;
 
-import com.tave.alarmissue.post.converter.CommentConverter;
-import com.tave.alarmissue.post.domain.Comment;
-import com.tave.alarmissue.post.dto.request.CommentCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.CommentResponseDto;
-import com.tave.alarmissue.post.exception.CommentException;
-import com.tave.alarmissue.post.repository.CommentRepository;
-import com.tave.alarmissue.post.repository.LikeRepository;
+import com.tave.alarmissue.post.converter.PostCommentConverter;
+import com.tave.alarmissue.post.converter.PostReplyConverter;
+import com.tave.alarmissue.post.domain.PostComment;
+import com.tave.alarmissue.post.domain.PostReply;
+import com.tave.alarmissue.post.dto.request.CommentCreateRequest;
+import com.tave.alarmissue.post.dto.request.ReplyCreateRequest;
+import com.tave.alarmissue.post.dto.response.CommentResponse;
+import com.tave.alarmissue.post.dto.response.ReplyResponse;
+import com.tave.alarmissue.post.exception.PostException;
+import com.tave.alarmissue.post.repository.*;
 import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.post.repository.PostRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
-import com.tave.alarmissue.post.domain.Vote;
-import com.tave.alarmissue.post.domain.VoteType;
-import com.tave.alarmissue.post.repository.VoteRepository;
+import com.tave.alarmissue.post.domain.PostVote;
+import com.tave.alarmissue.post.domain.enums.VoteType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
-import static com.tave.alarmissue.post.exception.CommentErrorCode.*;
+import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -30,54 +31,97 @@ import static com.tave.alarmissue.post.exception.CommentErrorCode.*;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final ReplyRepository replyRepository;
+    private final PostReplyConverter replyConverter;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final CommentConverter commentConverter;
+    private final PostCommentConverter commentConverter;
     private final VoteRepository voteRepository;
-    private final LikeRepository likeRepository;
 
     @Transactional
-    public CommentResponseDto createComment(CommentCreateRequestDto dto, Long userId, Long postId) {
+    public CommentResponse createComment(CommentCreateRequest dto, Long userId, Long postId) {
+
         UserEntity user = userRepository.findById(userId).
-                orElseThrow(()-> new CommentException(USER_ID_NOT_FOUND,"사용자가 없습니다"));
+                orElseThrow(()-> new PostException(USER_ID_NOT_FOUND,"userId:"+userId));
 
         Post post= postRepository.findById(postId).
-                orElseThrow(()->new CommentException(POST_ID_NOT_FOUND, "postId:" + postId));
+                orElseThrow(()->new PostException(POST_ID_NOT_FOUND, "postId:" + postId));
 
-        
-        Vote vote = null;
+        PostVote vote = null;
+
         VoteType voteType = null;
+
         //게시글에 투표가 있고 실제 유저가 투표했을경우 voteType 넣기
         if (post.getHasVote()) { 
             vote = voteRepository.findByUserAndPost(user, post).orElse(null);
             voteType = (vote != null) ? vote.getVoteType() : null;
         }
 
-        Comment comment = commentConverter.toComment(dto, user, post, voteType);
+        PostComment postComment = commentConverter.toComment(dto, user, post, voteType);
 
-
-        Comment saved = commentRepository.save(comment);
-        return CommentConverter.toCommentResponseDto(saved);
+        PostComment saved = commentRepository.save(postComment);
+        return PostCommentConverter.toCommentResponseDto(saved);
     }
+
+
     @Transactional
-    public void deleteComment(Long commentId, Long userId, Long postId) {
+    public void deleteComment(Long commentId, Long userId) {
+
         UserEntity user = userRepository.findById(userId).
-                orElseThrow(()->new CommentException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
+                orElseThrow(()->new PostException(USER_ID_NOT_FOUND,"userId:"+userId));
 
-        Post post= postRepository.findById(postId).
-                orElseThrow(()->new CommentException(POST_ID_NOT_FOUND, "postId:" + postId));
+        PostComment postComment = commentRepository.findById(commentId).
+                orElseThrow(()->new PostException(COMMENT_ID_NOT_FOUND, "commentId: "+ commentId));
 
-        Comment comment = commentRepository.findById(commentId).
-                orElseThrow(()->new CommentException(COMMENT_ID_NOT_FOUND, "commentId: "+ commentId));
-
-        if(!Objects.equals(post.getPostId(),comment.getPost().getPostId())) {
-            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 postId: "+comment.getPost().getPostId() + " postId: " + post.getPostId());
+        if(!Objects.equals(postComment.getUser().getId(), user.getId())) {
+            throw new PostException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+ postComment.getUser().getId() + " userId: " + user.getId());
         }
 
-        if(!Objects.equals(comment.getUser().getId(), user.getId())) {
-            throw new CommentException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+comment.getUser().getId() + " userId: " + user.getId());
-        }
-        likeRepository.deleteAllByComment(comment);
-        commentRepository.delete(comment);
+        commentRepository.delete(postComment); //댓글 삭제
     }
+
+    @Transactional
+    public ReplyResponse createReply(ReplyCreateRequest dto, Long commentId, Long userId) {
+        UserEntity user = userRepository.findById(userId).
+                orElseThrow(()->new PostException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
+
+        PostComment postComment = commentRepository.findById(commentId).
+                orElseThrow(()->new PostException(COMMENT_ID_NOT_FOUND, "commentId: "+ commentId));
+
+        Post post= postRepository.findById(postComment.getPost().getPostId()).
+                orElseThrow(()->new PostException(POST_ID_NOT_FOUND, "postId:" + postComment.getPost().getPostId()));
+
+        PostVote vote = null;
+        VoteType voteType = null;
+        //게시글에 투표가 있고 실제 유저가 투표했을경우 voteType 넣기
+        if (post.getHasVote()) {
+            vote = voteRepository.findByUserAndPost(user, post).orElse(null);
+            voteType = (vote != null) ? vote.getVoteType() : null;
+        }
+
+        PostReply reply = replyConverter.toReply(dto,user,post, postComment,voteType);
+        PostReply saved = replyRepository.save(reply);
+
+        return PostReplyConverter.toReplyResponseDto(saved);
+
+    }
+
+    @Transactional
+    public void deleteReply(Long replyId, Long userId) {
+
+        UserEntity user = userRepository.findById(userId).
+                orElseThrow(()->new PostException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
+
+        PostReply reply = replyRepository.findById(replyId).
+                orElseThrow(()-> new PostException(REPLY_ID_NOT_FOUND, "replyId:" + replyId));
+
+        if(!Objects.equals(reply.getUser().getId(),user.getId())) {
+            throw new PostException(REPLY_DELETE_FORBIDDEN,"Reply의 userId: "+reply.getUser().getId()+ " userId: " + user.getId());
+        }
+
+        replyRepository.delete(reply); //대댓글 삭제
+
+    }
+
+
 }
