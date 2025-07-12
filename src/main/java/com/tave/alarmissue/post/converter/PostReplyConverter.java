@@ -4,16 +4,16 @@ import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.domain.PostReply;
 import com.tave.alarmissue.post.domain.PostReply;
-import com.tave.alarmissue.post.dto.request.ReplyCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.ReplyResponseDto;
+import com.tave.alarmissue.post.dto.request.ReplyCreateRequest;
+import com.tave.alarmissue.post.dto.response.ReplyResponse;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.post.domain.enums.VoteType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PostReplyConverter {
-    public static ReplyResponseDto toReplyResponseDto(PostReply reply) {
-        return ReplyResponseDto.builder()
+    public static ReplyResponse toReplyResponseDto(PostReply reply) {
+        return ReplyResponse.builder()
                 .replyId(reply.getReplyId())
                 .replyContent(reply.getReplyContent())
                 .nickname(reply.getUser().getNickName())
@@ -24,7 +24,7 @@ public class PostReplyConverter {
 
 
     }
-   public PostReply toReply(ReplyCreateRequestDto dto, UserEntity user, Post post, PostComment postComment, VoteType voteType) {
+   public PostReply toReply(ReplyCreateRequest dto, UserEntity user, Post post, PostComment postComment, VoteType voteType) {
         return PostReply.builder().
                 replyContent(dto.getReplyContent()).
                 user(user).

@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class LikeResponseDto {
+public class LikeResponse {
     private Long likeId;
     private boolean liked;
     private LikeType likeType;

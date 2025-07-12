@@ -1,7 +1,7 @@
 package com.tave.alarmissue.post.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
-import com.tave.alarmissue.post.dto.response.LikeResponseDto;
+import com.tave.alarmissue.post.dto.response.LikeResponse;
 import com.tave.alarmissue.post.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,28 +18,28 @@ public class LikeController {
     private final LikeService likeService;
     //게시글 좋아요
     @PatchMapping("/{postId}/likes")
-    public ResponseEntity<LikeResponseDto> postLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long postId) {
+    public ResponseEntity<LikeResponse> postLike(@AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long postId) {
 
         Long userId = principal.getUserId();
 
-        LikeResponseDto responseDto = likeService.postLike(userId,postId);
+        LikeResponse responseDto = likeService.postLike(userId,postId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
     @PatchMapping("/comments/{commentId}/likes")
-    public ResponseEntity<LikeResponseDto> commentLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long commentId) {
+    public ResponseEntity<LikeResponse> commentLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long commentId) {
 
         Long userId = principal.getUserId();
 
-        LikeResponseDto responseDto = likeService.commentLike(userId,commentId);
+        LikeResponse responseDto = likeService.commentLike(userId,commentId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @PatchMapping("/replies/{replyId}/likes")
-    public ResponseEntity<LikeResponseDto> replyLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long replyId) {
+    public ResponseEntity<LikeResponse> replyLike(@AuthenticationPrincipal PrincipalUserDetails principal,@PathVariable Long replyId) {
         Long userId = principal.getUserId();
 
-        LikeResponseDto responseDto = likeService.replyLike(userId,replyId);
+        LikeResponse responseDto = likeService.replyLike(userId,replyId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

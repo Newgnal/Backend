@@ -1,8 +1,8 @@
 package com.tave.alarmissue.post.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
-import com.tave.alarmissue.post.dto.request.VoteRequestDto;
-import com.tave.alarmissue.post.dto.response.VoteResponseDto;
+import com.tave.alarmissue.post.dto.request.VoteRequest;
+import com.tave.alarmissue.post.dto.response.VoteResponse;
 import com.tave.alarmissue.post.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,10 +18,10 @@ public class VoteController {
     private final VoteService voteService;
 
     @PostMapping //투표
-    public ResponseEntity<VoteResponseDto> createVoteAndGetResult(@RequestBody VoteRequestDto dto,
-                                                              @AuthenticationPrincipal PrincipalUserDetails principal) {
+    public ResponseEntity<VoteResponse> createVoteAndGetResult(@RequestBody VoteRequest dto,
+                                                               @AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
-        VoteResponseDto voteResponseDto = voteService.createVoteAndGetResult(dto, userId);
+        VoteResponse voteResponseDto = voteService.createVoteAndGetResult(dto, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(voteResponseDto);
     }

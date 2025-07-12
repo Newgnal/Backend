@@ -1,14 +1,14 @@
 package com.tave.alarmissue.post.service;
 
 import com.tave.alarmissue.post.domain.Post;
+import com.tave.alarmissue.post.dto.request.VoteRequest;
 import com.tave.alarmissue.post.repository.PostRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
 import com.tave.alarmissue.post.converter.PostVoteConverter;
 import com.tave.alarmissue.post.domain.PostVote;
-import com.tave.alarmissue.post.dto.request.VoteRequestDto;
 import com.tave.alarmissue.post.dto.response.VoteCountResponse;
-import com.tave.alarmissue.post.dto.response.VoteResponseDto;
+import com.tave.alarmissue.post.dto.response.VoteResponse;
 import com.tave.alarmissue.post.exception.VoteException;
 import com.tave.alarmissue.post.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class VoteService {
     private final UserRepository userRepository;
 
     @Transactional
-    public VoteResponseDto createVoteAndGetResult(VoteRequestDto dto,Long userId) {
+    public VoteResponse createVoteAndGetResult(VoteRequest dto, Long userId) {
 
         //유저가 없을때
         UserEntity user = userRepository.findById(userId)
@@ -61,7 +61,7 @@ public class VoteService {
         //DB 접근을 최소화
         List<VoteCountResponse> voteCounts = voteRepository.countVotesByType(post);
 
-        VoteResponseDto response = PostVoteConverter.toVoteResponseDto(post, newVote.getVoteType(), voteCounts);
+        VoteResponse response = PostVoteConverter.toVoteResponseDto(post, newVote.getVoteType(), voteCounts);
 
         return response;
     }

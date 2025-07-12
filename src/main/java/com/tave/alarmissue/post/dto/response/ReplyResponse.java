@@ -5,13 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
-@Builder
 @AllArgsConstructor
-public class VoteResponseDto {
-    private Long postId;
-    private Integer buyCount;
-    private Integer holdCount;
-    private Integer sellCount;
+@Builder
+public class ReplyResponse {
+    private Long replyId;
+    private String replyContent;
+    private String nickname;
+    private LocalDateTime createdAt;
     private VoteType voteType;
+    private Long likeCount;
 }

@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @Builder
-public class ReplyResponseDto {
-    private Long replyId;
-    private String replyContent;
+public class CommentResponse {
+    private Long commentId;
+    private String commentContent;
+    private Long likeCount;
     private String nickname;
     private LocalDateTime createdAt;
     private VoteType voteType;
-    private Long likeCount;
 }

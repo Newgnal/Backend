@@ -1,11 +1,11 @@
 package com.tave.alarmissue.post.service;
 
+import com.tave.alarmissue.post.dto.request.PostCreateRequest;
+import com.tave.alarmissue.post.dto.request.PostUpdateRequest;
+import com.tave.alarmissue.post.dto.response.PostResponse;
 import com.tave.alarmissue.post.repository.*;
 import com.tave.alarmissue.post.converter.PostConverter;
 import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
-import com.tave.alarmissue.post.dto.request.PostUpdateRequestDto;
-import com.tave.alarmissue.post.dto.response.PostResponseDto;
 import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
@@ -32,7 +32,7 @@ public class PostService {
     private final ReplyRepository replyRepository;
 
     @Transactional
-    public PostResponseDto createPost(PostCreateRequestDto dto, Long userId) {
+    public PostResponse createPost(PostCreateRequest dto, Long userId) {
 
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
@@ -47,7 +47,7 @@ public class PostService {
     //게시글 수정
 
     @Transactional
-    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto dto, Long userId) {
+    public PostResponse updatePost(Long postId, PostUpdateRequest dto, Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
 

@@ -1,8 +1,8 @@
 package com.tave.alarmissue.post.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
-import com.tave.alarmissue.post.dto.request.CommentCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.CommentResponseDto;
+import com.tave.alarmissue.post.dto.request.CommentCreateRequest;
+import com.tave.alarmissue.post.dto.response.CommentResponse;
 import com.tave.alarmissue.post.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,10 +18,10 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<CommentResponseDto> createComment(@RequestBody CommentCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long postId) {
+    public ResponseEntity<CommentResponse> createComment(@RequestBody CommentCreateRequest dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long postId) {
         Long userId = principal.getUserId();
 
-        CommentResponseDto responseDto = commentService.createComment(dto,userId,postId);
+        CommentResponse responseDto = commentService.createComment(dto,userId,postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);}
 
     @DeleteMapping("/{commentId}")

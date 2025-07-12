@@ -2,15 +2,15 @@ package com.tave.alarmissue.post.converter;
 
 import com.tave.alarmissue.post.domain.*;
 import com.tave.alarmissue.post.domain.enums.LikeType;
-import com.tave.alarmissue.post.dto.response.LikeResponseDto;
+import com.tave.alarmissue.post.dto.response.LikeResponse;
 import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PostLikeConverter {
 
-public static LikeResponseDto toLikeResponseDto(PostLike like){
-    return LikeResponseDto.builder()
+public static LikeResponse toLikeResponseDto(PostLike like){
+    return LikeResponse.builder()
             .likeId(like.getLikeId())
             .likeType(like.getLikeType())
             .liked(true)
@@ -40,7 +40,7 @@ public static LikeResponseDto toLikeResponseDto(PostLike like){
             user(user).
             post(post).
             comment(postComment).
-            reply(postReply).
+            postReply(postReply).
             likeType(LikeType.REPLY).
             liked(true).
             build();

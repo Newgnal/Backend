@@ -2,8 +2,8 @@ package com.tave.alarmissue.post.service;
 
 import com.tave.alarmissue.post.converter.PostCommentConverter;
 import com.tave.alarmissue.post.domain.PostComment;
-import com.tave.alarmissue.post.dto.request.CommentCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.CommentResponseDto;
+import com.tave.alarmissue.post.dto.request.CommentCreateRequest;
+import com.tave.alarmissue.post.dto.response.CommentResponse;
 import com.tave.alarmissue.post.exception.CommentException;
 import com.tave.alarmissue.post.repository.*;
 import com.tave.alarmissue.post.domain.Post;
@@ -35,7 +35,7 @@ public class CommentService {
    private final ReplyRepository replyRepository;
 
     @Transactional
-    public CommentResponseDto createComment(CommentCreateRequestDto dto, Long userId, Long postId) {
+    public CommentResponse createComment(CommentCreateRequest dto, Long userId, Long postId) {
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(()-> new CommentException(USER_ID_NOT_FOUND,"사용자가 없습니다"));
 

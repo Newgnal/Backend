@@ -4,7 +4,7 @@ import com.tave.alarmissue.post.domain.*;
 import com.tave.alarmissue.post.domain.enums.LikeType;
 import com.tave.alarmissue.post.repository.CommentRepository;
 import com.tave.alarmissue.post.converter.PostLikeConverter;
-import com.tave.alarmissue.post.dto.response.LikeResponseDto;
+import com.tave.alarmissue.post.dto.response.LikeResponse;
 import com.tave.alarmissue.post.exception.LikeException;
 import com.tave.alarmissue.post.repository.LikeRepository;
 import com.tave.alarmissue.post.repository.PostRepository;
@@ -33,7 +33,7 @@ public class LikeService {
 
 
     @Transactional
-    public LikeResponseDto postLike(Long userId, Long postId) {
+    public LikeResponse postLike(Long userId, Long postId) {
 
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
@@ -47,7 +47,7 @@ public class LikeService {
            Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             postRepository.decrementLikeCount(postId);
-            return new LikeResponseDto(LikeId,false, LikeType.POST);
+            return new LikeResponse(LikeId,false, LikeType.POST);
         }
     else {
             // 없으면 좋아요 생성
@@ -59,7 +59,7 @@ public class LikeService {
     }
 
     @Transactional
-    public LikeResponseDto commentLike(Long userId,Long commentId) {
+    public LikeResponse commentLike(Long userId,Long commentId) {
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
@@ -76,7 +76,7 @@ public class LikeService {
             Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             commentRepository.decrementLikeCount(commentId);
-            return new LikeResponseDto(LikeId,false,LikeType.COMMENT);
+            return new LikeResponse(LikeId,false,LikeType.COMMENT);
         }
         // 없으면 좋아요 생성
         else {
@@ -87,7 +87,7 @@ public class LikeService {
         }
     }
     @Transactional
-    public LikeResponseDto replyLike(Long userId, Long replyId) {
+    public LikeResponse replyLike(Long userId, Long replyId) {
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(() -> new LikeException(USER_ID_NOT_FOUND,"유저가 없습니다."));
 
@@ -105,7 +105,7 @@ public class LikeService {
             Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             replyRepository.decrementLikeCount(replyId);
-            return new LikeResponseDto(LikeId,false,LikeType.REPLY);
+            return new LikeResponse(LikeId,false,LikeType.REPLY);
         }
         // 없으면 좋아요 생성
         else {

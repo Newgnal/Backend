@@ -1,12 +1,12 @@
 package com.tave.alarmissue.post.service;
 
 import com.tave.alarmissue.post.domain.PostComment;
+import com.tave.alarmissue.post.dto.request.ReplyCreateRequest;
+import com.tave.alarmissue.post.dto.response.ReplyResponse;
 import com.tave.alarmissue.post.repository.*;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.converter.PostReplyConverter;
 import com.tave.alarmissue.post.domain.PostReply;
-import com.tave.alarmissue.post.dto.request.ReplyCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.ReplyResponseDto;
 import com.tave.alarmissue.post.exception.ReplyException;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
@@ -34,7 +34,7 @@ public class ReplyService {
     private final LikeRepository likeRepository ;
 
     @Transactional
-    public ReplyResponseDto createReply(ReplyCreateRequestDto dto, Long commentId, Long userId) {
+    public ReplyResponse createReply(ReplyCreateRequest dto, Long commentId, Long userId) {
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(()->new ReplyException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
 
