@@ -1,8 +1,8 @@
 package com.tave.alarmissue.post.converter;
 
 import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.PostResponseDto;
+import com.tave.alarmissue.post.dto.request.PostCreateRequest;
+import com.tave.alarmissue.post.dto.response.PostResponse;
 import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 public class
 PostConverter {
 
-    public static PostResponseDto toPostResponseDto(Post post) {
-        return PostResponseDto.builder()
+    public static PostResponse toPostResponseDto(Post post) {
+        return PostResponse.builder()
                 .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
@@ -25,7 +25,7 @@ PostConverter {
                 .build();
     }
 
-    public Post toPost(PostCreateRequestDto dto, UserEntity user) {
+    public Post toPost(PostCreateRequest dto, UserEntity user) {
         return Post.builder()
                 .postTitle(dto.getPostTitle())
                 .postContent(dto.getPostContent())
