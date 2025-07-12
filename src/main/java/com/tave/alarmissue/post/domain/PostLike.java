@@ -20,6 +20,9 @@ public class PostLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long LikeId;
 
+    @Column
+    private boolean liked;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
@@ -27,9 +30,6 @@ public class PostLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
-
-    @JoinColumn
-    private boolean liked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = true)
