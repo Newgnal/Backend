@@ -26,6 +26,7 @@ public class Post extends BaseTimeEntity {
     @Column
     private Long likeCount;
 
+
     @Column
     private String articleUrl; //기사 url
 

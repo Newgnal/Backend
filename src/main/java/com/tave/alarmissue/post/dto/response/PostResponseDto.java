@@ -23,4 +23,5 @@ public class PostResponseDto {
     private LocalDateTime updatedAt;
     private boolean hasVote;
     private Long viewCount;
+
 }

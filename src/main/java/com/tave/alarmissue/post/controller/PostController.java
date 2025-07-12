@@ -106,5 +106,6 @@ public class PostController {
     }
 
     //홈화면 조회
-
+    @GetMapping("/home")
+    public ResponseEntity
 }
