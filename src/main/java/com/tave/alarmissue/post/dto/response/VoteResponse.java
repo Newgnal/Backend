@@ -1,6 +1,6 @@
 package com.tave.alarmissue.post.dto.response;
 
-import com.tave.alarmissue.post.domain.VoteType;
+import com.tave.alarmissue.post.domain.enums.VoteType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class VoteResponseDto {
+public class VoteResponse {
     private Long postId;
     private Integer buyCount;
     private Integer holdCount;
