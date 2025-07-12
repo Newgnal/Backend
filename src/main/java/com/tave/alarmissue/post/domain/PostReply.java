@@ -38,18 +38,18 @@ public class PostReply extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)
-    private VoteType voteTypeSnapshot;
+    private VoteType voteType;
 
     @Column
     private Long likeCount;
 
     @Builder
-    public PostReply (String replyContent, UserEntity user, Post post, PostComment postComment, VoteType voteTypeSnapshot, Long likeCount) {
+    public PostReply (String replyContent, UserEntity user, Post post, PostComment postComment, VoteType voteType, Long likeCount) {
         this.replyContent = replyContent;
         this.user = user;
         this.post = post;
         this.postComment = postComment;
-        this.voteTypeSnapshot = voteTypeSnapshot;
+        this.voteType = voteType;
         this.likeCount = likeCount;
     }
 

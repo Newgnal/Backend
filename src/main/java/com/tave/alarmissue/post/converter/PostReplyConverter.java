@@ -18,7 +18,7 @@ public class PostReplyConverter {
                 .replyContent(reply.getReplyContent())
                 .nickname(reply.getUser().getNickName())
                 .createdAt(reply.getCreatedAt())
-                .voteType(reply.getVoteTypeSnapshot() != null ? reply.getVoteTypeSnapshot() : null)
+                .voteType(reply.getVoteType() != null ? reply.getVoteType() : null)
                 .likeCount(reply.getLikeCount())
                 .build();
 
@@ -30,7 +30,7 @@ public class PostReplyConverter {
                 user(user).
                 post(post).
                 postComment(postComment).
-                voteTypeSnapshot(voteType).
+                voteType(voteType).
                 likeCount(0L).
                 build();
    }
