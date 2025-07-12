@@ -16,7 +16,7 @@ import java.security.Principal;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/posts/v1")
+@RequestMapping("/post/v1")
 public class PostController {
 
     private final PostService postService;

@@ -11,7 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/vote/v1")
+@RequestMapping("post/v1/vote")
 @RequiredArgsConstructor
 public class VoteController {
 
