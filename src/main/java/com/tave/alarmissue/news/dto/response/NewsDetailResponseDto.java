@@ -23,4 +23,5 @@ public class NewsDetailResponseDto {
     private Long view;
     private Long commentNum;
     private Long voteNum;
+    private String summary;
 }

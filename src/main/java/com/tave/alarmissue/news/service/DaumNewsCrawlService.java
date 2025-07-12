@@ -118,6 +118,7 @@ public class DaumNewsCrawlService {
                         .view(0L)
                         .commentNum(0L)
                         .voteNum(0L)
+                        .summary(null)
                         .build();
 
                 newsToSave.add(news);
