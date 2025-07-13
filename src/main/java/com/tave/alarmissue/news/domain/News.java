@@ -60,6 +60,9 @@ public class News {
     @Column
     private Long voteNum;
 
+    @Column
+    private String summary;
+
     @Builder
     public News(String title,
                 String url,
@@ -71,7 +74,8 @@ public class News {
                 Double sentiment,
                 Long view,
                 Long commentNum,
-                Long voteNum) {
+                Long voteNum,
+                String summary) {
         this.title = title;
         this.url = url;
         this.imageUrl = imageUrl;
@@ -83,6 +87,7 @@ public class News {
         this.view = view;
         this.commentNum = commentNum;
         this.voteNum = voteNum;
+        this.summary = summary;
     }
 
     public void incrementView(){
