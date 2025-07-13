@@ -6,6 +6,9 @@ import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,9 +20,9 @@ public class Post extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
 
-
     @Column(nullable = false, length = 100)
     private String postTitle;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String postContent;
 
@@ -39,13 +42,24 @@ public class Post extends BaseTimeEntity {
     @Column
     private Long viewCount ;
 
+    @Column
+    private Long commentCount ;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostComment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostReply> replies = new ArrayList<>();
 
     @Builder
-    public Post(String postTitle, String postContent, Long likeCount, String articleUrl, Thema thema, UserEntity user, boolean hasVote, Long viewCount) {
+    public Post(String postTitle, String postContent, Long likeCount, String articleUrl, Thema thema, UserEntity user, boolean hasVote, Long viewCount,Long commentCount) {
         this.postTitle = postTitle;
         this.postContent = postContent;
         this.likeCount = likeCount;
@@ -54,6 +68,7 @@ public class Post extends BaseTimeEntity {
         this.user = user;
         this.hasVote = hasVote;
         this.viewCount = viewCount;
+        this.commentCount = commentCount;
     }
 
     public void Update(String postTitle,String postContent, String articleUrl,Thema thema, boolean hasVote)

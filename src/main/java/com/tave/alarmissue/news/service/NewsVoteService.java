@@ -9,7 +9,6 @@ import com.tave.alarmissue.news.dto.response.NewsVoteResponseDto;
 import com.tave.alarmissue.news.repository.NewsVoteRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.news.exceptions.NewsVoteException;
-import com.tave.alarmissue.post.exception.VoteException;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

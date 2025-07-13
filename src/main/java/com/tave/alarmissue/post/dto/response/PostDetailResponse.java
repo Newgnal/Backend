@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Builder
-public class PostDetailResponseDto {
-    private PostResponseDto post;
-    private List<CommentResponseDto> comments;
+public class PostDetailResponse {
+    private PostResponse post;
+    private List<CommentResponse> comments;
 }

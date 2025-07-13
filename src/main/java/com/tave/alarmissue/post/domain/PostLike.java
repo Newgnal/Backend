@@ -1,5 +1,6 @@
 package com.tave.alarmissue.post.domain;
 
+import com.tave.alarmissue.post.domain.enums.TargetType;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,37 +14,42 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "likes")
-public class Like {
+public class PostLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long LikeId;
+
+    @Column
+    private boolean liked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id", nullable = true)
     private Post post;
-
-    @JoinColumn
-    private boolean liked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = true)
-    private Comment comment;
+    private PostComment comment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reply_id", nullable = true)
+    private PostReply postReply;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LikeType likeType;
+    private TargetType targetType;
 
     @Builder
-    public Like( UserEntity user, Post post,Comment comment, LikeType likeType,boolean liked) {
+    public PostLike(UserEntity user, Post post, PostComment postComment, PostReply reply,TargetType targetType , boolean liked) {
         this.user = user;
         this.post = post;
-        this.comment = comment;
-        this.likeType = likeType;
+        this.comment = postComment;
+        this.postReply = reply;
+        this.targetType = targetType;
         this.liked = liked;
     }
 }

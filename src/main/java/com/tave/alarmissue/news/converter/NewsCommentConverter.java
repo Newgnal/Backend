@@ -3,7 +3,7 @@ package com.tave.alarmissue.news.converter;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
-import com.tave.alarmissue.news.dto.request.NewsCommentCreateRequestDto;
+import com.tave.alarmissue.news.dto.request.NewsCommentRequestDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.util.TimeAgoUtil;
@@ -26,7 +26,7 @@ public class NewsCommentConverter {
                 .build();
     }
 
-    public NewsComment toComment(NewsCommentCreateRequestDto dto, UserEntity user, News news, NewsVoteType voteType) {
+    public NewsComment toComment(NewsCommentRequestDto dto, UserEntity user, News news, NewsVoteType voteType) {
         return NewsComment.builder()
                 .comment(dto.getComment())
                 .user(user)

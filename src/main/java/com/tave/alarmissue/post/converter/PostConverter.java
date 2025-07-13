@@ -1,27 +1,28 @@
 package com.tave.alarmissue.post.converter;
 
-import com.tave.alarmissue.post.domain.Comment;
 import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.post.dto.request.PostCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.PostDetailResponseDto;
-import com.tave.alarmissue.post.dto.response.PostResponseDto;
+import com.tave.alarmissue.post.domain.PostComment;
+import com.tave.alarmissue.post.domain.PostReply;
+import com.tave.alarmissue.post.dto.request.PostCreateRequest;
+import com.tave.alarmissue.post.dto.response.CommentResponse;
+import com.tave.alarmissue.post.dto.response.PostDetailResponse;
+import com.tave.alarmissue.post.dto.response.PostResponse;
+import com.tave.alarmissue.post.dto.response.ReplyResponse;
 import com.tave.alarmissue.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-import com.tave.alarmissue.post.dto.response.CommentResponseDto;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class
 PostConverter {
 
-    private final CommentConverter commentConverter;
+    private final PostCommentConverter postCommentConverter;
 
-    public static PostResponseDto toPostResponseDto(Post post) {
-        return PostResponseDto.builder()
+    public static PostResponse toPostResponseDto(Post post) {
+        return PostResponse.builder()
                 .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
@@ -33,22 +34,23 @@ PostConverter {
                 .updatedAt(post.getUpdatedAt())
                 .hasVote(post.getHasVote())
                 .viewCount(post.getViewCount())
+                .commentCount(post.getCommentCount())
                 .build();
     }
+    //게시글 상세 조회
+    public static PostDetailResponse toPostDetailResponseDto(Post post, List<PostComment> comments) {
+        PostResponse postResponseDto = toPostResponseDto(post);
+        
+        List<CommentResponse> commentResponseDto = PostCommentConverter.toCommentResponseDtos(comments);
 
-    public static PostDetailResponseDto toPostDetailResponseDto(Post post, List<Comment> comments) {
-        PostResponseDto postResponseDto = toPostResponseDto(post);
-
-        List<CommentResponseDto> commentResponseDto = CommentConverter.toCommentResponseDtos(comments);
-
-        return PostDetailResponseDto.builder()
+        return PostDetailResponse.builder()
                 .post(postResponseDto)
                 .comments(commentResponseDto)
                 .build();
     }
 
-    public static Page<PostResponseDto> toPostResponseDtos(Page<Post> posts) {
-        return posts.map(post -> PostResponseDto.builder()
+    public static Page<PostResponse> toPostResponseDtos(Page<Post> posts) {
+        return posts.map(post -> PostResponse.builder()
                 .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
@@ -60,11 +62,12 @@ PostConverter {
                 .updatedAt(post.getUpdatedAt())
                 .hasVote(post.getHasVote())
                 .viewCount(post.getViewCount())
+                .commentCount(post.getCommentCount())
                 .build()
         );
     }
 
-    public Post toPost(PostCreateRequestDto dto, UserEntity user) {
+    public Post toPost(PostCreateRequest dto, UserEntity user) {
         return Post.builder()
                 .postTitle(dto.getPostTitle())
                 .postContent(dto.getPostContent())
@@ -73,6 +76,7 @@ PostConverter {
                 .hasVote(dto.isHasVote())
                 .likeCount(0L)
                 .viewCount(0L)
+                .commentCount(0L)
                 .user(user)
                 .build();
     }

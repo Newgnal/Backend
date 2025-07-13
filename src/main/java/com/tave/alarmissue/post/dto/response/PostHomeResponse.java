@@ -7,5 +7,5 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class PostHomeResponseDto {
+public class PostHomeResponse {
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @AllArgsConstructor
-public class PostResponseDto {
+public class PostResponse {
     private Long postId;
     private String postTitle;
     private String postContent;
@@ -23,5 +23,5 @@ public class PostResponseDto {
     private LocalDateTime updatedAt;
     private boolean hasVote;
     private Long viewCount;
-
+    private Long commentCount;
 }

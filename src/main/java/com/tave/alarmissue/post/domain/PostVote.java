@@ -1,5 +1,6 @@
 package com.tave.alarmissue.post.domain;
 
+import com.tave.alarmissue.post.domain.enums.VoteType;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +9,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @Builder
-public class Vote {
+public class PostVote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +29,7 @@ public class Vote {
     private VoteType voteType;
 
     @Builder
-    public Vote(Long id, UserEntity user, Post post, VoteType voteType) {
+    public PostVote(Long id, UserEntity user, Post post, VoteType voteType) {
         this.id = id;
         this.user = user;
         this.post = post;
