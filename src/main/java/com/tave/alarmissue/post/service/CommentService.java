@@ -61,7 +61,7 @@ public class CommentService {
 
         PostComment saved = commentRepository.save(postComment);
         postRepository.incrementCommentCount(postId); //댓글 갯수 증가
-        return PostCommentConverter.toCommentResponseDto(saved);
+        return PostCommentConverter.toCommentResponseDto(saved,null);
     }
 
 

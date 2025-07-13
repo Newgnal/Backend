@@ -38,14 +38,12 @@ PostConverter {
                 .build();
     }
     //게시글 상세 조회
-    public static PostDetailResponse toPostDetailResponseDto(Post post, List<PostComment> comments) {
+    public static PostDetailResponse toPostDetailResponseDto(Post post, List<CommentResponse> comments) {
         PostResponse postResponseDto = toPostResponseDto(post);
-        
-        List<CommentResponse> commentResponseDto = PostCommentConverter.toCommentResponseDtos(comments);
 
         return PostDetailResponse.builder()
                 .post(postResponseDto)
-                .comments(commentResponseDto)
+                .comments(comments)
                 .build();
     }
 

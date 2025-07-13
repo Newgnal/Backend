@@ -1,10 +1,12 @@
 package com.tave.alarmissue.post.service;
 
 import com.tave.alarmissue.news.domain.enums.Thema;
+import com.tave.alarmissue.post.converter.PostCommentConverter;
 import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.domain.PostReply;
 import com.tave.alarmissue.post.dto.request.PostCreateRequest;
 import com.tave.alarmissue.post.dto.request.PostUpdateRequest;
+import com.tave.alarmissue.post.dto.response.CommentResponse;
 import com.tave.alarmissue.post.dto.response.PostDetailResponse;
 import com.tave.alarmissue.post.dto.response.PostResponse;
 import com.tave.alarmissue.post.repository.*;
@@ -96,10 +98,21 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(()-> new PostException(POST_ID_NOT_FOUND,"postId:"+ postId));
 
+        List<PostReply> replies = replyRepository.findAllByPost(post);
+        List<PostComment> comments = commentRepository.findAllByPost(post);
+
+        List<CommentResponse> commentResponses = comments.stream()
+                .map(comment -> {
+                    List<PostReply> repliesForComment = replies.stream()
+                            .filter(reply -> reply.getPostComment().getCommentId().equals(comment.getCommentId()))
+                            .toList();
+
+                    return PostCommentConverter.toCommentResponseDto(comment, repliesForComment);
+                })
+                .toList();
 
         postRepository.incrementViewCount(postId); //조회수 증가
-        List<PostComment> comments = commentRepository.findAllByPost(post);
-        return PostConverter.toPostDetailResponseDto(post,comments);
+        return PostConverter.toPostDetailResponseDto(post,commentResponses);
 
     }
 
