@@ -1,13 +1,14 @@
 package com.tave.alarmissue.post.service;
 
-import com.tave.alarmissue.post.domain.Comment;
+import com.tave.alarmissue.post.domain.PostComment;
+import com.tave.alarmissue.post.domain.PostReport;
 import com.tave.alarmissue.post.repository.CommentRepository;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.repository.PostRepository;
-import com.tave.alarmissue.post.converter.ReportConverter;
-import com.tave.alarmissue.post.domain.Report;
+import com.tave.alarmissue.post.converter.PostReportConverter;
+import com.tave.alarmissue.post.domain.PostReport;
 import com.tave.alarmissue.post.dto.request.ReportCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.ReportResponseDto;
+import com.tave.alarmissue.post.dto.response.ReportResponse;
 import com.tave.alarmissue.post.exception.ReportException;
 import com.tave.alarmissue.post.repository.ReportRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
@@ -30,11 +31,11 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final ReportConverter reportConverter;
+    private final PostReportConverter postReportConverter;
     private final CommentRepository commentRepository;
 
     @Transactional
-    public ReportResponseDto createPostReport(ReportCreateRequestDto dto, Long userId, Long postId) {
+    public ReportResponse createPostReport(ReportCreateRequestDto dto, Long userId, Long postId) {
 
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(() -> new ReportException(USER_ID_NOT_FOUND, "유저가 없습니다."));
@@ -48,22 +49,22 @@ public class ReportService {
         }
 
         //이미 신고가 있을경우
-        Optional<Report> existingReport = reportRepository.findPostReport(user, post);
+        Optional<PostReport> existingReport = reportRepository.findPostReport(user, post);
         if(existingReport.isPresent()) {
             throw new ReportException(ALREADY_POST_REPORTED);
         }
-        Report report = reportConverter.toPostReport(dto, user, post);
-        Report saved = reportRepository.save(report);
-        return ReportConverter.toReportResponseDto(saved);
+        PostReport report = postReportConverter.toPostReport(dto, user, post);
+        PostReport saved = reportRepository.save(report);
+        return PostReportConverter.toReportResponseDto(saved);
     }
-
+    //수정해야함
     @Transactional
-    public ReportResponseDto createCommentReport(ReportCreateRequestDto dto, Long userId,Long commentId) {
+    public ReportResponse createCommentReport(ReportCreateRequestDto dto, Long userId, Long commentId) {
 
         UserEntity user = userRepository.findById(userId).
                 orElseThrow(() -> new ReportException(USER_ID_NOT_FOUND, "유저가 없습니다."));
 
-        Comment comment = commentRepository.findById(commentId)
+        PostComment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ReportException(COMMENT_ID_NOT_FOUND, "commentId:" + commentId));
 
         Post post = postRepository.findById(comment.getPost().getPostId())
@@ -78,13 +79,15 @@ public class ReportService {
             throw new ReportException(COMMENT_REPORT_FORBIDDEN, " userId: " + user.getId() + " comment 의 userId: " + comment.getUser().getId());
         }
         //신고가 있는경우
-        Optional<Report> existingReport = reportRepository.findCommentReport(user, comment);
+        Optional<PostReport> existingReport = reportRepository.findCommentReport(user, comment);
         if(existingReport.isPresent()) {
             throw new ReportException(ALREADY_POST_REPORTED);
         }
 
-        Report report = reportConverter.toCommentReport(dto, user, post, comment);
-        Report saved = reportRepository.save(report);
-        return ReportConverter.toReportResponseDto(saved);
+        PostReport report = postReportConverter.toCommentReport(dto, user, comment);
+        PostReport saved = reportRepository.save(report);
+        return PostReportConverter.toReportResponseDto(saved);
     }
+
+
 }

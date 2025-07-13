@@ -2,7 +2,7 @@ package com.tave.alarmissue.post.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.post.dto.request.ReportCreateRequestDto;
-import com.tave.alarmissue.post.dto.response.ReportResponseDto;
+import com.tave.alarmissue.post.dto.response.ReportResponse;
 import com.tave.alarmissue.post.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,18 +17,18 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping("/{postId}/reports")
-    public ResponseEntity<ReportResponseDto> createPostReport(@RequestBody ReportCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long postId) {
+    public ResponseEntity<ReportResponse> createPostReport(@RequestBody ReportCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long postId) {
         Long userId = principal.getUserId();
 
-        ReportResponseDto responseDto = reportService.createPostReport(dto,userId,postId);
+        ReportResponse responseDto = reportService.createPostReport(dto,userId,postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
     }
     @PostMapping("comments/{commentId}/reports")
-    public ResponseEntity<ReportResponseDto> createCommentReport(@RequestBody ReportCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long commentId) {
+    public ResponseEntity<ReportResponse> createCommentReport(@RequestBody ReportCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long commentId) {
         Long userId = principal.getUserId();
 
-        ReportResponseDto responseDto = reportService.createCommentReport(dto,userId,commentId);
+        ReportResponse responseDto = reportService.createCommentReport(dto,userId,commentId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
     }

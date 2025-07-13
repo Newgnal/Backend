@@ -1,6 +1,6 @@
 package com.tave.alarmissue.post.domain;
 
-import com.tave.alarmissue.post.domain.Comment;
+import com.tave.alarmissue.post.domain.enums.ReportType;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Report {
+public class PostReport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,22 +24,28 @@ public class Report {
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id", nullable = true)
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = true)
-    private Comment comment;
+    private PostComment postComment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reply_id", nullable = true)
+    private PostReply postReply;
+
 
     @JoinColumn(nullable = false)
     private ReportType reportType;
 
     @Builder
-    public Report(boolean reported, UserEntity user, Post post, Comment comment, ReportType reportType) {
+    public PostReport(boolean reported, UserEntity user, Post post, PostComment postComment,PostReply postReply, ReportType reportType) {
         this.reported = reported;
         this.user = user;
         this.post = post;
-        this.comment = comment;
+        this.postComment = postComment;
+        this.postReply = postReply;
         this.reportType = reportType;
     }
 }

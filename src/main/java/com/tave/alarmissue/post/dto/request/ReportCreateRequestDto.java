@@ -1,6 +1,6 @@
 package com.tave.alarmissue.post.dto.request;
 
-import com.tave.alarmissue.post.domain.ReportType;
+import com.tave.alarmissue.post.domain.enums.ReportType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
