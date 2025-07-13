@@ -1,6 +1,6 @@
 package com.tave.alarmissue.post.domain;
 
-import com.tave.alarmissue.post.domain.enums.ReportType;
+import com.tave.alarmissue.post.domain.enums.TargetType;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,15 +37,15 @@ public class PostReport {
 
 
     @JoinColumn(nullable = false)
-    private ReportType reportType;
+    private TargetType targetType;
 
     @Builder
-    public PostReport(boolean reported, UserEntity user, Post post, PostComment postComment,PostReply postReply, ReportType reportType) {
+    public PostReport(boolean reported, UserEntity user, Post post, PostComment postComment,PostReply postReply, TargetType targetType) {
         this.reported = reported;
         this.user = user;
         this.post = post;
         this.postComment = postComment;
         this.postReply = postReply;
-        this.reportType = reportType;
+        this.targetType = targetType;
     }
 }

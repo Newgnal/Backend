@@ -5,7 +5,7 @@ import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.domain.PostReply;
 import com.tave.alarmissue.post.domain.PostReport;
-import com.tave.alarmissue.post.dto.request.ReportCreateRequestDto;
+import com.tave.alarmissue.post.domain.enums.TargetType;
 import com.tave.alarmissue.post.dto.response.ReportResponse;
 import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.stereotype.Component;
@@ -16,33 +16,33 @@ public class PostReportConverter {
     public static ReportResponse toReportResponseDto(PostReport postReport) {
         return ReportResponse.builder().
                 reportId(postReport.getReportId()).
-                reported(postReport.isReported()).
-                reportType(postReport.getReportType()).
+                reported(true).
+                targetType(postReport.getTargetType()).
                 build();
     }
 
-    public PostReport toPostReport(ReportCreateRequestDto dto, UserEntity user, Post post) {
+    public PostReport toPostReport(UserEntity user, Post post) {
         return PostReport.builder().
-                reported(dto.isReported()).
-                reportType(dto.getReportType()).
+                reported(true).
+                targetType(TargetType.POST).
                 user(user).
                 post(post).
                 build();
     }
 
-    public PostReport toCommentReport(ReportCreateRequestDto dto, UserEntity user, PostComment postComment) {
+    public PostReport toCommentReport( UserEntity user, PostComment postComment) {
         return PostReport.builder().
-                reported(dto.isReported()).
-                reportType(dto.getReportType()).
+                reported(true).
+                targetType(TargetType.COMMENT).
                 user(user).
                 postComment(postComment).
                 build();
     }
 
-    public PostReport toReplyReport(ReportCreateRequestDto dto, UserEntity user, PostReply postReply) {
+    public PostReport toReplyReport(UserEntity user, PostReply postReply) {
         return PostReport.builder().
-                reported(dto.isReported()).
-                reportType(dto.getReportType()).
+                reported(true).
+                targetType(TargetType.REPLY).
                 user(user).
                 postReply(postReply).
                 build();

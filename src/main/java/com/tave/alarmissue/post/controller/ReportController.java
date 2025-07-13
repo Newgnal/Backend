@@ -1,7 +1,6 @@
 package com.tave.alarmissue.post.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
-import com.tave.alarmissue.post.dto.request.ReportCreateRequestDto;
 import com.tave.alarmissue.post.dto.response.ReportResponse;
 import com.tave.alarmissue.post.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -12,25 +11,36 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/posts/v1")
+@RequestMapping("/post/v1")
 public class ReportController {
     private final ReportService reportService;
 
-    @PostMapping("/{postId}/reports")
-    public ResponseEntity<ReportResponse> createPostReport(@RequestBody ReportCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long postId) {
+    @PatchMapping("/{postId}/report")
+    public ResponseEntity<ReportResponse> createPostReport(@AuthenticationPrincipal PrincipalUserDetails principal,
+                                                           @PathVariable Long postId) {
         Long userId = principal.getUserId();
 
-        ReportResponse responseDto = reportService.createPostReport(dto,userId,postId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        ReportResponse responseDto = reportService.createPostReport(userId,postId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
-    @PostMapping("comments/{commentId}/reports")
-    public ResponseEntity<ReportResponse> createCommentReport(@RequestBody ReportCreateRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal, @PathVariable Long commentId) {
+    @PatchMapping("comment/{commentId}/report")
+    public ResponseEntity<ReportResponse> createCommentReport( @AuthenticationPrincipal PrincipalUserDetails principal,
+                                                               @PathVariable Long commentId) {
         Long userId = principal.getUserId();
 
-        ReportResponse responseDto = reportService.createCommentReport(dto,userId,commentId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        ReportResponse responseDto = reportService.createCommentReport(userId,commentId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
+    @PatchMapping("reply/{replyId}/report")
+    public ResponseEntity<ReportResponse> createReplyReport( @AuthenticationPrincipal PrincipalUserDetails principal,
+                                                               @PathVariable Long replyId){
 
+        Long userId = principal.getUserId();
+
+        ReportResponse responseDto = reportService.createReplyReport(userId,replyId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+
+    }
 }

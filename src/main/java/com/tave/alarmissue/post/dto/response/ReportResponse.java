@@ -1,6 +1,6 @@
 package com.tave.alarmissue.post.dto.response;
 
-import com.tave.alarmissue.post.domain.enums.ReportType;
+import com.tave.alarmissue.post.domain.enums.TargetType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,5 +11,5 @@ import lombok.Getter;
 public class ReportResponse {
     private Long reportId;
     private boolean reported;
-    private ReportType reportType;
+    private TargetType targetType;
 }

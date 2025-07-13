@@ -52,7 +52,7 @@ public class CommentController {
     }
 
     // 대댓글 삭제
-    @DeleteMapping("{replyId}")
+    @DeleteMapping("reply/{replyId}")
     public ResponseEntity<Void> deleteReply(@PathVariable Long replyId ,
                                             @AuthenticationPrincipal PrincipalUserDetails principal){
 
