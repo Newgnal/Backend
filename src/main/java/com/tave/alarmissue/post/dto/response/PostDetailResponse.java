@@ -11,5 +11,6 @@ import java.util.List;
 @Builder
 public class PostDetailResponse {
     private PostResponse post;
+    private VoteResponse vote;
     private List<CommentResponse> comments;
 }

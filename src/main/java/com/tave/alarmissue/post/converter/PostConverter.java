@@ -4,10 +4,7 @@ import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.domain.PostReply;
 import com.tave.alarmissue.post.dto.request.PostCreateRequest;
-import com.tave.alarmissue.post.dto.response.CommentResponse;
-import com.tave.alarmissue.post.dto.response.PostDetailResponse;
-import com.tave.alarmissue.post.dto.response.PostResponse;
-import com.tave.alarmissue.post.dto.response.ReplyResponse;
+import com.tave.alarmissue.post.dto.response.*;
 import com.tave.alarmissue.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,11 +35,12 @@ PostConverter {
                 .build();
     }
     //게시글 상세 조회
-    public static PostDetailResponse toPostDetailResponseDto(Post post, List<CommentResponse> comments) {
+    public static PostDetailResponse toPostDetailResponseDto(Post post, VoteResponse vote, List<CommentResponse> comments) {
         PostResponse postResponseDto = toPostResponseDto(post);
 
         return PostDetailResponse.builder()
                 .post(postResponseDto)
+                .vote(vote)
                 .comments(comments)
                 .build();
     }

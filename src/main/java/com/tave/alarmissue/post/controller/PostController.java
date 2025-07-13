@@ -31,7 +31,8 @@ public class PostController {
 
     //게시글 작성
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(@RequestBody PostCreateRequest dto, @AuthenticationPrincipal PrincipalUserDetails principal) {
+    public ResponseEntity<PostResponse> createPost(@RequestBody PostCreateRequest dto,
+                                                   @AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
 
         PostResponse responseDto = postService.createPost(dto, userId);
@@ -41,7 +42,9 @@ public class PostController {
 
     //게시글 수정
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest dto, @AuthenticationPrincipal PrincipalUserDetails principal) {
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId,
+                                                   @RequestBody PostUpdateRequest dto,
+                                                   @AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
         PostResponse responseDto = postService.updatePost(postId, dto, userId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
@@ -50,7 +53,8 @@ public class PostController {
 
     //게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId, @AuthenticationPrincipal PrincipalUserDetails principal) {
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId,
+                                           @AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
         postService.deletePost(postId, userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -58,8 +62,10 @@ public class PostController {
 
     //게시글 상세조회
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable Long postId) {
-        PostDetailResponse responseDto = postService.getPostDetail(postId);
+    public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable Long postId,
+                                                            @AuthenticationPrincipal PrincipalUserDetails principal) {
+        Long userId = principal.getUserId();
+        PostDetailResponse responseDto = postService.getPostDetail(postId,userId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
