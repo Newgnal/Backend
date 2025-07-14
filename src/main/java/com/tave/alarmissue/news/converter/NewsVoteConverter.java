@@ -4,6 +4,7 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.news.dto.response.NewsVoteCountResponse;
 import com.tave.alarmissue.news.dto.response.NewsVoteResponseDto;
+import org.springframework.stereotype.Component;
 
 
 import java.util.List;
