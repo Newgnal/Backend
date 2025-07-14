@@ -46,8 +46,9 @@ public class ReportService {
         validateNotSelfReport(user.getId(), post.getUser().getId());
 
         //이미 신고가 있을경우
-        Optional<PostReport> existingReport = reportRepository.findPostReport(user, post);
-        validateNotAlreadyReported(existingReport);
+        boolean alreadyReported = reportRepository.findPostReport(user, post).
+                isPresent();
+        validateNotAlreadyReported(alreadyReported);
 
             PostReport report = postReportConverter.toPostReport(user, post);
             PostReport saved = reportRepository.save(report);
@@ -64,8 +65,9 @@ public class ReportService {
         validateNotSelfReport(user.getId(), postComment.getUser().getId());
 
         //신고가 있는경우
-        Optional<PostReport> existingReport = reportRepository.findCommentReport(user, postComment);
-        validateNotAlreadyReported(existingReport);
+        boolean alreadyReported = reportRepository.findCommentReport(user, postComment).
+                isPresent();
+        validateNotAlreadyReported(alreadyReported);
 
             PostReport report = postReportConverter.toCommentReport(user, postComment);
             PostReport saved = reportRepository.save(report);
@@ -79,8 +81,9 @@ public class ReportService {
 
         validateNotSelfReport(user.getId(), postReply.getUser().getId());
 
-        Optional<PostReport> existingReport = reportRepository.findReplyReport(user,postReply);
-        validateNotAlreadyReported(existingReport);
+        boolean alreadyReported = reportRepository.findReplyReport(user, postReply)
+                .isPresent();
+        validateNotAlreadyReported(alreadyReported);
 
             PostReport report = postReportConverter.toReplyReport(user, postReply);
             PostReport saved = reportRepository.save(report);
@@ -112,8 +115,8 @@ public class ReportService {
                 orElseThrow(() -> new PostException(REPLY_ID_NOT_FOUND," replyId: " + replyId));
     }
     //이미 신고되었을때
-    private void validateNotAlreadyReported(Optional<?> existingReport) {
-        if (existingReport.isPresent()) {
+    private void validateNotAlreadyReported(boolean alreadyReported) {
+        if (alreadyReported) {
             throw new PostException(ALREADY_REPORTED);
         }
     }
