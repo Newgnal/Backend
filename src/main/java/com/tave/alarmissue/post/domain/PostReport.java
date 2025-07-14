@@ -3,25 +3,21 @@ package com.tave.alarmissue.post.domain;
 import com.tave.alarmissue.post.domain.enums.TargetType;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "likes")
-public class PostLike {
+@Builder
+public class PostReport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long LikeId;
+    private Long reportId;
 
-    @Column
-    private boolean liked;
+    @JoinColumn
+    private boolean reported=false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -33,23 +29,23 @@ public class PostLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = true)
-    private PostComment comment;
+    private PostComment postComment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_id", nullable = true)
     private PostReply postReply;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+
+    @JoinColumn(nullable = false)
     private TargetType targetType;
 
     @Builder
-    public PostLike(UserEntity user, Post post, PostComment postComment, PostReply reply,TargetType targetType , boolean liked) {
+    public PostReport(boolean reported, UserEntity user, Post post, PostComment postComment,PostReply postReply, TargetType targetType) {
+        this.reported = reported;
         this.user = user;
         this.post = post;
-        this.comment = postComment;
-        this.postReply = reply;
+        this.postComment = postComment;
+        this.postReply = postReply;
         this.targetType = targetType;
-        this.liked = liked;
     }
 }

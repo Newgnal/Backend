@@ -1,7 +1,7 @@
 package com.tave.alarmissue.post.service;
 
 import com.tave.alarmissue.post.domain.*;
-import com.tave.alarmissue.post.domain.enums.LikeType;
+import com.tave.alarmissue.post.domain.enums.TargetType;
 import com.tave.alarmissue.post.repository.CommentRepository;
 import com.tave.alarmissue.post.converter.PostLikeConverter;
 import com.tave.alarmissue.post.dto.response.LikeResponse;
@@ -48,7 +48,7 @@ public class LikeService {
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             postRepository.decrementLikeCount(postId);
 
-            return new LikeResponse(LikeId,false, LikeType.POST);
+            return new LikeResponse(LikeId,false, TargetType.POST);
         }
     else {
             // 없으면 좋아요 생성
@@ -73,7 +73,7 @@ public class LikeService {
             Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             commentRepository.decrementLikeCount(commentId);
-            return new LikeResponse(LikeId,false,LikeType.COMMENT);
+            return new LikeResponse(LikeId,false,TargetType.COMMENT);
         }
 
         // 없으면 좋아요 생성
@@ -99,7 +99,7 @@ public class LikeService {
             Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
             replyRepository.decrementLikeCount(replyId);
-            return new LikeResponse(LikeId,false,LikeType.REPLY);
+            return new LikeResponse(LikeId,false,TargetType.REPLY);
         }
         // 없으면 좋아요 생성
         else {

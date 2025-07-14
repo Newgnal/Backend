@@ -29,7 +29,7 @@ public class LikeController {
 
     }
 
-    @PatchMapping("/{commentId}/likes")
+    @PatchMapping("comment/{commentId}/likes")
     public ResponseEntity<LikeResponse> commentLike(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                     @PathVariable Long commentId) {
 
@@ -39,7 +39,7 @@ public class LikeController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    @PatchMapping("/{replyId}/likes")
+    @PatchMapping("reply/{replyId}/likes")
     public ResponseEntity<LikeResponse> replyLike(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                   @PathVariable Long replyId) {
 
