@@ -19,11 +19,6 @@ import java.util.Optional;
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
 
-//    List<News> findAllByOrderByDateDesc();
-//    List<News> findAllByOrderByViewDesc();
-//    List<News> findByThemaOrderByDateDesc(Thema thema);
-//    List<News> findByThemaOrderByViewDesc(Thema thema);
-
     @Override
     List<News> findAll();
 

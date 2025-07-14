@@ -10,16 +10,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/news/v1")
 public class NewsVoteController {
+
     private final NewsVoteService newsvoteService;
 
-    @PostMapping("/news/v1/vote") //투표
+    //뉴스 투표
+    @PostMapping("/vote")
     public ResponseEntity<NewsVoteResponseDto> createVoteAndGetResult(@RequestBody NewsVoteRequestDto dto,
-                                                                                      @AuthenticationPrincipal PrincipalUserDetails principal) {
+                                                                      @AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
         NewsVoteResponseDto newsVoteResponseDto = newsvoteService.createVoteAndGetResult(dto, userId);
 
