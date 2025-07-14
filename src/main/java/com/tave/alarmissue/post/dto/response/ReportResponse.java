@@ -5,12 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-
 @Getter
 @Builder
 @AllArgsConstructor
-public class LikeResponse {
-    private Long likeId;
-    private boolean liked;
+public class ReportResponse {
+    private Long reportId;
+    private boolean reported;
     private TargetType targetType;
 }

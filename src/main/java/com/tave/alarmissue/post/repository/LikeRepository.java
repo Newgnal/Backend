@@ -12,11 +12,11 @@ import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<PostLike, Long> {
 
-    @Query("SELECT l FROM PostLike l WHERE l.user = :user AND l.post = :post AND l.comment IS NULL AND l.postReply IS NULL")
+    @Query("SELECT l FROM PostLike l WHERE l.user = :user AND l.post = :post")
     Optional<PostLike> findPostLike(@Param("user") UserEntity user, @Param("post") Post post);
 
-    @Query("SELECT l FROM PostLike l WHERE l.user = :user AND l.comment = :comment AND l.postReply IS NULL")
-    Optional<PostLike> findCommentLike(@Param("user") UserEntity user, @Param("comment") PostComment postComment);
+    @Query("SELECT l FROM PostLike l WHERE l.user = :user AND l.comment = :comment")
+    Optional<PostLike> findCommentLike(@Param("user") UserEntity user, @Param("comment") PostComment comment);
 
     @Query("SELECT l FROM PostLike l WHERE l.user = :user AND l.postReply = :reply")
     Optional<PostLike> findReplyLike(@Param("user")UserEntity user, @Param("reply") PostReply reply);
