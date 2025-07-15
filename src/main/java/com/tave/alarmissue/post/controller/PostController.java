@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/posts/v1")
+@RequestMapping("/post/v1")
 public class PostController {
 
     private final PostService postService;
@@ -39,7 +39,7 @@ public class PostController {
         Long userId = principal.getUserId();
 
         PostResponse responseDto = postService.createPost(dto, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
 
@@ -94,7 +94,8 @@ public class PostController {
     public ResponseEntity<Page<PostResponse>> getHotPost(
             @ParameterObject
             @PageableDefault(size = 10, sort = "viewCount", direction = Sort.Direction.DESC)
-            Pageable pageable) {
+            Pageable pageable
+    ) {
         Page<PostResponse> responseDto = postService.getHotPost(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
@@ -126,7 +127,7 @@ public class PostController {
     }
 
     @GetMapping("/home")
-    @Operation(summary = "게시글 홈 화면 조회", description = "인기 테마3개, 인기글 9개(조회수순), 최신 글 4개를 조회합니다")
+    @Operation(summary = "게시글 홈 화면 조회", description = "인기 테마3개(게시글 순), 인기글 9개(조회수순), 최신 글 4개를 조회합니다")
     public ResponseEntity<PostHomeResponse> getPostHome(){
         PostHomeResponse responseDto = postService.getPostHome();
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);

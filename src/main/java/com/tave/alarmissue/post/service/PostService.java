@@ -41,6 +41,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
 
+
     @Transactional
     public PostResponse createPost(PostCreateRequest dto, Long userId) {
         UserEntity user = getUserById(userId);
@@ -94,20 +95,13 @@ public class PostService {
 
         List<PostReply> replies = replyRepository.findAllByPost(post);
         List<PostComment> comments = commentRepository.findAllByPost(post);
-        //사용자
 
-        List<CommentResponse> commentResponses = comments.stream()
-                .map(comment -> {
-                    List<PostReply> repliesForComment = replies.stream()
-                            .filter(reply -> reply.getPostComment().getCommentId().equals(comment.getCommentId()))
-                            .toList();
-
-                    return PostCommentConverter.toCommentResponseDto(comment, repliesForComment);
-                })
-                .toList();
+        //댓글과 대댓글을 정렬
+        List<CommentResponse> commentResponses = PostCommentConverter.toCommentResponseDtos(comments, replies);
 
         postRepository.incrementViewCount(postId); //조회수 증가
 
+        //투표가 없으면 null로 반환
         if(!post.getHasVote()){
             return PostConverter.toPostDetailResponseDto(post,null,commentResponses);
         }
@@ -118,7 +112,7 @@ public class PostService {
 
             List<VoteCountResponse> voteCounts = voteRepository.countVotesByType(post);
             VoteResponse voteResponse = PostVoteConverter.toVoteResponseDto(post, myVoteType, voteCounts);
-
+            //투표가 있으면 투표한 내용으로 반환
             return PostConverter.toPostDetailResponseDto(post, voteResponse, commentResponses);
         }
     }
@@ -150,13 +144,16 @@ public class PostService {
     //홈화면 조회
     public PostHomeResponse getPostHome() {
 
+        //인기테마 3개 가져오기
         List<ThemeCountResponse> topThemes = postRepository.findTop3Themes();
 
+        //인기 게시글 9개 가져오기
         List<PostResponse> hotPostResponse  = postRepository.findTop9ByOrderByViewCountDesc()
                 .stream()
                 .map(PostConverter::toPostHotResponseDto)
                 .toList();
 
+        //최근 게시글 4개 가져오기
         List<PostResponse> postResponse = postRepository.findTop4ByOrderByCreatedAtDesc()
                 .stream()
                 .map(PostConverter::toPostResponseDto)

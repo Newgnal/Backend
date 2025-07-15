@@ -32,8 +32,11 @@ PostConverter {
                 .commentCount(post.getCommentCount())
                 .build();
     }
+
     //게시글 상세 조회
-    public static PostDetailResponse toPostDetailResponseDto(Post post, VoteResponse vote, List<CommentResponse> comments) {
+    public static PostDetailResponse toPostDetailResponseDto(Post post,
+                                                             VoteResponse vote,
+                                                             List<CommentResponse> comments) {
         PostResponse postResponseDto = toPostResponseDto(post);
 
         return PostDetailResponse.builder()
@@ -44,15 +47,15 @@ PostConverter {
     }
     //홈화면 조회
     public static PostHomeResponse toPostHomeResponseDto(List<ThemeCountResponse> topThemes,
-   List<PostResponse> hotPostResponse,
- List<PostResponse> postResponse) {
+                                                         List<PostResponse> hotPostResponse,
+                                                         List<PostResponse> postResponse) {
         return PostHomeResponse.builder().
                 topThemes(topThemes).
                 hotPostResponse(hotPostResponse).
                 postResponse(postResponse).
                 build();
-
     }
+
 
     public static Page<PostResponse> toPostResponseDtos(Page<Post> posts) {
         return posts.map(post -> PostResponse.builder()
@@ -71,7 +74,7 @@ PostConverter {
                 .build()
         );
     }
-
+    //인기 게시글
     public static PostResponse toPostHotResponseDto(Post post){
         return PostResponse.builder()
                .postId(post.getPostId())
