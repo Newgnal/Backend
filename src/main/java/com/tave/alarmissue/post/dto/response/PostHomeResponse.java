@@ -1,8 +1,5 @@
 package com.tave.alarmissue.post.dto.response;
 
-import com.tave.alarmissue.news.domain.enums.Thema;
-import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.post.repository.ThemeCountProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
