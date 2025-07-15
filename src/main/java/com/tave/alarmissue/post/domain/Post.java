@@ -29,6 +29,7 @@ public class Post extends BaseTimeEntity {
     @Column
     private Long likeCount;
 
+
     @Column
     private String articleUrl; //기사 url
 
@@ -37,6 +38,12 @@ public class Post extends BaseTimeEntity {
 
     @Column
     private Boolean hasVote = false ;
+
+    @Column
+    private Long viewCount ;
+
+    @Column
+    private Long commentCount ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -52,7 +59,7 @@ public class Post extends BaseTimeEntity {
     private List<PostReply> replies = new ArrayList<>();
 
     @Builder
-    public Post(String postTitle, String postContent, Long likeCount, String articleUrl, Thema thema, UserEntity user, boolean hasVote) {
+    public Post(String postTitle, String postContent, Long likeCount, String articleUrl, Thema thema, UserEntity user, boolean hasVote, Long viewCount,Long commentCount) {
         this.postTitle = postTitle;
         this.postContent = postContent;
         this.likeCount = likeCount;
@@ -60,6 +67,8 @@ public class Post extends BaseTimeEntity {
         this.thema = thema;
         this.user = user;
         this.hasVote = hasVote;
+        this.viewCount = viewCount;
+        this.commentCount = commentCount;
     }
 
     public void Update(String postTitle,String postContent, String articleUrl,Thema thema, boolean hasVote)

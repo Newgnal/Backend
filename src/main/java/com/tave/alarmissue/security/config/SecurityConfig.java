@@ -40,7 +40,9 @@ public class SecurityConfig {
             "/newsroom/v1/popular-keywords",
             "/actuator/health",
             "/news/v1/**",
-            "/search/v1/**"
+            "/search/v1/**",
+            "/post/v1/detail/*",
+            "/post/v1/list/**"
     };
 
 

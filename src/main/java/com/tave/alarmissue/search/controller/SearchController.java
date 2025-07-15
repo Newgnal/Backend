@@ -5,6 +5,7 @@ import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.search.dto.SearchListResponse;
 import com.tave.alarmissue.search.dto.SearchResultResponse;
 import com.tave.alarmissue.search.service.SearchService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class SearchController {
 
     private final SearchService searchService;
 
+    @Operation(summary = "뉴스 검색")
     @GetMapping("")
     public ResponseEntity<SearchResultResponse> searchNews(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                            @RequestParam(value = "title", required = false) String title) {

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -17,4 +18,5 @@ public class CommentResponse {
     private String nickname;
     private LocalDateTime createdAt;
     private VoteType voteType;
+    private List<ReplyResponse> replies;
 }

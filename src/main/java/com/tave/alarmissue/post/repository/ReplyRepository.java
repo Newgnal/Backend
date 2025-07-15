@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ReplyRepository extends JpaRepository<PostReply, Long> {
 
@@ -19,4 +21,6 @@ public interface ReplyRepository extends JpaRepository<PostReply, Long> {
     @Modifying
     @Query("UPDATE PostReply c SET c.likeCount = c.likeCount - 1 WHERE c.replyId = :replyId AND c.likeCount > 0")
     void decrementLikeCount(@Param("replyId") Long replyId);
+
+    List<PostReply> findAllByPost(Post post);
 }
