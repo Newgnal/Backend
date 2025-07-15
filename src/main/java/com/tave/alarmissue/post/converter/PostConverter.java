@@ -99,4 +99,13 @@ PostConverter {
                 .user(user)
                 .build();
     }
+
+    public static PageResponse<PostResponse> toPageResponse(Page<PostResponse> postPage) {
+        return PageResponse.<PostResponse>builder()
+                .content(postPage.getContent())
+                .pageNumber(postPage.getNumber())
+                .pageSize(postPage.getSize())
+                .last(postPage.isLast())
+                .build();
+    }
 }

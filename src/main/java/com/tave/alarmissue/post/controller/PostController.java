@@ -2,11 +2,13 @@ package com.tave.alarmissue.post.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.news.domain.enums.Thema;
+import com.tave.alarmissue.post.converter.PostConverter;
 import com.tave.alarmissue.post.domain.enums.SortType;
 import com.tave.alarmissue.post.dto.request.PostCreateRequest;
 
 import com.tave.alarmissue.post.dto.request.PostUpdateRequest;
 
+import com.tave.alarmissue.post.dto.response.PageResponse;
 import com.tave.alarmissue.post.dto.response.PostDetailResponse;
 import com.tave.alarmissue.post.dto.response.PostHomeResponse;
 import com.tave.alarmissue.post.dto.response.PostResponse;
@@ -34,6 +36,7 @@ import java.util.function.Function;
 public class PostController {
 
     private final PostService postService;
+    private final PostConverter postConverter;
 
     //게시글 작성
     @PostMapping
@@ -82,28 +85,26 @@ public class PostController {
 
     //게시글 전체 조회
     @GetMapping
-    @Operation(summary = "게시글 전체조회(최신순)", description = "게시글을 전체 조회합니다(최신순)")
-    public ResponseEntity<Page<PostResponse>> getAllPost(
+    @Operation(summary = "게시글 전체조회", description = "게시글을 전체 조회합니다(최신순)")
+    public ResponseEntity<PageResponse<PostResponse>> getAllPost(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "LATEST") SortType sortType
     ) {
-        Pageable pageable = PageRequest.of(page, size, sortType.getSort());
-        Page<PostResponse> responseDto = postService.getAllPost(pageable);
-        return ResponseEntity.ok(responseDto);
+        return getSortedPosts(page, size, sortType, pageable -> postService.getAllPost(pageable));
     }
 
 
     //게시글 테마별 조회
     @GetMapping("/thema/{thema}")
     @Operation(summary = "게시글 테마 별 조회", description = "해당 테마의 게시글들을 조회합니다(최신순)")
-    public ResponseEntity<Page<PostResponse>> getPostByThema(
+    public ResponseEntity<PageResponse<PostResponse>> getPostByThema(
             @PathVariable Thema thema,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "LATEST") SortType sortType
     ) {
-        return getSortedPosts(page,size, sortType, sortedPageable -> postService.getPostByThema(thema, sortedPageable));
+        return getSortedPosts(page, size, sortType, pageable -> postService.getPostByThema(thema, pageable));
     }
 
 
@@ -118,16 +119,16 @@ public class PostController {
     private method 분리 (페이징)
      */
 
-    private ResponseEntity<Page<PostResponse>> getSortedPosts(
+    private ResponseEntity<PageResponse<PostResponse>> getSortedPosts(
             int page,
             int size,
             SortType sortType,
             Function<Pageable, Page<PostResponse>> pageFetcher
     ) {
         Pageable sortedPageable = PageRequest.of(page, size, sortType.getSort());
-
-        Page<PostResponse> pageResult = pageFetcher.apply(sortedPageable);
-        return ResponseEntity.ok(pageResult);
+        Page<PostResponse> postPage = pageFetcher.apply(sortedPageable);
+        PageResponse<PostResponse> responseDto = postConverter.toPageResponse(postPage);
+        return ResponseEntity.ok(responseDto);
     }
 
 }

@@ -141,6 +141,7 @@ public class PostService {
         Page<Post> posts = postRepository.findAllByThema(thema, pageable);
         return PostConverter.toPostResponseDtos(posts);
     }
+
     //홈화면 조회
     public PostHomeResponse getPostHome() {
 
@@ -168,6 +169,7 @@ public class PostService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "userId" + userId));
     }
+
     private Post getPostById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND," postId: " + postId));
