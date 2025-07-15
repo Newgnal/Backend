@@ -4,6 +4,7 @@ import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.post.dto.request.VoteRequest;
 import com.tave.alarmissue.post.dto.response.VoteResponse;
 import com.tave.alarmissue.post.service.VoteService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class VoteController {
 
     // 투표
     @PostMapping
+    @Operation(summary = "게시글 투표", description = "해당 게시글 투표입니다.")
     public ResponseEntity<VoteResponse> createVoteAndGetResult(@RequestBody VoteRequest dto,
                                                                @AuthenticationPrincipal PrincipalUserDetails principal) {
 

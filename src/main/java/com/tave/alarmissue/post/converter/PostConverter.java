@@ -16,7 +16,6 @@ import java.util.List;
 public class
 PostConverter {
 
-    private final PostCommentConverter postCommentConverter;
 
     public static PostResponse toPostResponseDto(Post post) {
         return PostResponse.builder()
@@ -43,6 +42,17 @@ PostConverter {
                 .vote(vote)
                 .comments(comments)
                 .build();
+    }
+    //홈화면 조회
+    public static PostHomeResponse toPostHomeResponseDto(List<ThemeCountResponse> topThemes,
+   List<PostResponse> hotPostResponse,
+ List<PostResponse> postResponse) {
+        return PostHomeResponse.builder().
+                topThemes(topThemes).
+                hotPostResponse(hotPostResponse).
+                postResponse(postResponse).
+                build();
+
     }
 
     public static Page<PostResponse> toPostResponseDtos(Page<Post> posts) {
@@ -74,6 +84,20 @@ PostConverter {
                 .viewCount(0L)
                 .commentCount(0L)
                 .user(user)
+                .build();
+    }
+    public static PostResponse toPostHotResponseDto(Post post){
+        return PostResponse.builder().
+        postId(post.getPostId()).
+        postTitle(post.getPostTitle())
+               .postId(post.getPostId())
+                .postTitle(post.getPostTitle())
+                .likeCount(post.getLikeCount())
+                .thema(post.getThema())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .viewCount(post.getViewCount())
+                .commentCount(post.getCommentCount())
                 .build();
     }
 

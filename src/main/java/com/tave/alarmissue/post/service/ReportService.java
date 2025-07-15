@@ -43,20 +43,17 @@ public class ReportService {
         UserEntity user = getUserById(userId);
         Post post = getPostById(postId);
 
-        //게시글 신고자가 본인 일 경우
-        if (Objects.equals(user.getId(), post.getUser().getId())) {
-            throw new PostException(POST_REPORT_FORBIDDEN, " userId: " + user.getId() + " post의 userId: " + post.getUser().getId());
-        }
+        validateNotSelfReport(user.getId(), post.getUser().getId());
 
         //이미 신고가 있을경우
-        Optional<PostReport> existingReport = reportRepository.findPostReport(user, post);
-        if (existingReport.isPresent()) {
-            throw new PostException(ALREADY_REPORTED);
-        } else {
+        boolean alreadyReported = reportRepository.findPostReport(user, post).
+                isPresent();
+        validateNotAlreadyReported(alreadyReported);
+
             PostReport report = postReportConverter.toPostReport(user, post);
             PostReport saved = reportRepository.save(report);
             return PostReportConverter.toReportResponseDto(saved);
-        }
+
     }
     //
     @Transactional
@@ -65,37 +62,33 @@ public class ReportService {
         UserEntity user = getUserById(userId);
         PostComment postComment = getPostCommentById(commentId);
 
-        //신고자가 본인 일 경우
-        if (Objects.equals(user.getId(), postComment.getUser().getId())) {
-            throw new PostException(COMMENT_REPORT_FORBIDDEN, " userId: " + user.getId() + " comment 의 userId: " + postComment.getUser().getId());
-        }
+        validateNotSelfReport(user.getId(), postComment.getUser().getId());
+
         //신고가 있는경우
-        Optional<PostReport> existingReport = reportRepository.findCommentReport(user, postComment);
-        if (existingReport.isPresent()) {
-            throw new PostException(ALREADY_REPORTED);
-        } else {
+        boolean alreadyReported = reportRepository.findCommentReport(user, postComment).
+                isPresent();
+        validateNotAlreadyReported(alreadyReported);
+
             PostReport report = postReportConverter.toCommentReport(user, postComment);
             PostReport saved = reportRepository.save(report);
             return PostReportConverter.toReportResponseDto(saved);
-        }
+
     }
     @Transactional
     public ReportResponse createReplyReport(Long userId, Long replyId) {
         UserEntity user = getUserById(userId);
         PostReply postReply = getPostReplyById(replyId);
 
-        if (Objects.equals(user.getId(), postReply.getUser().getId())) {
-            throw new PostException(COMMENT_REPORT_FORBIDDEN," userId: " + user.getId() + " reply 의 userId: "+postReply.getUser().getId());
-        }
-        Optional<PostReport> existingReport = reportRepository.findReplyReport(user,postReply);
-        if(existingReport.isPresent()) {
-            throw new PostException(ALREADY_REPORTED);
-        }
-        else{
+        validateNotSelfReport(user.getId(), postReply.getUser().getId());
+
+        boolean alreadyReported = reportRepository.findReplyReport(user, postReply)
+                .isPresent();
+        validateNotAlreadyReported(alreadyReported);
+
             PostReport report = postReportConverter.toReplyReport(user, postReply);
             PostReport saved = reportRepository.save(report);
             return PostReportConverter.toReportResponseDto(saved);
-        }
+
     }
 
     /*
@@ -121,6 +114,16 @@ public class ReportService {
         return replyRepository.findById(replyId).
                 orElseThrow(() -> new PostException(REPLY_ID_NOT_FOUND," replyId: " + replyId));
     }
-
-
+    //이미 신고되었을때
+    private void validateNotAlreadyReported(boolean alreadyReported) {
+        if (alreadyReported) {
+            throw new PostException(ALREADY_REPORTED);
+        }
+    }
+    //신고자가 본인일때
+    private void validateNotSelfReport(Long reporterId, Long targetOwnerId) {
+        if (Objects.equals(reporterId, targetOwnerId)) {
+            throw new PostException(CANNOT_REPORT," userId: " + reporterId);
+        }
+    }
 }

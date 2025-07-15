@@ -19,6 +19,7 @@ import com.tave.alarmissue.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,7 +85,7 @@ public class PostService {
         postRepository.delete(post);
 
     }
-
+    //게시글 상세조회
     @Transactional
     public PostDetailResponse getPostDetail(Long postId, Long userId) {
 
@@ -146,6 +147,25 @@ public class PostService {
         Page<Post> posts = postRepository.findAllByThema(thema, pageable);
         return PostConverter.toPostResponseDtos(posts);
     }
+    //홈화면 조회
+    public PostHomeResponse getPostHome() {
+
+        List<ThemeCountResponse> topThemes = postRepository.findTop3Themes();
+
+        List<PostResponse> hotPostResponse  = postRepository.findTop9ByOrderByViewCountDesc()
+                .stream()
+                .map(PostConverter::toPostHotResponseDto)
+                .toList();
+
+        List<PostResponse> postResponse = postRepository.findTop4ByOrderByCreatedAtDesc()
+                .stream()
+                .map(PostConverter::toPostResponseDto)
+                .toList();
+
+        return PostConverter.toPostHomeResponseDto(topThemes,hotPostResponse,postResponse);
+    }
+
+
 
     private UserEntity getUserById(Long userId) {
         return userRepository.findById(userId)
