@@ -25,6 +25,7 @@ PostConverter {
                 .articleUrl(post.getArticleUrl())
                 .thema(post.getThema())
                 .nickname(post.getUser().getNickName())
+                .imageUrl(post.getUser().getImageUrl())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .hasVote(post.getHasVote())
