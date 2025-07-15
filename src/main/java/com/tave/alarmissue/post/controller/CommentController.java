@@ -7,6 +7,7 @@ import com.tave.alarmissue.post.dto.response.CommentResponse;
 import com.tave.alarmissue.post.dto.response.ReplyResponse;
 import com.tave.alarmissue.post.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/post/v1/comment")
+@Tag(name = "커뮤니티 댓글 API")
 public class CommentController {
 
     private final CommentService commentService;
