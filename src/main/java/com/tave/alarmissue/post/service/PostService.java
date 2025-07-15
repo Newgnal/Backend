@@ -34,6 +34,7 @@ import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 @Slf4j
 @Transactional(readOnly = true)
 public class PostService {
+
     private final PostConverter postConverter;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -41,7 +42,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
 
-
+    // 게시글 작성
     @Transactional
     public PostResponse createPost(PostCreateRequest dto, Long userId) {
         UserEntity user = getUserById(userId);
@@ -54,7 +55,6 @@ public class PostService {
     }
 
     //게시글 수정
-
     @Transactional
     public PostResponse updatePost(Long postId, PostUpdateRequest dto, Long userId) {
         UserEntity user = getUserById(userId);
@@ -86,6 +86,7 @@ public class PostService {
         postRepository.delete(post);
 
     }
+
     //게시글 상세조회
     @Transactional
     public PostDetailResponse getPostDetail(Long postId, Long userId) {
@@ -117,53 +118,10 @@ public class PostService {
         }
     }
 
-    //전체 게시글 조회
-    public Page<PostResponse> getAllPost(Pageable pageable) {
 
-        Page<Post> posts = postRepository.findAll(pageable);
-        return PostConverter.toPostResponseDtos(posts);
-    }
-
-    //게시글 조회 조회순
-    public Page<PostResponse> getHotPost(Pageable pageable) {
-        Page<Post> posts = postRepository.findAll(pageable);
-        return PostConverter.toPostResponseDtos(posts);
-    }
-
-    //테마별 조회
-    public Page<PostResponse> getPostByThema(Thema thema, Pageable pageable) {
-        Page<Post> posts = postRepository.findAllByThema(thema, pageable);
-        return PostConverter.toPostResponseDtos(posts);
-    }
-
-    //테마별 조회 인기순
-    public Page<PostResponse> getHotPostByThema(Thema thema, Pageable pageable) {
-        Page<Post> posts = postRepository.findAllByThema(thema, pageable);
-        return PostConverter.toPostResponseDtos(posts);
-    }
-
-    //홈화면 조회
-    public PostHomeResponse getPostHome() {
-
-        //인기테마 3개 가져오기
-        List<ThemeCountResponse> topThemes = postRepository.findTop3Themes();
-
-        //인기 게시글 9개 가져오기
-        List<HotPostResponse> hotPostResponse  = postRepository.findTop9ByOrderByViewCountDesc()
-                .stream()
-                .map(PostConverter::toPostHotResponseDto)
-                .toList();
-
-        //최근 게시글 4개 가져오기
-        List<PostResponse> postResponse = postRepository.findTop4ByOrderByCreatedAtDesc()
-                .stream()
-                .map(PostConverter::toPostResponseDto)
-                .toList();
-
-        return PostConverter.toPostHomeResponseDto(topThemes,hotPostResponse,postResponse);
-    }
-
-
+    /*
+    private method 분리
+     */
 
     private UserEntity getUserById(Long userId) {
         return userRepository.findById(userId)

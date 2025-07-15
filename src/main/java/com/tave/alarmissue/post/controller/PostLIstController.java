@@ -8,6 +8,7 @@ import com.tave.alarmissue.post.dto.response.PageResponse;
 import com.tave.alarmissue.post.dto.response.PostDetailResponse;
 import com.tave.alarmissue.post.dto.response.PostHomeResponse;
 import com.tave.alarmissue.post.dto.response.PostResponse;
+import com.tave.alarmissue.post.service.PostListService;
 import com.tave.alarmissue.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class PostLIstController {
 
     private final PostService postService;
     private final PostConverter postConverter;
-
+    private final PostListService postListService;
 
     //게시글 전체 조회
     @GetMapping
@@ -38,7 +39,7 @@ public class PostLIstController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "LATEST") SortType sortType
     ) {
-        return getSortedPosts(page, size, sortType, pageable -> postService.getAllPost(pageable));
+        return getSortedPosts(page, size, sortType, pageable -> postListService.getAllPost(pageable));
     }
 
 
@@ -51,14 +52,14 @@ public class PostLIstController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "LATEST") SortType sortType
     ) {
-        return getSortedPosts(page, size, sortType, pageable -> postService.getPostByThema(thema, pageable));
+        return getSortedPosts(page, size, sortType, pageable -> postListService.getPostByThema(thema, pageable));
     }
 
 
     @GetMapping("/home")
     @Operation(summary = "게시글 홈 화면 조회", description = "인기 테마3개(게시글 순), 인기글 9개(조회수순), 최신 글 4개를 조회합니다")
     public ResponseEntity<PostHomeResponse> getPostHome(){
-        PostHomeResponse responseDto = postService.getPostHome();
+        PostHomeResponse responseDto = postListService.getPostHome();
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
