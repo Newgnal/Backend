@@ -78,7 +78,7 @@ public class PostController {
 
     //게시글 전체 조회(최신순)
     @GetMapping
-    @Operation(summary = "게시글 전체조회", description = "게시글을 전체 조회합니다(최신순)")
+    @Operation(summary = "게시글 전체조회(최신순)", description = "게시글을 전체 조회합니다(최신순)")
     public ResponseEntity<Page<PostResponse>> getAllPost(
             @ParameterObject
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
@@ -90,7 +90,7 @@ public class PostController {
 
     //게시글 전체 조회(인기순=조회수순)
     @GetMapping("/hot")
-    @Operation(summary = "게시글 전체조회", description = "게시글을 전체 조회합니다(조회수순)")
+    @Operation(summary = "게시글 전체조회(인기순)", description = "게시글을 전체 조회합니다(조회수순)")
     public ResponseEntity<Page<PostResponse>> getHotPost(
             @ParameterObject
             @PageableDefault(size = 10, sort = "viewCount", direction = Sort.Direction.DESC)

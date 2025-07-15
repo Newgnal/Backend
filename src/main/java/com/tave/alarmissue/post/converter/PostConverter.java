@@ -16,7 +16,6 @@ import java.util.List;
 public class
 PostConverter {
 
-
     public static PostResponse toPostResponseDto(Post post) {
         return PostResponse.builder()
                 .postId(post.getPostId())
@@ -73,6 +72,17 @@ PostConverter {
         );
     }
 
+    public static PostResponse toPostHotResponseDto(Post post){
+        return PostResponse.builder()
+               .postId(post.getPostId())
+                .postTitle(post.getPostTitle())
+                .likeCount(post.getLikeCount())
+                .thema(post.getThema())
+                .viewCount(post.getViewCount())
+                .commentCount(post.getCommentCount())
+                .build();
+    }
+
     public Post toPost(PostCreateRequest dto, UserEntity user) {
         return Post.builder()
                 .postTitle(dto.getPostTitle())
@@ -86,19 +96,4 @@ PostConverter {
                 .user(user)
                 .build();
     }
-    public static PostResponse toPostHotResponseDto(Post post){
-        return PostResponse.builder().
-        postId(post.getPostId()).
-        postTitle(post.getPostTitle())
-               .postId(post.getPostId())
-                .postTitle(post.getPostTitle())
-                .likeCount(post.getLikeCount())
-                .thema(post.getThema())
-                .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
-                .viewCount(post.getViewCount())
-                .commentCount(post.getCommentCount())
-                .build();
-    }
-
 }
