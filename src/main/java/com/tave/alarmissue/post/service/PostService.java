@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 @Service
 @Slf4j
 @Transactional(readOnly = true)
+@EnableAsync
 public class PostService {
 
     private final PostConverter postConverter;
@@ -138,7 +140,7 @@ public class PostService {
     }
 
 
-
+    @Async
     @Transactional
     public void incrementViewCountAsync(Long postId) {
         postRepository.incrementViewCount(postId);
