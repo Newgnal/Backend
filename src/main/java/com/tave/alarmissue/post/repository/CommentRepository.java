@@ -22,5 +22,8 @@ public interface CommentRepository extends JpaRepository<PostComment, Long> {
     @Query("UPDATE PostComment c SET c.likeCount = c.likeCount - 1 WHERE c.commentId = :commentId AND c.likeCount > 0")
     void decrementLikeCount(@Param("commentId") Long commentId);
 
+    @Query("SELECT c FROM PostComment c LEFT JOIN FETCH c.user LEFT JOIN FETCH c.replies WHERE c.post = :post")
+    List<PostComment> findAllByPostWithUserAndReplies(@Param("post") Post post);
+
     List<PostComment> findAllByPost(Post post);
 }

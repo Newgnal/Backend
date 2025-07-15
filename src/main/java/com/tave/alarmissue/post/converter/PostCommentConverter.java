@@ -21,14 +21,15 @@ public class PostCommentConverter {
     public static CommentResponse toCommentResponseDto(PostComment postComment,List<PostReply> replies) {
         return CommentResponse.builder()
                 .commentId(postComment.getCommentId())
-            .commentContent(postComment.getComment())
+                .commentContent(postComment.getComment())
                 .likeCount(postComment.getLikeCount())
-            .nickname(postComment.getUser().getNickName())
-            .createdAt(postComment.getCreatedAt())
+                .nickname(postComment.getUser().getNickName())
+                .createdAt(postComment.getCreatedAt())
                 .voteType(postComment.getVoteType() != null ? postComment.getVoteType() : null)
                 .replies(replies != null ? PostReplyConverter.toReplyResponseDtos(replies) : null)
                 .build();
     }
+
     //댓글 대댓글 부모자식 관계로 변환
     public static List<CommentResponse> toCommentResponseDtos(List<PostComment> comments,List<PostReply> replies) {
 
@@ -54,6 +55,21 @@ public class PostCommentConverter {
 
 
     }
+
+    public static List<CommentResponse> toCommentResponseDtos(List<PostComment> comments) {
+        return comments.stream()
+                .map(c -> CommentResponse.builder()
+                        .commentId(c.getCommentId())
+                        .commentContent(c.getComment())
+                        .likeCount(c.getLikeCount())
+                        .nickname(c.getUser().getNickName())
+                        .createdAt(c.getCreatedAt())
+                        .voteType(c.getVoteType())
+                        .replies(PostReplyConverter.toReplyResponseDtos(c.getReplies()))  // 댓글 엔티티에 포함된 대댓글 리스트 사용
+                        .build())
+                .toList();
+    }
+
 
     public PostComment toComment(CommentCreateRequest dto, UserEntity user, Post post, VoteType voteType) {
         return PostComment.builder()

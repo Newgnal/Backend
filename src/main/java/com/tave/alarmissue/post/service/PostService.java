@@ -93,29 +93,12 @@ public class PostService {
 
         Post post = getPostById(postId);
 
-        List<PostReply> replies = replyRepository.findAllByPost(post);
-        List<PostComment> comments = commentRepository.findAllByPost(post);
+        List<CommentResponse> commentResponses = getCommentResponses(post);
 
-        //댓글과 대댓글을 정렬
-        List<CommentResponse> commentResponses = PostCommentConverter.toCommentResponseDtos(comments, replies);
+        VoteResponse voteResponse = createVoteResponse(post, userId);
 
-        // 기본값 설정
-        VoteType myVoteType = null;
-
-        // userId가 있을 경우에만 투표 여부 확인
-        if (userId != null) {
-            UserEntity user = getUserById(userId);
-            myVoteType = voteRepository.findByUserAndPost(user, post)
-                    .map(PostVote::getVoteType)
-                    .orElse(null);
-        }
-
-            List<VoteCountResponse> voteCounts = voteRepository.countVotesByType(post);
-            VoteResponse voteResponse = PostVoteConverter.toVoteResponseDto(post, myVoteType, voteCounts);
-
-            //투표가 있으면 투표한 내용으로 반환
-            return PostConverter.toPostDetailResponseDto(post, voteResponse, commentResponses);
-        }
+        return PostConverter.toPostDetailResponseDto(post, voteResponse, commentResponses);
+    }
 
 
     /*
@@ -131,6 +114,29 @@ public class PostService {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND," postId: " + postId));
     }
+
+    private List<CommentResponse> getCommentResponses(Post post) {
+        List<PostComment> comments = commentRepository.findAllByPostWithUserAndReplies(post);
+        return PostCommentConverter.toCommentResponseDtos(comments);
+    }
+
+    private VoteResponse createVoteResponse(Post post, Long userId) {
+        if (!post.getHasVote()) {
+            return null;
+        }
+
+        VoteType myVoteType = null;
+        if (userId != null) {
+            UserEntity user = getUserById(userId);
+            myVoteType = voteRepository.findByUserAndPost(user, post)
+                    .map(PostVote::getVoteType)
+                    .orElse(null);
+        }
+
+        List<VoteCountResponse> voteCounts = voteRepository.countVotesByType(post);
+        return PostVoteConverter.toVoteResponseDto(post, myVoteType, voteCounts);
+    }
+
 
 
     @Transactional
