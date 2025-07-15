@@ -45,9 +45,10 @@ PostConverter {
                 .comments(comments)
                 .build();
     }
+
     //홈화면 조회
     public static PostHomeResponse toPostHomeResponseDto(List<ThemeCountResponse> topThemes,
-                                                         List<PostResponse> hotPostResponse,
+                                                         List<HotPostResponse> hotPostResponse,
                                                          List<PostResponse> postResponse) {
         return PostHomeResponse.builder().
                 topThemes(topThemes).
@@ -74,9 +75,10 @@ PostConverter {
                 .build()
         );
     }
+
     //인기 게시글
-    public static PostResponse toPostHotResponseDto(Post post){
-        return PostResponse.builder()
+    public static HotPostResponse toPostHotResponseDto(Post post){
+        return HotPostResponse.builder()
                .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
                 .likeCount(post.getLikeCount())

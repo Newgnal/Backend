@@ -149,7 +149,7 @@ public class PostService {
         List<ThemeCountResponse> topThemes = postRepository.findTop3Themes();
 
         //인기 게시글 9개 가져오기
-        List<PostResponse> hotPostResponse  = postRepository.findTop9ByOrderByViewCountDesc()
+        List<HotPostResponse> hotPostResponse  = postRepository.findTop9ByOrderByViewCountDesc()
                 .stream()
                 .map(PostConverter::toPostHotResponseDto)
                 .toList();

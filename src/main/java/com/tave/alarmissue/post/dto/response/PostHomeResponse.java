@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PostHomeResponse {
     private List<ThemeCountResponse> topThemes;
-    private List<PostResponse> hotPostResponse;
+    private List<HotPostResponse> hotPostResponse;
     private List<PostResponse> postResponse;
 
 }
