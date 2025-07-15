@@ -4,6 +4,7 @@ import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.post.dto.response.LikeResponse;
 import com.tave.alarmissue.post.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/post/v1")
+@Tag(name = "커뮤니티 좋아요 API")
 public class LikeController {
 
     private final LikeService likeService;
