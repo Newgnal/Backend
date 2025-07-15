@@ -8,6 +8,7 @@ import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.post.dto.response.LikeResponse;
 import com.tave.alarmissue.search.dto.SearchListResponse;
 import com.tave.alarmissue.search.dto.SearchResultResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class InquiryController {
     private final InquiryService inquiryService;
 
     @PostMapping("")
+    @Operation(summary = "문의글 작성")
     public ResponseEntity<InquiryResponse> searchNews(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                       @RequestBody InquiryRequest inquiryRequest) {
 

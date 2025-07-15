@@ -5,10 +5,14 @@ import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.domain.PostReply;
 import com.tave.alarmissue.post.domain.PostReply;
 import com.tave.alarmissue.post.dto.request.ReplyCreateRequest;
+import com.tave.alarmissue.post.dto.response.CommentResponse;
 import com.tave.alarmissue.post.dto.response.ReplyResponse;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.post.domain.enums.VoteType;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class PostReplyConverter {
@@ -34,4 +38,9 @@ public class PostReplyConverter {
                 likeCount(0L).
                 build();
    }
+    public static List<ReplyResponse> toReplyResponseDtos (List<PostReply> replies) {
+        return replies.stream()
+                .map(PostReplyConverter::toReplyResponseDto)
+                .collect(Collectors.toList());
+    }
 }

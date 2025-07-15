@@ -3,6 +3,8 @@ package com.tave.alarmissue.post.controller;
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.post.dto.response.LikeResponse;
 import com.tave.alarmissue.post.service.LikeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +15,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/post/v1")
+@Tag(name = "커뮤니티 좋아요 API")
 public class LikeController {
 
     private final LikeService likeService;
 
     //게시글 좋아요
     @PatchMapping("/{postId}/likes")
+    @Operation(summary = "게시글 좋아요", description = "해당 게시글 좋아요입니다.")
     public ResponseEntity<LikeResponse> postLike(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                  @PathVariable Long postId) {
 
@@ -30,6 +34,7 @@ public class LikeController {
     }
 
     @PatchMapping("comment/{commentId}/likes")
+    @Operation(summary = "댓글 좋아요", description = "해당 댓글 좋아요입니다.")
     public ResponseEntity<LikeResponse> commentLike(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                     @PathVariable Long commentId) {
 
@@ -40,6 +45,7 @@ public class LikeController {
     }
 
     @PatchMapping("reply/{replyId}/likes")
+    @Operation(summary = "대댓글 좋아요", description = "해당 대댓글 좋아요입니다.")
     public ResponseEntity<LikeResponse> replyLike(@AuthenticationPrincipal PrincipalUserDetails principal,
                                                   @PathVariable Long replyId) {
 

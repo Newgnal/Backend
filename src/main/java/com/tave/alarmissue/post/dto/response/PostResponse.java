@@ -19,7 +19,10 @@ public class PostResponse {
     private Long likeCount;
     private Thema thema;
     private String nickname;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean hasVote;
+    private Long viewCount;
+    private Long commentCount;
 }
