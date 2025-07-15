@@ -76,8 +76,12 @@ public class PostController {
     @Operation(summary = "게시글 상세조회", description = "해당 게시글의 내용,투표,댓글 조회입니다.")
     public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable Long postId,
                                                             @AuthenticationPrincipal PrincipalUserDetails principal) {
-        Long userId = principal.getUserId();
+
+        Long userId = principal != null ? principal.getUserId() : null;
+        postService.incrementViewCountAsync(postId);
+
         PostDetailResponse responseDto = postService.getPostDetail(postId,userId);
+
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }

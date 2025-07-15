@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,10 +89,8 @@ public class PostService {
     }
 
     //게시글 상세조회
-    @Transactional
     public PostDetailResponse getPostDetail(Long postId, Long userId) {
 
-        UserEntity user = getUserById(userId);
         Post post = getPostById(postId);
 
         List<PostReply> replies = replyRepository.findAllByPost(post);
@@ -100,23 +99,23 @@ public class PostService {
         //댓글과 대댓글을 정렬
         List<CommentResponse> commentResponses = PostCommentConverter.toCommentResponseDtos(comments, replies);
 
-        postRepository.incrementViewCount(postId); //조회수 증가
+        // 기본값 설정
+        VoteType myVoteType = null;
 
-        //투표가 없으면 null로 반환
-        if(!post.getHasVote()){
-            return PostConverter.toPostDetailResponseDto(post,null,commentResponses);
-        }
-        else {
-            VoteType myVoteType = voteRepository.findByUserAndPost(user, post)
+        // userId가 있을 경우에만 투표 여부 확인
+        if (userId != null) {
+            UserEntity user = getUserById(userId);
+            myVoteType = voteRepository.findByUserAndPost(user, post)
                     .map(PostVote::getVoteType)
                     .orElse(null);
+        }
 
             List<VoteCountResponse> voteCounts = voteRepository.countVotesByType(post);
             VoteResponse voteResponse = PostVoteConverter.toVoteResponseDto(post, myVoteType, voteCounts);
+
             //투표가 있으면 투표한 내용으로 반환
             return PostConverter.toPostDetailResponseDto(post, voteResponse, commentResponses);
         }
-    }
 
 
     /*
@@ -131,5 +130,11 @@ public class PostService {
     private Post getPostById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(POST_ID_NOT_FOUND," postId: " + postId));
+    }
+
+
+    @Transactional
+    public void incrementViewCountAsync(Long postId) {
+        postRepository.incrementViewCount(postId);
     }
 }
