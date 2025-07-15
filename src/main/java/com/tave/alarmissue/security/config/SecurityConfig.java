@@ -41,9 +41,8 @@ public class SecurityConfig {
             "/actuator/health",
             "/news/v1/**",
             "/search/v1/**",
-            "/post/v1",
-            "/post/v1/thema/**",
-            "/post/v1/home"
+            "/post/v1/detail/*",
+            "/post/v1/list/**"
     };
 
 

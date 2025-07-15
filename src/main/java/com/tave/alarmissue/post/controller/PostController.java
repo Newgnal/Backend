@@ -36,7 +36,6 @@ import java.util.function.Function;
 public class PostController {
 
     private final PostService postService;
-    private final PostConverter postConverter;
 
     //게시글 작성
     @PostMapping
@@ -73,7 +72,7 @@ public class PostController {
     }
 
     //게시글 상세조회
-    @GetMapping("/{postId}")
+    @GetMapping("/detail/{postId}")
     @Operation(summary = "게시글 상세조회", description = "해당 게시글의 내용,투표,댓글 조회입니다.")
     public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable Long postId,
                                                             @AuthenticationPrincipal PrincipalUserDetails principal) {
@@ -81,54 +80,6 @@ public class PostController {
         PostDetailResponse responseDto = postService.getPostDetail(postId,userId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
-    }
-
-    //게시글 전체 조회
-    @GetMapping
-    @Operation(summary = "게시글 전체조회", description = "게시글을 전체 조회합니다(최신순)")
-    public ResponseEntity<PageResponse<PostResponse>> getAllPost(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "LATEST") SortType sortType
-    ) {
-        return getSortedPosts(page, size, sortType, pageable -> postService.getAllPost(pageable));
-    }
-
-
-    //게시글 테마별 조회
-    @GetMapping("/thema/{thema}")
-    @Operation(summary = "게시글 테마 별 조회", description = "해당 테마의 게시글들을 조회합니다(최신순)")
-    public ResponseEntity<PageResponse<PostResponse>> getPostByThema(
-            @PathVariable Thema thema,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "LATEST") SortType sortType
-    ) {
-        return getSortedPosts(page, size, sortType, pageable -> postService.getPostByThema(thema, pageable));
-    }
-
-
-    @GetMapping("/home")
-    @Operation(summary = "게시글 홈 화면 조회", description = "인기 테마3개(게시글 순), 인기글 9개(조회수순), 최신 글 4개를 조회합니다")
-    public ResponseEntity<PostHomeResponse> getPostHome(){
-        PostHomeResponse responseDto = postService.getPostHome();
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-    }
-
-    /*
-    private method 분리 (페이징)
-     */
-
-    private ResponseEntity<PageResponse<PostResponse>> getSortedPosts(
-            int page,
-            int size,
-            SortType sortType,
-            Function<Pageable, Page<PostResponse>> pageFetcher
-    ) {
-        Pageable sortedPageable = PageRequest.of(page, size, sortType.getSort());
-        Page<PostResponse> postPage = pageFetcher.apply(sortedPageable);
-        PageResponse<PostResponse> responseDto = postConverter.toPageResponse(postPage);
-        return ResponseEntity.ok(responseDto);
     }
 
 }
