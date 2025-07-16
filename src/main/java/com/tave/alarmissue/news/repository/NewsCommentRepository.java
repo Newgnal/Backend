@@ -2,7 +2,11 @@ package com.tave.alarmissue.news.repository;
 
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
+import com.tave.alarmissue.news.domain.enums.NewsVoteType;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import javax.swing.text.html.Option;
 import java.util.List;
@@ -19,4 +23,5 @@ public interface NewsCommentRepository extends JpaRepository<NewsComment,Long> {
     Optional<NewsComment> findByIdAndUserId(Long commentId, Long userId);
     Optional<NewsComment> findByIdAndNewsId(Long commentId, Long newsId);
 
+    List<NewsComment> findByNewsIdAndUserId(Long newsId, Long userId);
 }

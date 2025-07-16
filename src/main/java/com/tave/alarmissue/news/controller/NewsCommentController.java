@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("/news/v1/{newsId}/comments")
 @RequestMapping("news/v1/comments")
 public class NewsCommentController {
 
@@ -32,8 +31,9 @@ public class NewsCommentController {
 
     @GetMapping("/{newsId}")
     @Operation(summary = "댓글 목록 조회", description = "특정 뉴스의 모든 댓글을 최신순으로 조회합니다.")
-    public ResponseEntity<NewsCommentListResponseDto> getComments(@PathVariable Long newsId){
-        NewsCommentListResponseDto comments=newsCommentService.getCommentsByNewsId(newsId);
+    public ResponseEntity<NewsCommentListResponseDto> getComments(@PathVariable Long newsId,@AuthenticationPrincipal PrincipalUserDetails principal){
+        Long userId=principal.getUserId();
+        NewsCommentListResponseDto comments=newsCommentService.getCommentsByNewsId(newsId,userId);
         return ResponseEntity.ok(comments);
     }
 
@@ -57,16 +57,5 @@ public class NewsCommentController {
 
         return ResponseEntity.ok(response);
     }
-
-//    @DeleteMapping("/{commentId}/with-count")
-//    @Operation(summary = "댓글 삭제(개수 포함)",description = "댓글 삭제하고 업데이트 된 댓글 개수를 반환홥니다.")
-//    public ResponseEntity<NewsCommentResponseDto>deleteCommentWithCount(@PathVariable Long newsId, @PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
-//        Long userId=principal.getUserId();
-//        NewsCommentResponseDto responseDto=newsCommentService.deleteCommentAndGetCount(commentId,userId);
-//
-//        return ResponseEntity.ok(responseDto);
-//    }
-
-
 
 }

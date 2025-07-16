@@ -2,10 +2,13 @@ package com.tave.alarmissue.news.service;
 
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.converter.NewsVoteConverter;
+import com.tave.alarmissue.news.domain.NewsComment;
 import com.tave.alarmissue.news.domain.NewsVote;
+import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.news.dto.request.NewsVoteRequestDto;
 import com.tave.alarmissue.news.dto.response.NewsVoteCountResponse;
 import com.tave.alarmissue.news.dto.response.NewsVoteResponseDto;
+import com.tave.alarmissue.news.repository.NewsCommentRepository;
 import com.tave.alarmissue.news.repository.NewsVoteRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.news.exceptions.NewsVoteException;
@@ -29,6 +32,7 @@ public class NewsVoteService {
     private final NewsVoteRepository newsVoteRepository;
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
+    private final NewsCommentRepository newsCommentRepository;
 
     @Transactional
     public NewsVoteResponseDto createVoteAndGetResult(NewsVoteRequestDto dto, Long userId) {
@@ -47,11 +51,20 @@ public class NewsVoteService {
                 .build();
         newsVoteRepository.save(vote);
 
+        //DB에 update
+        updateCommentsVoteType(dto.getNewsId(),userId, dto.getVoteType());
+
         //DB 접근을 최소화
         List<NewsVoteCountResponse> voteCounts = newsVoteRepository.countVotesByType(news);
 
         NewsVoteResponseDto response = NewsVoteConverter.toVoteResponseDto(news, vote.getVoteType(), voteCounts);
 
         return response;
+    }
+
+    private void updateCommentsVoteType(Long newsId, Long userId, NewsVoteType voteType) {
+        // 모든 댓글을 조회해서 업데이트
+        List<NewsComment> userComments = newsCommentRepository.findByNewsIdAndUserId(newsId, userId);
+        userComments.forEach(comment -> comment.updateVoteType(voteType));
     }
 }
