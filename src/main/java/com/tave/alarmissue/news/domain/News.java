@@ -114,4 +114,7 @@ public class News {
             this.commentNum-=1;
         }
     }
+    public void incrementVoteCount(){
+        this.voteNum+=1;
+    }
 }

@@ -49,6 +49,7 @@ public class NewsVoteService {
 
         //DB 접근을 최소화
         List<NewsVoteCountResponse> voteCounts = newsVoteRepository.countVotesByType(news);
+        news.incrementVoteCount();  //총 투표수 증가
 
         NewsVoteResponseDto response = NewsVoteConverter.toVoteResponseDto(news, vote.getVoteType(), voteCounts);
 
