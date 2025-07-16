@@ -20,6 +20,7 @@ public class NewsDetailResponseDto {
     private LocalDateTime date;
     private double sentiment;
     private String imageUrl;
+    private String imageCaption;
     private Long view;
     private Long commentNum;
     private Long voteNum;
