@@ -50,6 +50,9 @@ public class Post extends BaseTimeEntity {
     private UserEntity user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostVote> votes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostComment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
