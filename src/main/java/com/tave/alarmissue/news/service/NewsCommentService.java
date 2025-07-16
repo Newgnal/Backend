@@ -5,6 +5,8 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.news.dto.request.NewsCommentRequestDto;
+import com.tave.alarmissue.news.dto.request.NewsCommentUpdateRequest;
+import com.tave.alarmissue.news.dto.request.NewsReplyRequest;
 import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.exceptions.NewsException;
@@ -56,7 +58,7 @@ public class NewsCommentService {
     // 뉴스 댓글 반환
     public NewsCommentListResponseDto getCommentsByNewsId(Long newsId) {
 
-        List<NewsComment> comments = newsCommentRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
+        List<NewsComment> comments = newsCommentRepository.findByNewsIdAndParentCommentIsNullOrderByCreatedAtDesc(newsId);
         News news = getNewsById(newsId);
 
         Long totalCount = news.getCommentNum();
@@ -65,7 +67,7 @@ public class NewsCommentService {
     }
 
 
-    //댓글 삭제
+    //댓글,답글 삭제(어처피 Id로 삭제하는 것이기 때문!)
     @Transactional
     public void deleteComment(Long commentId, Long userId) {
 
@@ -74,15 +76,22 @@ public class NewsCommentService {
 
         News news = comment.getNews();
 
-        // 댓글 삭제
+        //원댓글 삭제
+        if(comment.getParentComment()==null){
+            //본인+답글들 삭제
+            int totalDeletedCount = 1 + comment.getReplies().size();
+            news.decrementCommentCountBy(totalDeletedCount);
+        }
+        else {
+            // 답글만 삭제
+            news.decrementCommentCount();
+        }
         newsCommentRepository.delete(comment);
-
-        // 댓글 개수 감소
-        news.decrementCommentCount();
     }
 
+    //댓글,답글 수정
     @Transactional
-    public NewsCommentResponseDto updateComment(Long commentId, Long userId, NewsCommentRequestDto dto) {
+    public NewsCommentResponseDto updateComment(Long commentId, Long userId, NewsCommentUpdateRequest dto) {
 
         NewsComment comment = getNewsCommentById(commentId,userId);
 
@@ -91,6 +100,27 @@ public class NewsCommentService {
 
         return NewsCommentConverter.toCommentResponseDto(comment);
 
+    }
+
+    @Transactional
+    public NewsCommentResponseDto createReply(Long userId, NewsReplyRequest dto) {
+        UserEntity user = getUserById(userId);   //사용자 확인
+        NewsComment parentComment = getNewsCommentById(dto.getParentId(),userId); //부모댓글 확인
+        News news= parentComment.getNews();
+
+        NewsVoteType newsVoteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(news.getId(), userId).orElse(null);
+        NewsComment reply=NewsComment.builder()
+                .comment(dto.getComment())
+                .user(user)
+                .news(news)
+                .parentComment(parentComment)
+                .voteType(newsVoteType)
+                .build();
+        NewsComment savedReply = newsCommentRepository.save(reply);
+
+        news.incrementCommentCount();
+
+        return NewsCommentConverter.toCommentResponseDto(savedReply);
     }
 
 
@@ -111,6 +141,7 @@ public class NewsCommentService {
         return newsCommentRepository.findByIdAndUserId(commentId,userId)
                 .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND,"userId"+userId));
     }
+
 
 
 }

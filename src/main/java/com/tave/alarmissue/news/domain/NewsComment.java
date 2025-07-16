@@ -9,6 +9,9 @@ import lombok.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name="news_comment")
 @Getter
@@ -35,13 +38,20 @@ public class NewsComment extends BaseTimeEntity {
     @Column(nullable = true)
     private NewsVoteType voteType;
 
+    // 답글 관련 필드 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="parent_id")
+    private NewsComment parentComment;       // 부모 댓글
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true) //답글들도 함께 삭제
+    private List<NewsComment> replies = new ArrayList<>();  // 답글 리스트
+
     public void updateContent(String newComment) {
         this.comment=newComment;
-
     }
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="parent_id")
-//    private Comment parent;       //답글을 위한 부모 댓글
+
+
+
 
 }

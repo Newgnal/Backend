@@ -103,4 +103,13 @@ public class News {
             this.commentNum-=1;
         }
     }
+
+    public void decrementCommentCountBy(int totalDeletedCount) {
+        if(this.commentNum>=totalDeletedCount){
+            this.commentNum-=totalDeletedCount;
+        }
+        else{
+            this.commentNum=0L;
+        }
+    }
 }
