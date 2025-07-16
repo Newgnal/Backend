@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class NewsCommentConverter {
+
     public static NewsCommentResponseDto toCommentResponseDto(NewsComment newsComment, NewsVoteType currentUserVoteType){
         return NewsCommentResponseDto.builder()
                 .commentId(newsComment.getId())
@@ -37,19 +38,6 @@ public class NewsCommentConverter {
 
     }
 
-    //댓글 목록 변환
-    public static NewsCommentListResponseDto toCommentListResponseDto(Long newsId, Long totalCount,
-                                                                      List<NewsComment> comments,
-                                                                      NewsVoteType currentUserVoteType) {
-        List<NewsCommentResponseDto> commentResponseDtos = comments.stream()
-//                .map(NewsCommentConverter::toCommentResponseDto)
-                .map(comment->toCommentResponseDto(comment,currentUserVoteType))
-                .collect(Collectors.toList());
 
-        return NewsCommentListResponseDto.builder()
-                .newsId(newsId)
-                .totalCount(totalCount)
-                .comments(commentResponseDtos)
-                .build();
-    }
+
 }
