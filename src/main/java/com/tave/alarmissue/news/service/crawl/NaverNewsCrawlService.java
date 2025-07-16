@@ -123,6 +123,11 @@ public class NaverNewsCrawlService {
                     imageUrl = "";
                 }
 
+                String imageCaption = "";
+                try {
+                    imageCaption = CrawlUtil.safeGetText(driver, "em.img_desc");
+                    } catch (Exception ignored) {}
+
                 boolean exists = newsRepository.findByUrl(link).isPresent()
                         || newsRepository.findByTitle(title).isPresent();
                 if (exists) {
@@ -137,6 +142,7 @@ public class NaverNewsCrawlService {
                         .contentUrl(contentUrl)
                         .url(link)
                         .imageUrl(imageUrl)
+                        .imageCaption(imageCaption)
                         .thema(Thema.ETC)
                         .view(0L)
                         .commentNum(0L)

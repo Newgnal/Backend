@@ -21,6 +21,7 @@ public class NewsConverter {
                 .sentiment(news.getSentiment() != null ? news.getSentiment() : 0.0)
                 .view(news.getView())
                 .imageUrl(news.getImageUrl())
+                .imageCaption(news.getImageCaption())
                 .build();
     }
 
@@ -34,6 +35,7 @@ public class NewsConverter {
                 .sentiment(news.getSentiment() != null ? news.getSentiment() : 0.0)
                 .view(news.getView())
                 .imageUrl(news.getImageUrl())
+                .imageCaption(news.getImageCaption())
                 .build();
     }
 
