@@ -1,9 +1,6 @@
 package com.tave.alarmissue;
 
-import com.tave.alarmissue.news.service.DaumNewsCrawlService;
-import com.tave.alarmissue.news.service.NaverNewsCrawlService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
