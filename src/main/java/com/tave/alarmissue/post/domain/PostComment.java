@@ -40,6 +40,9 @@ public class PostComment extends BaseTimeEntity {
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostReport> reports = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)
     private VoteType voteType;

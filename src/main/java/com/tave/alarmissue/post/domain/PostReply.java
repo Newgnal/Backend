@@ -36,6 +36,10 @@ public class PostReply extends BaseTimeEntity {
     @OneToMany(mappedBy = "postReply", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> likes = new ArrayList<>();
 
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostReport> reports = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)
     private VoteType voteType;
