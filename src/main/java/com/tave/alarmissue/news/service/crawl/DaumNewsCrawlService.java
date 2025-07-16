@@ -115,6 +115,12 @@ public class DaumNewsCrawlService {
                     // 빈 문자열 유지
                 }
 
+                String imageCaption = "";
+                try {
+                    imageCaption = CrawlUtil.safeGetText(driver, "figcaption.txt_caption.default_figure");
+                } catch (Exception e) {
+                }
+
                 News news = News.builder()
                         .title(title)
                         .source(source)
@@ -122,6 +128,7 @@ public class DaumNewsCrawlService {
                         .contentUrl(contentUrl)
                         .url(url)
                         .imageUrl(imageUrl)
+                        .imageCaption(imageCaption)
                         .thema(Thema.ETC) // 기본값 ETC
                         .view(0L)
                         .commentNum(0L)
