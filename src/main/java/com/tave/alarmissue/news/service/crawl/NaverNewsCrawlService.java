@@ -29,7 +29,7 @@ public class NaverNewsCrawlService {
     private final WebDriverFactory webDriverFactory;
     private final S3Uploader s3Uploader;
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     @Async
     public void crawlNaverEconomyNews() {
         int savedCount = 0;
