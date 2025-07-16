@@ -102,9 +102,6 @@ public class DaumNewsCrawlService {
                     if (!txt.isBlank()) contentBuilder.append(txt).append("\n");
                 }
 
-                String content = contentBuilder.toString();
-                log.info("[DAUM] 크롤링된 본문 내용: {}", content);
-
                 String fileName = "news/daum/" + UUID.randomUUID() + ".txt";
                 String contentUrl = s3Uploader.uploadContent(contentBuilder.toString(), fileName);
 
