@@ -15,8 +15,12 @@ import java.util.Optional;
 public interface NewsCommentRepository extends JpaRepository<NewsComment,Long> {
     //특정 뉴스의 모든 댓글을 최신순으로 조회
     List<NewsComment> findByNewsIdOrderByCreatedAtDesc(Long newsId);
-    //특정 뉴스에 달린 댓글 개수 조회
-    long countByNewsId(Long newsId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE NewsComment nc SET nc.voteType = :voteType WHERE nc.news.id = :newsId AND nc.user.id = :userId")
+    int updateVoteTypeByNewsIdAndUserId(@Param("voteType") NewsVoteType voteType,
+                                        @Param("newsId") Long newsId,
+                                        @Param("userId") Long userId);
 
 
     Optional<NewsComment> findByIdAndNewsIdAndUserId(Long commentId, Long newsId, Long userId);

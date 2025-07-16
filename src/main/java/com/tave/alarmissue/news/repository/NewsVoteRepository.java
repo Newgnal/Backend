@@ -22,4 +22,7 @@ public interface NewsVoteRepository extends JpaRepository<NewsVote, Long> {
     @Query("SELECT v.voteType, COUNT(v) FROM NewsVote v WHERE v.news = :news GROUP BY v.voteType")
     List<NewsVoteCountResponse> countVotesByType(@Param("news") News news);
 
+    @Query("SELECT nv FROM NewsVote nv WHERE nv.news.id = :newsId AND nv.user.id IN :userIds")
+    List<NewsVote> findVoteTypesByNewsIdAndUserIds(@Param("newsId") Long newsId, @Param("userIds") List<Long> userIds);
+
 }
