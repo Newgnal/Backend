@@ -44,6 +44,8 @@ public class PostComment extends BaseTimeEntity {
     @JoinColumn(nullable = true)
     private VoteType voteType;
 
+
+
     @Builder
     public PostComment(Long commentId, String comment, Long likeCount, UserEntity user, Post post, VoteType voteType) {
         this.commentId = commentId;

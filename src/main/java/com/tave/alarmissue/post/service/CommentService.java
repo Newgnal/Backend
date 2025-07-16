@@ -60,7 +60,8 @@ public class CommentService {
         PostComment postComment = commentConverter.toComment(dto, user, post, voteType);
 
         PostComment saved = commentRepository.save(postComment);
-        return PostCommentConverter.toCommentResponseDto(saved);
+        postRepository.incrementCommentCount(postId); //댓글 갯수 증가
+        return PostCommentConverter.toCommentResponseDto(saved,null);
     }
 
 
@@ -76,7 +77,7 @@ public class CommentService {
         if(!Objects.equals(postComment.getUser().getId(), user.getId())) {
             throw new PostException(COMMENT_DELETE_FORBIDDEN, "comment의 userId: "+ postComment.getUser().getId() + " userId: " + user.getId());
         }
-
+        postRepository.decrementCommentCount(postComment.getPost().getPostId()); //댓글 갯수 감소
         commentRepository.delete(postComment); //댓글 삭제
     }
 
@@ -101,7 +102,7 @@ public class CommentService {
 
         PostReply reply = replyConverter.toReply(dto,user,post, postComment,voteType);
         PostReply saved = replyRepository.save(reply);
-
+        postRepository.incrementCommentCount(postComment.getPost().getPostId()); //댓글  갯수 증가
         return PostReplyConverter.toReplyResponseDto(saved);
 
     }
@@ -118,7 +119,7 @@ public class CommentService {
         if(!Objects.equals(reply.getUser().getId(),user.getId())) {
             throw new PostException(REPLY_DELETE_FORBIDDEN,"Reply의 userId: "+reply.getUser().getId()+ " userId: " + user.getId());
         }
-
+        postRepository.decrementCommentCount(reply.getPost().getPostId()); //댓글 갯수 감소
         replyRepository.delete(reply); //대댓글 삭제
 
     }

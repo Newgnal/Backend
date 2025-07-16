@@ -5,7 +5,9 @@ import com.tave.alarmissue.user.dto.request.NicknameRequest;
 import com.tave.alarmissue.user.dto.response.LogoutResponse;
 import com.tave.alarmissue.user.dto.response.NicknameResponse;
 import com.tave.alarmissue.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/v1")
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -22,13 +25,16 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<LogoutResponse> logout(
             @AuthenticationPrincipal PrincipalUserDetails principal
+
     ) {
 
         Long userId = principal.getUserId();
+
         LogoutResponse response = userService.logout(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "닉네임 변경")
     @PatchMapping("/nickname")
     public ResponseEntity<NicknameResponse> changeNickname(
             @AuthenticationPrincipal PrincipalUserDetails principal,
@@ -41,6 +47,18 @@ public class UserController {
     }
 
 
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping()
+    public ResponseEntity<Void> deleteUser(
+            @AuthenticationPrincipal PrincipalUserDetails principal
+    ) {
 
+        log.debug(" delete user with ID: {}", principal.getUserId());
+
+        Long userId = principal.getUserId();
+        userService.softDeleteUser(userId);
+
+        return ResponseEntity.noContent().build();
+    }
 
 }
