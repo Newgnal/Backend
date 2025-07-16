@@ -19,13 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.tave.alarmissue.news.exceptions.NewsErrorCode.*;
 
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class NewsVoteService {
 
     private final NewsVoteRepository newsVoteRepository;
@@ -43,12 +43,25 @@ public class NewsVoteService {
         News news = newsRepository.findById(dto.getNewsId()).
                 orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "NewsId: "+ dto.getNewsId()));
 
-        NewsVote vote=NewsVote.builder()
-                .news(news)
-                .user(user)
-                .voteType(dto.getVoteType())
-                .build();
+        Optional<NewsVote> existingVoteOpt = newsVoteRepository.findByNewsAndUser(news, user);
+
+        NewsVote vote;
+        if (existingVoteOpt.isPresent()) {
+            vote = existingVoteOpt.get();
+            if (vote.getVoteType() != dto.getVoteType()) {
+                vote.updateVoteType(dto.getVoteType());
+            }
+        } else {
+            vote = NewsVote.builder()
+                    .news(news)
+                    .user(user)
+                    .voteType(dto.getVoteType())
+                    .build();
+        }
+
         newsVoteRepository.save(vote);
+
+        newsVoteRepository.flush();
 
         //DB에 update
         updateCommentsVoteType(dto.getNewsId(),userId, dto.getVoteType());

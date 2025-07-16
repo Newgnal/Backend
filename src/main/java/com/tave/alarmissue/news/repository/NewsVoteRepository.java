@@ -4,6 +4,7 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsVote;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.news.dto.response.NewsVoteCountResponse;
+import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,5 +25,8 @@ public interface NewsVoteRepository extends JpaRepository<NewsVote, Long> {
 
     @Query("SELECT nv FROM NewsVote nv WHERE nv.news.id = :newsId AND nv.user.id IN :userIds")
     List<NewsVote> findVoteTypesByNewsIdAndUserIds(@Param("newsId") Long newsId, @Param("userIds") List<Long> userIds);
+
+    Optional<NewsVote> findByNewsAndUser(News news, UserEntity user);
+
 
 }

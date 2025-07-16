@@ -16,7 +16,7 @@ public class NewsVote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id")
     private News news;
 
@@ -31,4 +31,7 @@ public class NewsVote {
 //    @Column(nullable = false)
 //    private String question;    //"이 뉴스가 [반도체/AI]에 어떤 영향을 줄까요?"
 
+    public void updateVoteType(NewsVoteType newsvoteType) {
+        this.voteType = newsvoteType;
+    }
 }
