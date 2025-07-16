@@ -27,7 +27,7 @@ public class NewsConverter {
     public NewsDetailResponseDto toDetailDto(News news) {
         return NewsDetailResponseDto.builder().id(news.getId())
                 .title(news.getTitle())
-                .content(news.getContent())
+                .contentUrl(news.getContentUrl())
                 .source(news.getSource())
                 .date(news.getDate())
                 .thema(news.getThema())

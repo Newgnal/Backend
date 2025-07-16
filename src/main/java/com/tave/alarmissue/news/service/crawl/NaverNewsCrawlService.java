@@ -1,4 +1,4 @@
-package com.tave.alarmissue.news.service;
+package com.tave.alarmissue.news.service.crawl;
 
 import com.tave.alarmissue.news.controller.CrawlUtil;
 import com.tave.alarmissue.news.domain.News;
@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,9 @@ public class NaverNewsCrawlService {
 
     private final NewsRepository newsRepository;
     private final WebDriverFactory webDriverFactory;
+    private final S3Uploader s3Uploader;
 
-    @Scheduled(cron = "0 */30 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     @Async
     public void crawlNaverEconomyNews() {
         int savedCount = 0;
@@ -102,6 +104,10 @@ public class NaverNewsCrawlService {
                     content = CrawlUtil.safeGetText(driver, "article#dic_area");
                 } catch (Exception ignored) {}
 
+                String fileName = "news/naver/" + UUID.randomUUID() + ".txt";
+                String contentUrl = s3Uploader.uploadContent(content, fileName);
+                log.info("Uploaded content URL: {}", contentUrl);
+
                 String imageUrl = null;
                 try {
                     List<WebElement> images = driver.findElements(By.cssSelector("article#dic_area img"));
@@ -128,7 +134,7 @@ public class NaverNewsCrawlService {
                         .title(title)
                         .source(source)
                         .date(date)
-                        .content(content)
+                        .contentUrl(contentUrl)
                         .url(link)
                         .imageUrl(imageUrl)
                         .thema(Thema.ETC)

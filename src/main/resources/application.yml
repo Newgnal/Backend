@@ -4,7 +4,7 @@ server:
 
 spring:
   profiles:
-    include: local, jwt, oauth
+    include: local, jwt, oauth, aws
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -42,12 +42,12 @@ management:
 cloud:
   aws:
     s3:
-      bucket: loopz-bucket
+      bucket: newgnalbucket
     credentials:
       access-key: ${AWS_ACCESS_KEY}
       secret-key: ${AWS_SECRET_KEY}
     region:
-      static: ${AWS_REGION:test-region}
+      static: ${AWS_REGION}
       auto: false
     stack:
       auto: false
