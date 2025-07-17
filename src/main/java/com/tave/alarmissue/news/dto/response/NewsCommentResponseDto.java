@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 public class NewsCommentResponseDto {
     @Schema(description = "댓글 ID")
     private Long commentId;
-//    @Schema(description = "댓글 개수")
-//    private Long count;
     private String comment;
     private NewsVoteType voteType;
     private String nickName;

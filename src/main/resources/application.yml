@@ -32,6 +32,10 @@ chromedriver:
   path: ${CHROMEDRIVER_PATH}
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health
   endpoint:
     health:
       show-details: never
