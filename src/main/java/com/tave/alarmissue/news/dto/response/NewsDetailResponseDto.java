@@ -14,7 +14,7 @@ public class NewsDetailResponseDto {
 
     private Long id;
     private String title;
-    private String content;
+    private String contentUrl;
     private String source;
     private Thema thema;
     private LocalDateTime date;
