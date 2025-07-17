@@ -26,22 +26,19 @@ import static com.tave.alarmissue.news.exceptions.NewsErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class NewsVoteService {
 
     private final NewsVoteRepository newsVoteRepository;
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
-    private final NewsCommentRepository newsCommentRepository;
 
     @Transactional
-    public NewsVoteResponseDto createVoteAndGetResult(NewsVoteRequestDto dto, Long userId) {
-        //유저가 없을때
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new NewsException(USER_ID_NOT_FOUND, "해당 유저를 찾을 수 없습니다."));
+    public void createVoteAndGetResult(NewsVoteRequestDto dto, Long userId) {
 
-        //게시글이 없을때
-        News news = newsRepository.findById(dto.getNewsId()).
-                orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "NewsId: "+ dto.getNewsId()));
+        UserEntity user = getUser(userId);
+
+        News news = getNews(dto.getNewsId());
 
         Optional<NewsVote> existingVoteOpt = newsVoteRepository.findByNewsAndUser(news, user);
 
@@ -61,20 +58,44 @@ public class NewsVoteService {
 
         newsVoteRepository.save(vote);
 
-        newsVoteRepository.flush();
-
         //DB에 update
-        updateCommentsVoteType(dto.getNewsId(),userId, dto.getVoteType());
+        updateVoteType(dto.getNewsId(),userId, dto.getVoteType());
 
-        //DB 접근을 최소화
-        List<NewsVoteCountResponse> voteCounts = newsVoteRepository.countVotesByType(news);
-
-        NewsVoteResponseDto response = NewsVoteConverter.toVoteResponseDto(news, vote.getVoteType(), voteCounts);
-
-        return response;
     }
 
-    private void updateCommentsVoteType(Long newsId, Long userId, NewsVoteType voteType) {
-        newsCommentRepository.updateVoteTypeByNewsIdAndUserId(voteType, newsId, userId);
+    public NewsVoteResponseDto getVoteResult(NewsVoteRequestDto dto, Long userId) {
+
+        News news = getNews(dto.getNewsId());
+
+        UserEntity user = getUser(userId);
+
+        NewsVote vote = getNewsVote(news, user);
+
+        List<NewsVoteCountResponse> voteCounts = newsVoteRepository.countVotesByType(news);
+
+        return NewsVoteConverter.toVoteResponseDto(news, vote.getVoteType(), voteCounts);
+    }
+
+    /*
+    private method 분리
+     */
+    private void updateVoteType(Long newsId, Long userId, NewsVoteType voteType) {
+        newsVoteRepository.updateVoteTypeByNewsIdAndUserId(voteType, newsId, userId);
+    }
+
+    private UserEntity getUser(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NewsException(USER_ID_NOT_FOUND, "UserId"+userId));
+    }
+
+    private News getNews(Long newsId){
+        return newsRepository.findById(newsId).
+                orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "NewsId: "+ newsId));
+
+    }
+
+    private NewsVote getNewsVote(News news, UserEntity user) {
+        return newsVoteRepository.findByNewsAndUser(news, user)
+                .orElseThrow(() -> new NewsException(VOTE_NOT_FOUND));
     }
 }
