@@ -58,15 +58,4 @@ public class NewsCommentController {
         return ResponseEntity.ok(response);
     }
 
-//    @DeleteMapping("/{commentId}/with-count")
-//    @Operation(summary = "댓글 삭제(개수 포함)",description = "댓글 삭제하고 업데이트 된 댓글 개수를 반환홥니다.")
-//    public ResponseEntity<NewsCommentResponseDto>deleteCommentWithCount(@PathVariable Long newsId, @PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
-//        Long userId=principal.getUserId();
-//        NewsCommentResponseDto responseDto=newsCommentService.deleteCommentAndGetCount(commentId,userId);
-//
-//        return ResponseEntity.ok(responseDto);
-//    }
-
-
-
 }
