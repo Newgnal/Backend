@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+//@RequestMapping("/news/v1/{newsId}/comments")
 @RequestMapping("news/v1/comments")
 public class NewsCommentController {
 
@@ -32,7 +33,6 @@ public class NewsCommentController {
     @GetMapping("/{newsId}")
     @Operation(summary = "댓글 목록 조회", description = "특정 뉴스의 모든 댓글을 최신순으로 조회합니다.")
     public ResponseEntity<NewsCommentListResponseDto> getComments(@PathVariable Long newsId){
-
         NewsCommentListResponseDto comments=newsCommentService.getCommentsByNewsId(newsId);
         return ResponseEntity.ok(comments);
     }

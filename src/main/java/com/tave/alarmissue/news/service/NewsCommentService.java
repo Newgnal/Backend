@@ -3,12 +3,11 @@ package com.tave.alarmissue.news.service;
 import com.tave.alarmissue.news.converter.NewsCommentConverter;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
-import com.tave.alarmissue.news.domain.NewsVote;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
 import com.tave.alarmissue.news.dto.request.NewsCommentRequestDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
-import com.tave.alarmissue.news.exceptions.NewsException;
+import com.tave.alarmissue.news.exceptions.NewsCommentException;
 import com.tave.alarmissue.news.repository.NewsCommentRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.news.repository.NewsVoteRepository;
@@ -19,10 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.tave.alarmissue.news.exceptions.NewsErrorCode.*;
+
 
 
 @Service
@@ -38,59 +37,52 @@ public class NewsCommentService {
 
     @Transactional
     public NewsCommentResponseDto createComment(NewsCommentRequestDto dto, Long userId, Long newsId){
-
-        UserEntity user=userRepository.findById(userId).orElseThrow(()->new NewsException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
-        News news=newsRepository.findById(newsId).orElseThrow(()->new NewsException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
+        UserEntity user=userRepository.findById(userId).orElseThrow(()->new NewsCommentException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
+        News news=newsRepository.findById(newsId).orElseThrow(()->new NewsCommentException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
 
 
         NewsVoteType newsVoteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(newsId,userId).orElse(null);
         NewsComment newsComment=newsCommentConverter.toComment(dto,user,news,newsVoteType);
         NewsComment saved=newsCommentRepository.save(newsComment);
         news.incrementCommentCount();
+//       newsRepository.save(news);
+//        Long totalCommentCount=newsCommentRepository.countByNewsId(newsId);
 
-        return NewsCommentConverter.toCommentResponseDto(saved,newsVoteType);
+        return NewsCommentConverter.toCommentResponseDto(saved);
     }
-
 
     public NewsCommentListResponseDto getCommentsByNewsId(Long newsId) {
+        List<NewsComment> comments=newsCommentRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
+        News news = newsRepository.findById(newsId).orElseThrow(() -> new NewsCommentException(NEWS_ID_NOT_FOUND, "뉴스를 찾을 수 없습니다."));
 
-        News news=newsRepository.findById(newsId).orElseThrow(()->new NewsException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
-        // 1. 댓글 조회
-        List<NewsComment> comments = newsCommentRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
+        Long totalCount=news.getCommentNum();
 
-        // 2. 댓글 작성자 ID 추출
-        List<Long> userIds = comments.stream()
-                .map(comment -> comment.getUser().getId())
-                .distinct()
-                .toList();
-
-        // 3. 작성자들의 voteType 한 번에 조회
-        Map<Long, NewsVoteType> voteTypeMap = newsVoteRepository.findVoteTypesByNewsIdAndUserIds(newsId, userIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        vote -> vote.getUser().getId(),
-                        NewsVote::getVoteType
-                ));
-
-        // 4. DTO 변환
-        List<NewsCommentResponseDto> commentDtos = comments.stream()
-                .map(comment -> {
-                    NewsVoteType voteType = voteTypeMap.get(comment.getUser().getId());
-                    return NewsCommentConverter.toCommentResponseDto(comment, voteType);
-                })
-                .toList();
-
-        // 5. 전체 응답 DTO 생성
-        Long totalCount = (long) comments.size();
-        return new NewsCommentListResponseDto(newsId, totalCount, commentDtos);
+        return NewsCommentConverter.toCommentListResponseDto(newsId,totalCount,comments);
     }
 
+//    @Transactional
+//    public void deleteComment(Long commentId, Long userId, Long newsId) {
+//        UserEntity user=userRepository.findById(userId).orElseThrow(()->new NewsCommentException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
+//        News news=newsRepository.findById(newsId).orElseThrow(()->new NewsCommentException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
+//
+//        //댓글 존재 확인
+//        NewsComment comment = newsCommentRepository.findById(commentId)
+//                .orElseThrow(() -> new NewsCommentException(COMMENT_ID_NOT_FOUND, "댓글을 찾을 수 없습니다."));
+//
+//        //작성자 본인인지 확인
+//        if(!comment.getUser().getId().equals(userId)){
+//            throw new NewsCommentException(UNAUTHORIZED_DELETE,"본인이 작성한 댓글만 삭제할 수 있습니다.");
+//        }
+//        //댓글 삭제
+//        newsCommentRepository.delete(comment);
+//        news.decrementCommentCount();
+//    }
 
     @Transactional
     public void deleteComment(Long commentId, Long userId) {
         // 해당 뉴스의 해당 사용자가 작성한 댓글만 조회
         NewsComment comment = newsCommentRepository.findByIdAndUserId(commentId, userId)
-                .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND,
+                .orElseThrow(() -> new NewsCommentException(COMMENT_ID_NOT_FOUND,
                         "해당 뉴스에서 본인이 작성한 댓글을 찾을 수 없습니다."));
 
         News news = comment.getNews();
@@ -105,16 +97,38 @@ public class NewsCommentService {
     @Transactional
     public NewsCommentResponseDto updateComment(Long commentId, Long userId, NewsCommentRequestDto dto) {
         NewsComment comment = newsCommentRepository.findByIdAndNewsIdAndUserId(commentId, dto.getNewsId(), userId)
-                .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND,
+                .orElseThrow(() -> new NewsCommentException(COMMENT_ID_NOT_FOUND,
                         "해당 뉴스에서 본인이 작성한 댓글을 찾을 수 없습니다."));
 
         //댓글 내용 업데이트
         comment.updateContent(dto.getComment().trim());
-        NewsVoteType currentUserVoteType = newsVoteRepository
-                .findVoteTypeByNewsIdAndUserId(dto.getNewsId(), userId)
-                .orElse(null);
 
-        return NewsCommentConverter.toCommentResponseDto(comment,currentUserVoteType);
+        return NewsCommentConverter.toCommentResponseDto(comment);
 
     }
+
+
+
+
+//    @Transactional
+//    public NewsCommentResponseDto deleteCommentAndGetCount(Long commentId, Long userId){
+//        //댓글 조회
+//        NewsComment comment=newsCommentRepository.findById(commentId).orElseThrow(()->new NewsCommentException(COMMENT_ID_NOT_FOUND,"댓글을 찾을 수 없습니다."));
+//        Long newsId=comment.getNews().getId();
+//
+//        //작성자 본인 확인
+//        if(!comment.getUser().getId().equals(userId)){
+//            throw new NewsCommentException(UNAUTHORIZED_DELETE, "본인이 작성한 댓글만 삭제할 수 있습니다.");
+//        }
+//        //댓글 삭제
+//        newsCommentRepository.delete(comment);
+////        Long updatedCount=newsCommentRepository.countByNewsId(newsId);
+//        News news=comment.getNews();
+//        news.decrementCommentCount();
+//
+//        return NewsCommentConverter.toCommentResponseDto(newsId);
+//
+//    }
+
+
 }
