@@ -45,8 +45,6 @@ public class NewsCommentService {
         NewsComment newsComment=newsCommentConverter.toComment(dto,user,news,newsVoteType);
         NewsComment saved=newsCommentRepository.save(newsComment);
         news.incrementCommentCount();
-//       newsRepository.save(news);
-//        Long totalCommentCount=newsCommentRepository.countByNewsId(newsId);
 
         return NewsCommentConverter.toCommentResponseDto(saved);
     }
@@ -59,7 +57,6 @@ public class NewsCommentService {
 
         return NewsCommentConverter.toCommentListResponseDto(newsId,totalCount,comments);
     }
-
 
     @Transactional
     public void deleteComment(Long commentId, Long userId) {
@@ -89,6 +86,7 @@ public class NewsCommentService {
         return NewsCommentConverter.toCommentResponseDto(comment);
 
     }
+
 
 
 }

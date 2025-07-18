@@ -19,6 +19,7 @@ public class NewsCommentConverter {
         return NewsCommentResponseDto.builder()
                 .commentId(newsComment.getId())
                 .comment(newsComment.getComment())
+                .likeCount(0L)
                 .nickName(newsComment.getUser().getNickName())
                 .createdAt(newsComment.getCreatedAt())
                 .timeAgo(TimeAgoUtil.getTimeAgo(newsComment.getCreatedAt()))   //현재 시간과 계산한 값
@@ -31,6 +32,7 @@ public class NewsCommentConverter {
                 .comment(dto.getComment())
                 .user(user)
                 .news(news)
+                .likeCount(0L)
                 .voteType(voteType)
                 .build();
 

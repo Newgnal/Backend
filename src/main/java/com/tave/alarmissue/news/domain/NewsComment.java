@@ -2,12 +2,16 @@ package com.tave.alarmissue.news.domain;
 
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
+import com.tave.alarmissue.post.domain.PostLike;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="news_comment")
@@ -37,7 +41,18 @@ public class NewsComment extends BaseTimeEntity {
 
     public void updateContent(String newComment) {
         this.comment=newComment;
+    }
 
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NewsCommentLike> likes = new ArrayList<>();
+
+    // 좋아요 개수 필드 추가 (성능 최적화용)
+    @Column(name = "like_count", nullable = false)
+    private Long likeCount = 0L;
+
+    // 좋아요 관련 메서드
+    public void incrementLikeCount() {
+        this.likeCount++;
     }
 
     public void updateVoteType(NewsVoteType voteType){
@@ -47,5 +62,10 @@ public class NewsComment extends BaseTimeEntity {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name="parent_id")
 //    private Comment parent;       //답글을 위한 부모 댓글
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
 
 }
