@@ -31,7 +31,7 @@ public class NewsService {
     private final NewsConverter newsConverter;
 
     public SliceResponseDto<NewsResponseDto> getAllNews(NewsSortType sortType,Pageable pageable){
-//        Slice<News> newsSlice=newsRepository.findAll(sortType,pageable);
+
         Slice<News> newsSlice=switch(sortType){
             case LATEST -> newsRepository.findAllByOrderByDateDesc(pageable);
             case VIEWEST -> newsRepository.findAllByOrderByViewDesc(pageable);
@@ -43,6 +43,7 @@ public class NewsService {
         return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
     }
 
+    @Transactional
     public SliceResponseDto<NewsResponseDto> getAllThemaNews(NewsSortType sortType,Thema thema,Pageable pageable) {
         Slice<News> newsSlice=switch(sortType){
             case LATEST -> newsRepository.findByThemaOrderByDateDesc(thema,pageable);
