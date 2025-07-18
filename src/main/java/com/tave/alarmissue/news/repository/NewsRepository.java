@@ -25,10 +25,10 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     List<News> findAll();
 
     Slice<News> findAllByOrderByDateDesc(Pageable pageable);
-    Slice<News> findAllByOrderByViewDesc(Pageable pageable);
+    Slice<News> findAllByOrderByViewDescDateDesc(Pageable pageable);
 
     Slice<News> findByThemaOrderByDateDesc(Thema thema,Pageable pageable);
-    Slice<News> findByThemaOrderByViewDesc(Thema thema,Pageable pageable);
+    Slice<News> findByThemaOrderByViewDescDateDesc(Thema thema,Pageable pageable);
 
     // 키워드 포함 뉴스 개수
     @Query("SELECT COUNT(n) FROM News n WHERE LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
