@@ -1,6 +1,8 @@
 package com.tave.alarmissue.post.service;
 
+import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.enums.Thema;
+import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.post.converter.PostCommentConverter;
 import com.tave.alarmissue.post.converter.PostVoteConverter;
 import com.tave.alarmissue.post.domain.PostComment;
@@ -43,7 +45,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
-    private final ReplyRepository replyRepository;
+    private final NewsRepository newsRepository;
 
     // 게시글 작성
     @Transactional
@@ -67,7 +69,13 @@ public class PostService {
             throw new PostException(POST_EDIT_FORBIDDEN, "post의 userId: " + post.getUser().getId() + " userId: " + user.getId());
         }
 
-        post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getArticleUrl(), dto.getThema(), dto.isHasVote());
+        News news = null;
+        if (dto.getNewsId() != null) {
+            news = newsRepository.findById(dto.getNewsId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid newsId: " + dto.getNewsId()));
+        }
+
+        post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getThema(), dto.isHasVote(), news);
 
         //투표기능끄면 post와 연관된 vote DB삭제
         if (!post.getHasVote()) voteRepository.deleteAllByPost(post);

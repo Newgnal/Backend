@@ -1,10 +1,13 @@
 package com.tave.alarmissue.post.domain;
 
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
+import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +32,6 @@ public class Post extends BaseTimeEntity {
     @Column
     private Long likeCount;
 
-
-    @Column
-    private String articleUrl; //기사 url
-
     @Column
     private Thema thema;
 
@@ -44,6 +43,11 @@ public class Post extends BaseTimeEntity {
 
     @Column
     private Long commentCount ;
+
+    @OneToOne
+    @JoinColumn(name = "news_id")
+    private News news;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -65,24 +69,24 @@ public class Post extends BaseTimeEntity {
     private List<PostReport> reports = new ArrayList<>();
 
     @Builder
-    public Post(String postTitle, String postContent, Long likeCount, String articleUrl, Thema thema, UserEntity user, boolean hasVote, Long viewCount,Long commentCount) {
+    public Post(String postTitle, String postContent, Long likeCount, Thema thema, UserEntity user,News news, boolean hasVote, Long viewCount,Long commentCount) {
         this.postTitle = postTitle;
         this.postContent = postContent;
         this.likeCount = likeCount;
-        this.articleUrl = articleUrl;
         this.thema = thema;
         this.user = user;
+        this.news= news;
         this.hasVote = hasVote;
         this.viewCount = viewCount;
         this.commentCount = commentCount;
     }
 
-    public void Update(String postTitle,String postContent, String articleUrl,Thema thema, boolean hasVote)
+    public void Update(String postTitle,String postContent, Thema thema, boolean hasVote, News news)
     {
         this.postTitle=postTitle;
         this.postContent=postContent;
-        this.articleUrl=articleUrl;
         this.thema = thema;
         this.hasVote=hasVote;
+        this.news=news;
     }
 }
