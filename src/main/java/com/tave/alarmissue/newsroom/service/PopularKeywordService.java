@@ -40,17 +40,12 @@ public class PopularKeywordService {
     public void resetDailyPopularKeywords() {
         log.info("일일 인기 키워드 초기화 시작");
 
-            Long currentCount = redisTemplate.opsForZSet().zCard(DAILY_KEY);
-            log.info("초기화 전 DAILY_KEY 키워드 개수: {}", currentCount);
+        Long currentCount = redisTemplate.opsForZSet().zCard(DAILY_KEY);
+        log.info("초기화 전 DAILY_KEY 키워드 개수: {}", currentCount);
 
-            Boolean deleted = redisTemplate.delete(DAILY_KEY);
-            log.info("DAILY_KEY 초기화 결과: {}", deleted);
+        redisTemplate.delete(DAILY_KEY);
 
-            if (deleted == null || !deleted) {
-                throw new KeywordException(KeywordErrorCode.KEYWORD_RESET_FAILED);
-            }
-
-        log.info("DAILY_KEY 초기화 완료");
+        log.info("DAILY_KEY 초기화 완료 (초기화된 키워드 개수: {})", currentCount != null ? currentCount : 0);
     }
 
     // 인기 키워드 Top N 조회 (실시간)
