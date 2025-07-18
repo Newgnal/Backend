@@ -94,10 +94,7 @@ PostConverter {
                 .build();
     }
 
-    public Post toPost(PostCreateRequest dto, UserEntity user) {
-
-        News news = newsRepository.findById(dto.getNewsId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid newsId: " + dto.getNewsId()));
+    public Post toPost(PostCreateRequest dto, UserEntity user,News news) {
 
         return Post.builder()
                 .postTitle(dto.getPostTitle())

@@ -51,8 +51,9 @@ public class PostService {
     @Transactional
     public PostResponse createPost(PostCreateRequest dto, Long userId) {
         UserEntity user = getUserById(userId);
+        News news= getNewsById(dto.getNewsId());
 
-        Post post = postConverter.toPost(dto, user);
+        Post post = postConverter.toPost(dto, user, news);
         Post saved = postRepository.save(post);
 
         return PostConverter.toPostResponseDto(saved);
@@ -63,17 +64,22 @@ public class PostService {
     @Transactional
     public PostResponse updatePost(Long postId, PostUpdateRequest dto, Long userId) {
         UserEntity user = getUserById(userId);
+
         Post post = getPostById(postId);
 
         if (!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new PostException(POST_EDIT_FORBIDDEN, "post의 userId: " + post.getUser().getId() + " userId: " + user.getId());
         }
 
+
         News news = null;
+        String newsUrl = null;
+
         if (dto.getNewsId() != null) {
-            news = newsRepository.findById(dto.getNewsId())
-                    .orElseThrow(() -> new PostException(NEWS_ID_NOT_FOUND, "newsId: " + dto.getNewsId()));
+            news = getNewsById(dto.getNewsId());
+            newsUrl = news.getUrl();
         }
+
 
         post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getThema(), dto.isHasVote(), news, news.getUrl());
 
@@ -119,6 +125,12 @@ public class PostService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(USER_ID_NOT_FOUND, "userId" + userId));
     }
+
+    private News getNewsById(Long newsId) {
+        return newsRepository.findById(newsId)
+                .orElseThrow(() -> new PostException(NEWS_ID_NOT_FOUND, "newsId: " + newsId));
+    }
+
 
     private Post getPostById(Long postId) {
         return postRepository.findById(postId)
