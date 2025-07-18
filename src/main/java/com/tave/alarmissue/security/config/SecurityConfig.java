@@ -42,7 +42,8 @@ public class SecurityConfig {
             "/news/v1/**",
             "/search/v1/**",
             "/post/v1/detail/*",
-            "/post/v1/list/**"
+            "/post/v1/list/**",
+            "news/v1/comments/*"
     };
 
 

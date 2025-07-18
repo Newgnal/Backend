@@ -40,7 +40,7 @@ public class News {
     private String imageCaption;
 
     @Column(columnDefinition = "LONGTEXT")
-    private String content;
+    private String contentUrl;
 
     @Column(nullable = false, length = 100)
     private String source; //ex) 매일경제
@@ -76,6 +76,7 @@ public class News {
     public News(String title,
                 String url,
                 String imageUrl,
+                String contentUrl,
                 String imageCaption,
                 String content,
                 String source,
@@ -89,8 +90,8 @@ public class News {
         this.title = title;
         this.url = url;
         this.imageUrl = imageUrl;
+        this.contentUrl = contentUrl;
         this.imageCaption = imageCaption;
-        this.content = content;
         this.source = source;
         this.thema = thema;
         this.date = date;

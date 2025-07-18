@@ -1,4 +1,4 @@
-package com.tave.alarmissue.news.service;
+package com.tave.alarmissue.news.service.crawl;
 
 import com.tave.alarmissue.news.controller.CrawlUtil;
 import com.tave.alarmissue.news.domain.News;
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class DaumNewsCrawlService {
 
     private final NewsRepository newsRepository;
     private final WebDriverFactory webDriverFactory;
+    private final S3Uploader s3Uploader;
 
     @Scheduled(cron = "0 */30 * * * *")
     @Async
@@ -100,6 +102,9 @@ public class DaumNewsCrawlService {
                     if (!txt.isBlank()) contentBuilder.append(txt).append("\n");
                 }
 
+                String fileName = "news/daum/" + UUID.randomUUID() + ".txt";
+                String contentUrl = s3Uploader.uploadContent(contentBuilder.toString(), fileName);
+
                 String imageUrl = "";
                 try {
                     imageUrl = CrawlUtil.safeGetAttr(driver, "img.thumb_g_article", "data-org-src");
@@ -117,7 +122,7 @@ public class DaumNewsCrawlService {
                         .title(title)
                         .source(source)
                         .date(date)
-                        .content(contentBuilder.toString())
+                        .contentUrl(contentUrl)
                         .url(url)
                         .imageUrl(imageUrl)
                         .imageCaption(imageCaption)

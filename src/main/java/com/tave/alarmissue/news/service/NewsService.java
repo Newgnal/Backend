@@ -7,6 +7,7 @@ import com.tave.alarmissue.news.dto.request.NewsSortType;
 import com.tave.alarmissue.news.dto.response.NewsDetailResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.news.dto.response.SliceResponseDto;
+import com.tave.alarmissue.news.exceptions.NewsException;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tave.alarmissue.news.exceptions.NewsErrorCode.NEWS_ID_NOT_FOUND;
+
 @Service      //Spring이 관리하는 Bean으로 등록됨
 @Transactional(readOnly = true)   //읽기 전용. 성능향상 목적
 @RequiredArgsConstructor        //final로 선언된 필드들을 자동으로 생성자에 포함시켜 주입
@@ -27,8 +30,8 @@ public class NewsService {
     private final NewsRepository newsRepository;
     private final NewsConverter newsConverter;
 
-    @Transactional
     public SliceResponseDto<NewsResponseDto> getAllNews(NewsSortType sortType,Pageable pageable){
+
         Slice<News> newsSlice=switch(sortType){
             case LATEST -> newsRepository.findAllByOrderByDateDesc(pageable);
             case VIEWEST -> newsRepository.findAllByOrderByViewDesc(pageable);
@@ -55,7 +58,7 @@ public class NewsService {
 
     @Transactional
     public NewsDetailResponseDto getDetailNews(Long newsId) {
-        News news=newsRepository.findById(newsId).orElseThrow(()->new EntityNotFoundException("뉴스를 찾을 수 없습니다. ID: "+newsId));
+        News news=newsRepository.findById(newsId).orElseThrow(()->new NewsException(NEWS_ID_NOT_FOUND,"뉴스를 찾을 수 없습니다. ID: "+newsId));
         news.incrementView();
         return newsConverter.toDetailDto(news);
 
