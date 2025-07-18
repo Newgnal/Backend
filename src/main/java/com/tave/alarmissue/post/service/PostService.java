@@ -75,7 +75,7 @@ public class PostService {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid newsId: " + dto.getNewsId()));
         }
 
-        post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getThema(), dto.isHasVote(), news);
+        post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getThema(), dto.isHasVote(), news, news.getUrl());
 
         //투표기능끄면 post와 연관된 vote DB삭제
         if (!post.getHasVote()) voteRepository.deleteAllByPost(post);

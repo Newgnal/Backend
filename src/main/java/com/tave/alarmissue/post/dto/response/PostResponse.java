@@ -16,6 +16,7 @@ public class PostResponse {
     private String postTitle;
     private String postContent;
     private Long newsId;
+    private String newsUrl;
     private Long likeCount;
     private Thema thema;
     private String nickname;

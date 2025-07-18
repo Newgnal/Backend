@@ -27,7 +27,7 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @Table(name="news")
 @SQLDelete(sql = "UPDATE news SET deleted_at = NOW() WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
+@Where(clause = "deleted_at IS NULL")
 public class News extends BaseTimeEntityWithDeletion {
 
     @Id
