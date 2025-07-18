@@ -142,7 +142,4 @@ public class NewsCommentService {
                 .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND,"userId"+userId));
     }
 
-
-
-}
 }
