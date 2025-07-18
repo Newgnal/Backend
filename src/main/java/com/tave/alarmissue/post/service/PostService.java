@@ -72,7 +72,7 @@ public class PostService {
         News news = null;
         if (dto.getNewsId() != null) {
             news = newsRepository.findById(dto.getNewsId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid newsId: " + dto.getNewsId()));
+                    .orElseThrow(() -> new PostException(NEWS_ID_NOT_FOUND, "newsId: " + dto.getNewsId()));
         }
 
         post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getThema(), dto.isHasVote(), news, news.getUrl());
