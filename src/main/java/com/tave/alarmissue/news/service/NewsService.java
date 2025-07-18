@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor        //final로 선언된 필드들을 자동으로 생성자에 포함시켜 주입
 public class NewsService {
 
+
     private final NewsRepository newsRepository;
     private final NewsConverter newsConverter;
 
@@ -52,6 +53,7 @@ public class NewsService {
         return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
     }
 
+    @Transactional
     public NewsDetailResponseDto getDetailNews(Long newsId) {
         News news = newsRepository.findById(newsId).orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "해당 뉴스를 찾을 수 없습니다."));
 

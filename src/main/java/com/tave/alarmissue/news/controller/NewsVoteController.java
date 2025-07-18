@@ -25,9 +25,11 @@ public class NewsVoteController {
     public ResponseEntity<NewsVoteResponseDto> createVoteAndGetResult(@RequestBody NewsVoteRequestDto dto,
                                                                       @AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
-        NewsVoteResponseDto newsVoteResponseDto = newsvoteService.createVoteAndGetResult(dto, userId);
+        newsvoteService.createVoteAndGetResult(dto, userId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(newsVoteResponseDto);
+        NewsVoteResponseDto result = newsvoteService.getVoteResult(dto, userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }
 

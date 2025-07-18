@@ -8,7 +8,7 @@ public class NewsException extends CustomException {
     public NewsException(ErrorCode errorCode) {
         super(errorCode);
     }
-    public NewsException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
+    public NewsException(ErrorCode errorCode, String message){
+        super(errorCode,message);
     }
 }

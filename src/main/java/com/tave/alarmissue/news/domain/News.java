@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -34,8 +36,11 @@ public class News {
     @Column(nullable = true, unique = true, length=1000)
     private String imageUrl;
 
+    @Column(columnDefinition = "TEXT")
+    private String imageCaption;
+
     @Column(columnDefinition = "LONGTEXT")
-    private String content;
+    private String contentUrl;
 
     @Column(nullable = false, length = 100)
     private String source; //ex) 매일경제
@@ -63,10 +68,16 @@ public class News {
     @Column
     private String summary;
 
+
+    @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NewsComment> comments = new ArrayList<>();
+
     @Builder
     public News(String title,
                 String url,
                 String imageUrl,
+                String contentUrl,
+                String imageCaption,
                 String content,
                 String source,
                 Thema thema,
@@ -79,7 +90,8 @@ public class News {
         this.title = title;
         this.url = url;
         this.imageUrl = imageUrl;
-        this.content = content;
+        this.contentUrl = contentUrl;
+        this.imageCaption = imageCaption;
         this.source = source;
         this.thema = thema;
         this.date = date;

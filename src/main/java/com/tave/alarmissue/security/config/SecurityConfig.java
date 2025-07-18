@@ -42,7 +42,8 @@ public class SecurityConfig {
             "/news/v1/**",
             "/search/v1/**",
             "/post/v1/detail/*",
-            "/post/v1/list/**"
+            "/post/v1/list/**",
+            "news/v1/comments/*"
     };
 
 
@@ -73,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://newgnal.site"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://newgnal.site", "https://api.newgnal.site"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

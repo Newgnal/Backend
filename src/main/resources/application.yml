@@ -4,7 +4,7 @@ server:
 
 spring:
   profiles:
-    include: local, jwt, oauth
+    include: local, jwt, oauth, aws
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -32,6 +32,10 @@ chromedriver:
   path: ${CHROMEDRIVER_PATH}
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health
   endpoint:
     health:
       show-details: never
@@ -39,6 +43,18 @@ management:
     db:
       enabled: false
 
+cloud:
+  aws:
+    s3:
+      bucket: newgnalbucket
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+      auto: false
+    stack:
+      auto: false
 
 jwt:
   expiration:

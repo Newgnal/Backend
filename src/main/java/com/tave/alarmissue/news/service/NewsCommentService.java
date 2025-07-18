@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tave.alarmissue.news.exceptions.NewsErrorCode.*;
-import static com.tave.alarmissue.post.exception.PostErrorCode.POST_ID_NOT_FOUND;
-import static com.tave.alarmissue.post.exception.PostErrorCode.USER_ID_NOT_FOUND;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -144,4 +144,5 @@ public class NewsCommentService {
 
 
 
+}
 }
