@@ -17,7 +17,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.tave.alarmissue.news.exceptions.NewsErrorCode.*;
@@ -45,19 +48,28 @@ public class NewsCommentService {
         NewsComment newsComment=newsCommentConverter.toComment(dto,user,news,newsVoteType);
         NewsComment saved=newsCommentRepository.save(newsComment);
         news.incrementCommentCount();
-//       newsRepository.save(news);
-//        Long totalCommentCount=newsCommentRepository.countByNewsId(newsId);
 
-        return NewsCommentConverter.toCommentResponseDto(saved);
+        return NewsCommentConverter.toCommentResponseDto(saved,newsVoteType);
     }
 
-    public NewsCommentListResponseDto getCommentsByNewsId(Long newsId) {
+    public NewsCommentListResponseDto getCommentsByNewsId(Long newsId, Long userId) {
         List<NewsComment> comments=newsCommentRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
         News news = newsRepository.findById(newsId).orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "뉴스를 찾을 수 없습니다."));
 
         Long totalCount=news.getCommentNum();
 
-        return NewsCommentConverter.toCommentListResponseDto(newsId,totalCount,comments);
+        List<NewsCommentResponseDto> commentDtos = new ArrayList<>();
+        for (NewsComment comment : comments) {
+            Long commentUserId = comment.getUser().getId();
+
+            NewsVoteType voteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(newsId, commentUserId).orElse(null);
+
+            NewsCommentResponseDto dto = NewsCommentConverter.toCommentResponseDto(comment,voteType);
+
+            commentDtos.add(dto);
+        }
+
+        return new NewsCommentListResponseDto(newsId, totalCount, commentDtos);
     }
 
 
@@ -86,8 +98,12 @@ public class NewsCommentService {
         //댓글 내용 업데이트
         comment.updateContent(dto.getComment().trim());
 
-        return NewsCommentConverter.toCommentResponseDto(comment);
+        NewsVoteType voteType = newsVoteRepository
+                .findVoteTypeByNewsIdAndUserId(dto.getNewsId(), userId)
+                .orElse(null);
 
+        // 수정된 댓글 + voteType 같이 반환
+        return NewsCommentConverter.toCommentResponseDto(comment, voteType);
     }
 
 

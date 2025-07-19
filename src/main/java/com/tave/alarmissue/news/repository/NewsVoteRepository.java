@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -34,6 +35,5 @@ public interface NewsVoteRepository extends JpaRepository<NewsVote, Long> {
     int updateVoteTypeByNewsIdAndUserId(@Param("voteType") NewsVoteType voteType,
                                         @Param("newsId") Long newsId,
                                         @Param("userId") Long userId);
-
 
 }
