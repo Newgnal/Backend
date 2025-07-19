@@ -62,6 +62,9 @@ jwt:
     refresh: ${REFRESH_EXPIRATION:2592000000}
   secret: ${JWT_SECRET:test1234tes1tte2st1234test1te!stte7stt@#e4sttes5ttest2testtest1234123415215161231}
 
+ai:
+  base-url: ${AI_BASE_URL}
+
 kakao:
   oauth:
     client-id: ${KAKAO_CLIENT_ID}
