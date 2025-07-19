@@ -7,6 +7,7 @@ import com.tave.alarmissue.search.dto.SearchResultResponse;
 import com.tave.alarmissue.search.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,24 +26,30 @@ public class SearchController {
     @Operation(summary = "뉴스 검색")
     @GetMapping("")
     public ResponseEntity<SearchResultResponse> searchNews(@AuthenticationPrincipal PrincipalUserDetails principal,
-                                                           @RequestParam(value = "title", required = false) String title) {
+                                                           @RequestParam(value = "title", required = false) String title,
+                                                           @RequestParam(value = "page", defaultValue = "0") int page,
+                                                           @RequestParam(value = "size", defaultValue = "20") int size) {
 
         Long userId = null;
         if (principal != null) {
             userId = principal.getUserId();
         }
 
-        List<NewsResponseDto> newsList = searchService.searchNews(userId, title);
+        Slice<NewsResponseDto> searchSlice = searchService.searchNewsSlice(userId, title, page, size);
 
-
-        List<SearchListResponse> recentSearch = Collections.emptyList();
-        if (userId != null) {
-            recentSearch = searchService.getSearchHistory(userId);
-        }
-
-        SearchResultResponse response = new SearchResultResponse(newsList, recentSearch);
+        SearchResultResponse response = SearchResultResponse.builder()
+                .newsList(searchSlice.getContent())
+                .recentSearches(getRecentSearches(userId))
+                .hasNext(searchSlice.hasNext())
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    private List<SearchListResponse> getRecentSearches(Long userId) {
+        if (userId == null)
+            return Collections.emptyList();
+        return searchService.getSearchHistory(userId);
     }
 
 }

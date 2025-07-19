@@ -72,6 +72,7 @@ public class NewsVoteService {
         NewsVote vote = getNewsVote(news, user);
 
         List<NewsVoteCountResponse> voteCounts = newsVoteRepository.countVotesByType(news);
+        news.incrementVoteCount();  //총 투표수 증가
 
         return NewsVoteConverter.toVoteResponseDto(news, vote.getVoteType(), voteCounts);
     }

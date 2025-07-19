@@ -41,6 +41,7 @@ public class NewsService {
         return new SliceResponseDto<>(content, newsSlice.hasNext(),newsSlice.getNumber());
     }
 
+    @Transactional
     public SliceResponseDto<NewsResponseDto> getAllThemaNews(NewsSortType sortType,Thema thema,Pageable pageable) {
         Slice<News> newsSlice=switch(sortType){
             case LATEST -> newsRepository.findByThemaOrderByDateDesc(thema,pageable);

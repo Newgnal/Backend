@@ -4,6 +4,7 @@ import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.news.dto.request.NewsVoteRequestDto;
 import com.tave.alarmissue.news.dto.response.NewsVoteResponseDto;
 import com.tave.alarmissue.news.service.NewsVoteService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/news/v1")
+@Tag(name = "뉴스 투표 API")
 public class NewsVoteController {
 
     private final NewsVoteService newsvoteService;
