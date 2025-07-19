@@ -40,9 +40,9 @@ public class NewsCommentService {
 
     @Transactional
     public NewsCommentResponseDto createComment(NewsCommentRequestDto dto, Long userId, Long newsId){
-        UserEntity user=userRepository.findById(userId).orElseThrow(()->new NewsException(USER_ID_NOT_FOUND,"사용자가 없습니다."));
-        News news=newsRepository.findById(newsId).orElseThrow(()->new NewsException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
 
+        UserEntity user=getUserById(userId);
+        News news= getNewsById(newsId);
 
         NewsVoteType newsVoteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(newsId,userId).orElse(null);
         NewsComment newsComment=newsCommentConverter.toComment(dto,user,news,newsVoteType);
@@ -53,8 +53,9 @@ public class NewsCommentService {
     }
 
     public NewsCommentListResponseDto getCommentsByNewsId(Long newsId, Long userId) {
+
         List<NewsComment> comments=newsCommentRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
-        News news = newsRepository.findById(newsId).orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "뉴스를 찾을 수 없습니다."));
+        News news =getNewsById(newsId);
 
         Long totalCount=news.getCommentNum();
 
@@ -104,6 +105,19 @@ public class NewsCommentService {
 
         // 수정된 댓글 + voteType 같이 반환
         return NewsCommentConverter.toCommentResponseDto(comment, voteType);
+    }
+
+    /*
+    private method 부리
+     */
+   private UserEntity getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(()->new NewsException(USER_ID_NOT_FOUND,"userId:"+userId));
+    }
+
+    private News getNewsById(Long newsId) {
+        return newsRepository.findById(newsId)
+                .orElseThrow(()->new NewsException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
     }
 
 
