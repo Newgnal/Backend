@@ -3,6 +3,7 @@ package com.tave.alarmissue.news.repository;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.NewsComment;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

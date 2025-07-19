@@ -1,6 +1,7 @@
 package com.tave.alarmissue.post.domain;
 
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
+import com.tave.alarmissue.report.domain.Report;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.post.domain.enums.VoteType;
 import jakarta.persistence.*;
@@ -38,7 +39,7 @@ public class PostReply extends BaseTimeEntity {
 
 
     @OneToMany(mappedBy = "postReply", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostReport> reports = new ArrayList<>();
+    private List<Report> reports = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)
