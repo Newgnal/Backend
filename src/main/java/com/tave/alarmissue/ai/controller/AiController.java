@@ -1,19 +1,13 @@
 package com.tave.alarmissue.ai.controller;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tave.alarmissue.ai.dto.request.SentimentRequest;
 import com.tave.alarmissue.ai.dto.request.SummaryRequest;
-import com.tave.alarmissue.ai.dto.request.ThemaRequest;
 import com.tave.alarmissue.ai.dto.response.SentimentResponse;
 import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import com.tave.alarmissue.ai.service.AiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,12 +24,10 @@ import java.util.regex.Pattern;
 public class AiController {
 
     private final AiService aiService;
-    private final ObjectMapper safeObjectMapper;
 
     @PostMapping(value = "/thema", consumes = "application/json; charset=UTF-8")
     public Mono<ThemaResponse> analyzeThema(@RequestBody String rawJson) {
         try {
-            // 정규식으로 "text" 필드 값 직접 추출
             String text = extractTextFromJson(rawJson);
 
             if (text == null || text.isEmpty()) {
