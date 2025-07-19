@@ -2,10 +2,13 @@ package com.tave.alarmissue.fcm.service;
 
 
 import com.google.firebase.messaging.*;
-import com.tave.alarmissue.fcm.dto.request.FcmSendReqeust;
+import com.tave.alarmissue.fcm.dto.request.FcmSendRequest;
 import com.tave.alarmissue.fcm.dto.response.FcmNotificationResponse;
 import com.tave.alarmissue.fcm.exception.FcmErrorCode;
 import com.tave.alarmissue.fcm.exception.FcmException;
+import com.tave.alarmissue.notification.domain.enums.NotificationStatus;
+import com.tave.alarmissue.notification.dto.request.NotificationHistoryRequest;
+import com.tave.alarmissue.notification.service.NotificationHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +18,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class FcmService {
     private final FcmTokenService fcmTokenService;
+    private final NotificationHistoryService notificationHistoryService;
 
-    public FcmNotificationResponse sendPushNotification(FcmSendReqeust fcmSendDto) {
+    public FcmNotificationResponse sendPushNotification(FcmSendRequest fcmSendDto) {
         if (!fcmTokenService.isTokenExists(fcmSendDto.getToken())) {
             throw new FcmException(FcmErrorCode.TOKEN_NOT_FOUND);
         }
@@ -35,6 +39,9 @@ public class FcmService {
             String messageId = FirebaseMessaging.getInstance().send(message);
             System.out.println("Successfully sent message: " + messageId);
 
+            //성공 이력 저장
+            saveNotificationHistory(fcmSendDto, messageId, NotificationStatus.SUCCESS, null);
+
             return FcmNotificationResponse.builder()
                     .messageId(messageId)
                     .fcmToken(fcmSendDto.getToken())
@@ -42,11 +49,36 @@ public class FcmService {
                     .build();
 
         } catch (FirebaseMessagingException ex) {
+            saveNotificationHistory(fcmSendDto, null, NotificationStatus.FAILED, ex.getMessage());
             handleFirebaseMessagingException(ex, fcmSendDto.getToken());
         } catch (Exception e) {
+            saveNotificationHistory(fcmSendDto, null, NotificationStatus.FAILED, e.getMessage());
             throw new FcmException(FcmErrorCode.PUSH_SEND_FAILED);
         }
         return null;
+    }
+
+    // ----- method -----
+
+    private void saveNotificationHistory(FcmSendRequest request, String messageId,
+                                         NotificationStatus status, String failureReason) {
+        try {
+            NotificationHistoryRequest historyRequest = NotificationHistoryRequest.builder()
+                    .userId(request.getUserId())
+                    .notificationType(request.getNotificationType())
+                    .title(request.getTitle())
+                    .body(request.getBody())
+                    .status(status)
+                    .fcmMessageId(messageId)
+                    .failureReason(failureReason)
+                    .relatedEntityId(request.getRelatedEntityId())
+                    .build();
+
+            notificationHistoryService.saveNotificationHistory(historyRequest);
+        } catch (Exception e) {
+            // 이력 저장 실패는 메인 로직에 영향주지 않도록
+            System.err.println("알림 이력 저장 실패: " + e.getMessage());
+        }
     }
 
     private void handleFirebaseMessagingException(FirebaseMessagingException ex, String token) {

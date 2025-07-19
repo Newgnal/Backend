@@ -1,6 +1,6 @@
 package com.tave.alarmissue.fcm.controller;
 
-import com.tave.alarmissue.fcm.dto.request.FcmSendReqeust;
+import com.tave.alarmissue.fcm.dto.request.FcmSendRequest;
 import com.tave.alarmissue.fcm.dto.request.FcmTokenRequest;
 import com.tave.alarmissue.fcm.dto.response.FcmNotificationResponse;
 import com.tave.alarmissue.fcm.dto.response.FcmTokenResponse;
@@ -29,7 +29,7 @@ public class FcmController {
     // 알림 전송
     @PostMapping("/notifications")
     @Operation(summary = "푸시 알림 전송", description = "특정 FCM 토큰으로 푸시 알림을 전송합니다.")
-    public  ResponseEntity<FcmNotificationResponse> sendNotificationByToken(@RequestBody FcmSendReqeust fcmSendDto) {
+    public  ResponseEntity<FcmNotificationResponse> sendNotificationByToken(@RequestBody FcmSendRequest fcmSendDto) {
         FcmNotificationResponse response = fcmService.sendPushNotification(fcmSendDto);
         return ResponseEntity.ok(response);
     }
