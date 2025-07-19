@@ -64,6 +64,7 @@ jwt:
 
 ai:
   base-url1: ${AI_BASE_URL_THEMA}
+  base-url2: ${AI_BASE_URL}
 
 kakao:
   oauth:
