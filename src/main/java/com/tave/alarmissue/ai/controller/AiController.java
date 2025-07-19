@@ -34,6 +34,6 @@ public class AiController {
 
         @PostMapping("/sentiment")
     public Mono<SentimentResponse> analyzeSentiment(@RequestBody SentimentRequest request) {
-        return aiService.analyzeSentiment(request.getTitle());
+        return aiService.analyzeSentiment(request.getTitles());
     }
 }

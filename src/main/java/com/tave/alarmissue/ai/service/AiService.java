@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -36,10 +37,10 @@ public class AiService {
     }
 
 
-        public Mono<SentimentResponse> analyzeSentiment(String title) {
+        public Mono<SentimentResponse> analyzeSentiment(List<String> titles) {
         return webClient.post()
                 .uri("/sentiment")
-                .bodyValue(Map.of("title", title))
+                .bodyValue(Map.of("titles", titles))
                 .retrieve()
                 .bodyToMono(SentimentResponse.class);
     }
