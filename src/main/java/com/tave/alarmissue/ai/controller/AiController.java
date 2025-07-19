@@ -29,4 +29,9 @@ public class AiController {
 //    public Mono<SummaryResponse> analyzeSummary(@RequestBody SummaryRequest request) {
 //        return aiService.analyzeSummary(request.getContentUrl());
 //    }
+
+    //    @PostMapping("/sentiment")
+//    public Mono<SentimentResponse> analyzeSentiment(@RequestBody SentimentRequest request) {
+//        return aiService.analyzeSentiment(request.getTitle());
+//    }
 }

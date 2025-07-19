@@ -33,5 +33,13 @@ public class AiService {
 //                .bodyToMono(SummaryResponse.class);
 //    }
 
+    //    public Mono<SentimentResponse> analyzeSentiment(String title) {
+//        return webClient.post()
+//                .uri("/sentiment")
+//                .bodyValue(Map.of("title", title))
+//                .retrieve()
+//                .bodyToMono(SummaryResponse.class);
+//    }
+
 
 }
