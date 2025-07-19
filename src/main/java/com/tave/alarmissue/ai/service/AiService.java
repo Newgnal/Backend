@@ -21,6 +21,7 @@ public class AiService {
     private final WebClient webClient;
 
     public Mono<ThemaResponse> analyzeThema(String text) {
+
         return webClientForThema.post()
                 .uri("/predict")
                 .contentType(MediaType.APPLICATION_JSON)  // 요청 바디 타입
@@ -56,8 +57,6 @@ public class AiService {
                 })
                 .onErrorReturn(new SentimentResponse(0.0f));
     }
-
-
 
 
 }
