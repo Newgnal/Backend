@@ -131,7 +131,7 @@ public class ReportService {
 
     private NewsComment getNewsCommentById(Long newsCommentId){
         return newsCommentRepository.findById(newsCommentId).
-                orElseThrow(() -> new PostException(REPLY_ID_NOT_FOUND," newsCommentId: " + newsCommentId));
+                orElseThrow(() -> new PostException(COMMENT_ID_NOT_FOUND," newsCommentId: " + newsCommentId));
     }
     //이미 신고되었을때
     private void validateNotAlreadyReported(boolean alreadyReported) {
