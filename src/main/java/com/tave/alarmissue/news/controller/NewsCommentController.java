@@ -43,7 +43,7 @@ public class NewsCommentController {
             userId = principal.getUserId();
         }
 
-        NewsCommentListResponseDto comments=newsCommentService.getCommentsByNewsId(newsId,userId);
+        NewsCommentListResponseDto comments=newsCommentService.getCommentsByNewsId(newsId);
         return ResponseEntity.ok(comments);
     }
 

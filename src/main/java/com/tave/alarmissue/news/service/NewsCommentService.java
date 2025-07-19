@@ -13,16 +13,15 @@ import com.tave.alarmissue.news.exceptions.NewsException;
 import com.tave.alarmissue.news.repository.NewsCommentRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.news.repository.NewsVoteRepository;
+import com.tave.alarmissue.post.domain.Post;
+import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.tave.alarmissue.news.exceptions.NewsErrorCode.*;
@@ -40,6 +39,7 @@ public class NewsCommentService {
     private final NewsVoteRepository newsVoteRepository;
     private final NewsCommentConverter newsCommentConverter;
 
+    //뉴스 댓글 작성
     @Transactional
     public NewsCommentResponseDto createComment(NewsCommentRequestDto dto, Long userId, Long newsId) {
 
@@ -52,25 +52,18 @@ public class NewsCommentService {
         NewsComment saved = newsCommentRepository.save(newsComment);
         news.incrementCommentCount();
 
-        return NewsCommentConverter.toCommentResponseDto(saved,newsVoteType);
+        return NewsCommentConverter.toCommentResponseDto(saved);
     }
 
-    public NewsCommentListResponseDto getCommentsByNewsId(Long newsId,Long userId) {
-        List<NewsComment> comments=newsCommentRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
-        News news = newsRepository.findById(newsId).orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "뉴스를 찾을 수 없습니다."));
+    // 뉴스 댓글 반환
+    public NewsCommentListResponseDto getCommentsByNewsId(Long newsId) {
 
-        Long totalCount=news.getCommentNum();
+        List<NewsComment> comments = newsCommentRepository.findByNewsIdAndParentCommentIsNullOrderByCreatedAtDesc(newsId);
+        News news = getNewsById(newsId);
 
-        List<NewsCommentResponseDto> commentDtos = new ArrayList<>();
+        Long totalCount = news.getCommentNum();
 
-        NewsVoteType voteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(newsId, userId).orElse(null);
-
-        for (NewsComment comment : comments) {
-            NewsCommentResponseDto dto = NewsCommentConverter.toCommentResponseDto(comment, voteType);
-            commentDtos.add(dto);
-        }
-
-        return new NewsCommentListResponseDto(newsId, totalCount, commentDtos);
+        return NewsCommentConverter.toCommentListResponseDto(newsId, totalCount, comments);
     }
 
 
@@ -96,6 +89,7 @@ public class NewsCommentService {
         newsCommentRepository.delete(comment);
     }
 
+    //댓글,답글 수정
     @Transactional
     public NewsCommentResponseDto updateComment(Long commentId, Long userId, NewsCommentUpdateRequest dto) {
 
@@ -104,27 +98,8 @@ public class NewsCommentService {
         //댓글 내용 업데이트
         comment.updateContent(dto.getComment().trim());
 
-        Long newsId = comment.getNews().getId();
+        return NewsCommentConverter.toCommentResponseDto(comment);
 
-        NewsVoteType voteType = newsVoteRepository
-                .findVoteTypeByNewsIdAndUserId(newsId, userId)
-                .orElse(null);
-
-        // 수정된 댓글 + voteType 같이 반환
-        return NewsCommentConverter.toCommentResponseDto(comment, voteType);
-    }
-
-    /*
-    private method 부리
-     */
-   private UserEntity getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(()->new NewsException(USER_ID_NOT_FOUND,"userId:"+userId));
-    }
-
-    private News getNewsById(Long newsId) {
-        return newsRepository.findById(newsId)
-                .orElseThrow(()->new NewsException(NEWS_ID_NOT_FOUND,"newsId:"+newsId));
     }
 
 
@@ -152,13 +127,23 @@ public class NewsCommentService {
 
         news.incrementCommentCount();
 
-        return NewsCommentConverter.toCommentResponseDto(savedReply,newsVoteType);
+        return NewsCommentConverter.toCommentResponseDto(savedReply);
     }
 
 
     /*
  private method 분리
   */
+    private UserEntity getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NewsException(USER_ID_NOT_FOUND, "userId"+userId));
+    }
+
+    private News getNewsById(Long newsId) {
+        return newsRepository.findById(newsId)
+                .orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "newsId"+newsId));
+    }
+
     private NewsComment getNewsCommentById(Long commentId, Long userId){
         return newsCommentRepository.findByIdAndUserId(commentId,userId)
                 .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND,"userId"+userId));

@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 
 public interface NewsVoteRepository extends JpaRepository<NewsVote, Long> {
@@ -25,8 +26,8 @@ public interface NewsVoteRepository extends JpaRepository<NewsVote, Long> {
     @Query("SELECT v.voteType, COUNT(v) FROM NewsVote v WHERE v.news = :news GROUP BY v.voteType")
     List<NewsVoteCountResponse> countVotesByType(@Param("news") News news);
 
-    @Query("SELECT nv FROM NewsVote nv WHERE nv.news.id = :newsId AND nv.user.id IN :userIds")
-    List<NewsVote> findVoteTypesByNewsIdAndUserIds(@Param("newsId") Long newsId, @Param("userIds") List<Long> userIds);
+    @Query("SELECT v FROM NewsVote v WHERE v.news.id = :newsId AND v.user.id IN :userIds")
+    List<NewsVote> findByNewsIdAndUserIds(@Param("newsId") Long newsId, @Param("userIds") Set<Long> userIds);
 
     Optional<NewsVote> findByNewsAndUser(News news, UserEntity user);
 
