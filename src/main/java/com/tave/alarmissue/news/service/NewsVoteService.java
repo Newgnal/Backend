@@ -32,6 +32,7 @@ public class NewsVoteService {
     private final NewsVoteRepository newsVoteRepository;
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
+    private final NewsCommentRepository newsCommentRepository;
 
     @Transactional
     public void createVoteAndGetResult(NewsVoteRequestDto dto, Long userId) {
@@ -59,7 +60,8 @@ public class NewsVoteService {
         newsVoteRepository.save(vote);
 
         //DB에 update
-        updateVoteType(dto.getNewsId(),userId, dto.getVoteType());
+//        updateVoteType(dto.getNewsId(),userId, dto.getVoteType());
+        updateCommentsVoteType(dto.getNewsId(),userId, dto.getVoteType());
 
     }
 
@@ -75,6 +77,12 @@ public class NewsVoteService {
         news.incrementVoteCount();  //총 투표수 증가
 
         return NewsVoteConverter.toVoteResponseDto(news, vote.getVoteType(), voteCounts);
+    }
+
+    private void updateCommentsVoteType(Long newsId, Long userId, NewsVoteType voteType) {
+        // 모든 댓글을 조회해서 업데이트
+        List<NewsComment> userComments = newsCommentRepository.findByNewsIdAndUserId(newsId, userId);
+        userComments.forEach(comment -> comment.updateVoteType(voteType));
     }
 
     /*

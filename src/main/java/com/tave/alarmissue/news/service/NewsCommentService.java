@@ -13,8 +13,6 @@ import com.tave.alarmissue.news.exceptions.NewsException;
 import com.tave.alarmissue.news.repository.NewsCommentRepository;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.news.repository.NewsVoteRepository;
-import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.tave.alarmissue.news.exceptions.NewsErrorCode.*;
 
@@ -52,18 +49,19 @@ public class NewsCommentService {
         NewsComment saved = newsCommentRepository.save(newsComment);
         news.incrementCommentCount();
 
-        return NewsCommentConverter.toCommentResponseDto(saved);
+        return NewsCommentConverter.toCommentResponseDto(saved,newsVoteType);
     }
 
     // 뉴스 댓글 반환
-    public NewsCommentListResponseDto getCommentsByNewsId(Long newsId) {
+    public NewsCommentListResponseDto getCommentsByNewsId(Long newsId, Long userId) {
 
         List<NewsComment> comments = newsCommentRepository.findByNewsIdAndParentCommentIsNullOrderByCreatedAtDesc(newsId);
         News news = getNewsById(newsId);
 
         Long totalCount = news.getCommentNum();
+        NewsVoteType currentUserVoteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(newsId, userId).orElse(null);
 
-        return NewsCommentConverter.toCommentListResponseDto(newsId, totalCount, comments);
+        return NewsCommentConverter.toCommentListResponseDto(newsId, totalCount, comments,currentUserVoteType);
     }
 
 
@@ -97,8 +95,9 @@ public class NewsCommentService {
 
         //댓글 내용 업데이트
         comment.updateContent(dto.getComment().trim());
+        NewsVoteType currentUserVoteType=newsVoteRepository.findVoteTypeByNewsIdAndUserId(comment.getNews().getId(),userId).orElse(null);
 
-        return NewsCommentConverter.toCommentResponseDto(comment);
+        return NewsCommentConverter.toCommentResponseDto(comment,currentUserVoteType);
 
     }
 
@@ -127,7 +126,7 @@ public class NewsCommentService {
 
         news.incrementCommentCount();
 
-        return NewsCommentConverter.toCommentResponseDto(savedReply);
+        return NewsCommentConverter.toCommentResponseDto(savedReply,newsVoteType);
     }
 
 
