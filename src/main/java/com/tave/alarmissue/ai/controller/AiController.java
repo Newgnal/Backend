@@ -22,11 +22,11 @@ public class AiController {
 
     @PostMapping("/thema")
     public Mono<ThemaResponse> analyzeThema(@RequestBody ThemaRequest request) {
-        return aiService.analyzeThema(request.getContentUrl());
+        return aiService.analyzeThema(request.getText());
     }
 
-    @PostMapping("/summary")
-    public Mono<SummaryResponse> analyzeSummary(@RequestBody SummaryRequest request) {
-        return aiService.analyzeSummary(request.getContentUrl());
-    }
+//    @PostMapping("/summary")
+//    public Mono<SummaryResponse> analyzeSummary(@RequestBody SummaryRequest request) {
+//        return aiService.analyzeSummary(request.getContentUrl());
+//    }
 }

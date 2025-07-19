@@ -8,13 +8,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${ai.base-url}")
-    private String baseUrl;
+    @Value("${ai.base-url1}")
+    private String baseUrl1;
 
     @Bean
-    public WebClient webClient() {
+    public WebClient webClientForThema() {
         return WebClient.builder()
-                .baseUrl(baseUrl)
+                .baseUrl(baseUrl1)
                 .build();
     }
 

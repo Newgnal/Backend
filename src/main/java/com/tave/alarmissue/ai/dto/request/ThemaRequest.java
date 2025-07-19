@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class ThemaRequest {
 
-    private String contentUrl;
+    private String text;
 
 }

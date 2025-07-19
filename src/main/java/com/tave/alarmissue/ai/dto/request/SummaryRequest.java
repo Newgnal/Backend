@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class SummaryRequest {
-    private String contentUrl;
+    private String text;
 }

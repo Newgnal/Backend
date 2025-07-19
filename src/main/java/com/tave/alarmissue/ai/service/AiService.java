@@ -3,6 +3,7 @@ package com.tave.alarmissue.ai.service;
 import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -13,23 +14,24 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AiService {
 
-    private final WebClient webClient;
+    private final WebClient webClientForThema;
 
-    public Mono<ThemaResponse> analyzeThema(String contentUrl) {
-        return webClient.post()
+    public Mono<ThemaResponse> analyzeThema(String text) {
+        return webClientForThema.post()
                 .uri("/predict")
-                .bodyValue(Map.of("contentUrl", contentUrl))
+                .contentType(MediaType.APPLICATION_JSON)  // 요청 바디 타입
+                .bodyValue(Map.of("text", text))
                 .retrieve()
                 .bodyToMono(ThemaResponse.class);
     }
 
-    public Mono<SummaryResponse> analyzeSummary(String contentUrl) {
-        return webClient.post()
-                .uri("/summarize")
-                .bodyValue(Map.of("contentUrl", contentUrl))
-                .retrieve()
-                .bodyToMono(SummaryResponse.class);
-    }
+//    public Mono<SummaryResponse> analyzeSummary(String text) {
+//        return webClient.post()
+//                .uri("/summarize")
+//                .bodyValue(Map.of("text", text))
+//                .retrieve()
+//                .bodyToMono(SummaryResponse.class);
+//    }
 
 
 }
