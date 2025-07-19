@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class PostUpdateRequest {
     private String postTitle;
     private String postContent;
-    private String articleUrl;
+    private Long newsId;
     private Thema thema;
     private boolean hasVote;
 }

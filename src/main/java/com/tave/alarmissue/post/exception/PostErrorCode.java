@@ -25,6 +25,8 @@ public enum PostErrorCode implements ErrorCode {
     COMMENT_ID_MISMATCH(HttpStatus.BAD_REQUEST, "댓글 ID가 일치하지 않습니다."),
     REPLY_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN,"대댓글 삭제 권한이 없습니다."),
 
+    NEWS_ID_NOT_FOUND(HttpStatus.BAD_REQUEST, "뉴스를 찾을 수 없습니다."),
+
     CANNOT_REPORT(HttpStatus.FORBIDDEN, "신고 권한이 없습니다."),
     ALREADY_REPORTED(HttpStatus.FORBIDDEN, "이미 신고가 되었습니다.");
 
