@@ -60,13 +60,11 @@ public class NewsCommentService {
         Long totalCount=news.getCommentNum();
 
         List<NewsCommentResponseDto> commentDtos = new ArrayList<>();
+
+        NewsVoteType voteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(newsId, userId).orElse(null);
+
         for (NewsComment comment : comments) {
-            Long commentUserId = comment.getUser().getId();
-
-            NewsVoteType voteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(newsId, commentUserId).orElse(null);
-
-            NewsCommentResponseDto dto = NewsCommentConverter.toCommentResponseDto(comment,voteType);
-
+            NewsCommentResponseDto dto = NewsCommentConverter.toCommentResponseDto(comment, voteType);
             commentDtos.add(dto);
         }
 
