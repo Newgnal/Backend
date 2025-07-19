@@ -1,5 +1,6 @@
 package com.tave.alarmissue.ai.service;
 
+import com.tave.alarmissue.ai.dto.response.SentimentResponse;
 import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class AiService {
 
     private final WebClient webClientForThema;
+    private final WebClient webClient;
 
     public Mono<ThemaResponse> analyzeThema(String text) {
         return webClientForThema.post()
@@ -25,21 +27,22 @@ public class AiService {
                 .bodyToMono(ThemaResponse.class);
     }
 
-//    public Mono<SummaryResponse> analyzeSummary(String text) {
-//        return webClient.post()
-//                .uri("/summarize")
-//                .bodyValue(Map.of("text", text))
-//                .retrieve()
-//                .bodyToMono(SummaryResponse.class);
-//    }
+    public Mono<SummaryResponse> analyzeSummary(String text) {
+        return webClient.post()
+                .uri("/summarize")
+                .bodyValue(Map.of("text", text))
+                .retrieve()
+                .bodyToMono(SummaryResponse.class);
+    }
 
-    //    public Mono<SentimentResponse> analyzeSentiment(String title) {
-//        return webClient.post()
-//                .uri("/sentiment")
-//                .bodyValue(Map.of("title", title))
-//                .retrieve()
-//                .bodyToMono(SummaryResponse.class);
-//    }
+
+        public Mono<SentimentResponse> analyzeSentiment(String title) {
+        return webClient.post()
+                .uri("/sentiment")
+                .bodyValue(Map.of("title", title))
+                .retrieve()
+                .bodyToMono(SentimentResponse.class);
+    }
 
 
 }

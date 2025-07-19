@@ -1,7 +1,9 @@
 package com.tave.alarmissue.ai.controller;
 
+import com.tave.alarmissue.ai.dto.request.SentimentRequest;
 import com.tave.alarmissue.ai.dto.request.SummaryRequest;
 import com.tave.alarmissue.ai.dto.request.ThemaRequest;
+import com.tave.alarmissue.ai.dto.response.SentimentResponse;
 import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import com.tave.alarmissue.ai.service.AiService;
@@ -25,13 +27,13 @@ public class AiController {
         return aiService.analyzeThema(request.getText());
     }
 
-//    @PostMapping("/summary")
-//    public Mono<SummaryResponse> analyzeSummary(@RequestBody SummaryRequest request) {
-//        return aiService.analyzeSummary(request.getContentUrl());
-//    }
+    @PostMapping("/summary")
+    public Mono<SummaryResponse> analyzeSummary(@RequestBody SummaryRequest request) {
+        return aiService.analyzeSummary(request.getText());
+    }
 
-    //    @PostMapping("/sentiment")
-//    public Mono<SentimentResponse> analyzeSentiment(@RequestBody SentimentRequest request) {
-//        return aiService.analyzeSentiment(request.getTitle());
-//    }
+        @PostMapping("/sentiment")
+    public Mono<SentimentResponse> analyzeSentiment(@RequestBody SentimentRequest request) {
+        return aiService.analyzeSentiment(request.getTitle());
+    }
 }
