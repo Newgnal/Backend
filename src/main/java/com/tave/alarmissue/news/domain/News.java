@@ -3,12 +3,17 @@ package com.tave.alarmissue.news.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tave.alarmissue.global.domain.BaseTimeEntityWithDeletion;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +26,9 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @AllArgsConstructor
 @Table(name="news")
-public class News {
+@SQLDelete(sql = "UPDATE news SET deleted_at = NOW() WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+public class News extends BaseTimeEntityWithDeletion {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -114,5 +121,17 @@ public class News {
         if(this.commentNum>0) {
             this.commentNum-=1;
         }
+    }
+
+    public void decrementCommentCountBy(int totalDeletedCount) {
+        if(this.commentNum>=totalDeletedCount){
+            this.commentNum-=totalDeletedCount;
+        }
+        else{
+            this.commentNum=0L;
+        }
+    }
+    public void incrementVoteCount(){
+        this.voteNum+=1;
     }
 }

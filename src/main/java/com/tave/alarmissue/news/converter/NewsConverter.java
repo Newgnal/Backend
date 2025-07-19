@@ -20,6 +20,8 @@ public class NewsConverter {
                 .thema(news.getThema())
                 .sentiment(news.getSentiment() != null ? news.getSentiment() : 0.0)
                 .view(news.getView())
+                .commentNum(news.getCommentNum())
+                .voteNum(news.getVoteNum())
                 .imageUrl(news.getImageUrl())
                 .imageCaption(news.getImageCaption())
                 .build();
@@ -34,6 +36,8 @@ public class NewsConverter {
                 .thema(news.getThema())
                 .sentiment(news.getSentiment() != null ? news.getSentiment() : 0.0)
                 .view(news.getView())
+                .commentNum(news.getCommentNum())
+                .voteNum(news.getVoteNum())
                 .imageUrl(news.getImageUrl())
                 .imageCaption(news.getImageCaption())
                 .build();

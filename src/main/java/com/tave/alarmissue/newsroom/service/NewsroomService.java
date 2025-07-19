@@ -182,6 +182,10 @@ public class NewsroomService {
         // 사용자의 키워드인지 확인
         List<Keyword> keywords = keywordRepository.findAllById(keywordIds);
 
+        if (keywords.size() != keywordIds.size()) {
+            throw new KeywordException(KeywordErrorCode.KEYWORD_NOT_FOUND);
+        }
+
         for (Keyword keyword : keywords) {
             if (!keyword.getUser().getId().equals(userId)) {
                 throw new KeywordException(KeywordErrorCode.UNAUTHORIZED_ACCESS);

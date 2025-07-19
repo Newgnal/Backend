@@ -1,5 +1,7 @@
 package com.tave.alarmissue.post.converter;
 
+import com.tave.alarmissue.news.domain.News;
+import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.domain.PostReply;
@@ -16,13 +18,16 @@ import java.util.List;
 public class
 PostConverter {
 
+    private final NewsRepository newsRepository;
+
     public static PostResponse toPostResponseDto(Post post) {
         return PostResponse.builder()
                 .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
                 .likeCount(post.getLikeCount())
-                .articleUrl(post.getArticleUrl())
+                .newsId(post.getNews() != null ? post.getNews().getId() : null)
+                .newsUrl(post.getNewsUrl())
                 .thema(post.getThema())
                 .nickname(post.getUser().getNickName())
                 .imageUrl(post.getUser().getImageUrl())
@@ -65,7 +70,7 @@ PostConverter {
                 .postTitle(post.getPostTitle())
                 .postContent(post.getPostContent())
                 .likeCount(post.getLikeCount())
-                .articleUrl(post.getArticleUrl())
+                .newsId(post.getNews() != null ? post.getNews().getId() : null)
                 .thema(post.getThema())
                 .nickname(post.getUser().getNickName())
                 .createdAt(post.getCreatedAt())
@@ -89,11 +94,13 @@ PostConverter {
                 .build();
     }
 
-    public Post toPost(PostCreateRequest dto, UserEntity user) {
+    public Post toPost(PostCreateRequest dto, UserEntity user,News news) {
+
         return Post.builder()
                 .postTitle(dto.getPostTitle())
                 .postContent(dto.getPostContent())
-                .articleUrl(dto.getArticleUrl())
+                .news(news)
+                .newsUrl(news.getUrl())
                 .thema(dto.getThema())
                 .hasVote(dto.isHasVote())
                 .likeCount(0L)

@@ -25,10 +25,10 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     List<News> findAll();
 
     Slice<News> findAllByOrderByDateDesc(Pageable pageable);
-    Slice<News> findAllByOrderByViewDesc(Pageable pageable);
+    Slice<News> findAllByOrderByViewDescDateDesc(Pageable pageable);
 
     Slice<News> findByThemaOrderByDateDesc(Thema thema,Pageable pageable);
-    Slice<News> findByThemaOrderByViewDesc(Thema thema,Pageable pageable);
+    Slice<News> findByThemaOrderByViewDescDateDesc(Thema thema,Pageable pageable);
 
     // 키워드 포함 뉴스 개수
     @Query("SELECT COUNT(n) FROM News n WHERE LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
@@ -46,16 +46,16 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     Optional<News> findByUrl(String url);
     Optional<News> findByTitle(String title);
 
-    List<News> findByTitleContainingIgnoreCase(String title);
+    Slice<News> findByTitleContainingIgnoreCaseOrderByDateDesc(String title,Pageable pageable);
 
 
     @Query("SELECT n FROM News n WHERE LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "ORDER BY COALESCE(n.view, 0) DESC, n.date DESC")
     List<News> findTopNewsByKeyword(String keyword, Pageable pageable);
 
-    int deleteByDateBefore(LocalDateTime date);
-
     @Query("SELECT n.title FROM News n WHERE n.title IN :titles")
     List<String> findAllTitlesByTitleIn(@Param("titles") List<String> titles);
+
+    List<News> findByDateBefore(LocalDateTime date);
 
 }
