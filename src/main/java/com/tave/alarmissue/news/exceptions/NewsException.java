@@ -4,6 +4,7 @@ import com.tave.alarmissue.global.exception.CustomException;
 import com.tave.alarmissue.global.exception.ErrorCode;
 
 public class NewsException extends CustomException {
+
     public NewsException(ErrorCode errorCode) {
         super(errorCode);
     }
