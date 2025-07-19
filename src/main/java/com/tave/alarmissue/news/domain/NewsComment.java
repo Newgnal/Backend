@@ -67,9 +67,6 @@ public class NewsComment extends BaseTimeEntity {
         this.voteType=voteType;
     }
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="parent_id")
-//    private Comment parent;       //답글을 위한 부모 댓글
     public void decrementLikeCount() {
         if (this.likeCount > 0) {
             this.likeCount--;

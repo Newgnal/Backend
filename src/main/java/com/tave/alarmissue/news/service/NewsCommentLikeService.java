@@ -59,9 +59,4 @@ public class NewsCommentLikeService {
         return new NewsCommentLikeResponse(commentId, isLiked, comment.getLikeCount());
     }
 
-
-    // 특정 사용자의 좋아요 상태 확인
-    public boolean isLikedByUser(Long commentId, Long userId) {
-        return newsCommentLikeRepository.existsByCommentIdAndUserId(commentId, userId);
-    }
 }

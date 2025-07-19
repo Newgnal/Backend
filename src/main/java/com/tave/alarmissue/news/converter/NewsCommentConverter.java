@@ -23,7 +23,7 @@ public class NewsCommentConverter {
         return NewsCommentResponseDto.builder()
                 .commentId(newsComment.getId())
                 .comment(newsComment.getComment())
-                .likeCount(0L)
+                .likeCount(newsComment.getLikeCount())
                 .nickName(newsComment.getUser().getNickName())
                 .createdAt(newsComment.getCreatedAt())
                 .timeAgo(TimeAgoUtil.getTimeAgo(newsComment.getCreatedAt()))   //현재 시간과 계산한 값
@@ -70,6 +70,7 @@ public class NewsCommentConverter {
                 .createdAt(newsComment.getCreatedAt())
                 .timeAgo(TimeAgoUtil.getTimeAgo(newsComment.getCreatedAt()))
                 .voteType(newsComment.getVoteType())
+                .likeCount(newsComment.getLikeCount())
                 .parentId(null) // 원댓글이므로 null
                 .replies(replyDtos) // 답글들 포함
                 .replyCount(replyDtos.size())

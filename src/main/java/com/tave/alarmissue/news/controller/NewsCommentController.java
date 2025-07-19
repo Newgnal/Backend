@@ -83,7 +83,7 @@ public class NewsCommentController {
     }
 
     @PostMapping("/like/{commentId}")
-    @Operation(summary = "댓글/답글 좋아요 토글", description = "댓글/답글에 좋아요를 추가하거나 제거합니다.")
+    @Operation(summary = "댓글/답글 좋아요", description = "댓글/답글에 좋아요를 추가하거나 제거합니다.")
     public ResponseEntity<NewsCommentLikeResponse> toggleLike(@PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
         Long userId= principal.getUserId();
         NewsCommentLikeResponse response=newsCommentLikeService.commentLike(commentId,userId);
