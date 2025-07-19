@@ -65,6 +65,7 @@ public class NewsVoteService {
 
     }
 
+    @Transactional
     public NewsVoteResponseDto getVoteResult(NewsVoteRequestDto dto, Long userId) {
 
         News news = getNews(dto.getNewsId());
