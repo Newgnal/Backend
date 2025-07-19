@@ -122,6 +122,15 @@ public class News extends BaseTimeEntityWithDeletion {
             this.commentNum-=1;
         }
     }
+
+    public void decrementCommentCountBy(int totalDeletedCount) {
+        if(this.commentNum>=totalDeletedCount){
+            this.commentNum-=totalDeletedCount;
+        }
+        else{
+            this.commentNum=0L;
+        }
+    }
     public void incrementVoteCount(){
         this.voteNum+=1;
     }

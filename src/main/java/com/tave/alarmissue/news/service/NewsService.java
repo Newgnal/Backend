@@ -3,23 +3,21 @@ package com.tave.alarmissue.news.service;
 import com.tave.alarmissue.news.converter.NewsConverter;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.enums.Thema;
-import com.tave.alarmissue.news.dto.request.NewsSortType;
+import com.tave.alarmissue.news.dto.request.enums.NewsSortType;
 import com.tave.alarmissue.news.dto.response.NewsDetailResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsResponseDto;
 import com.tave.alarmissue.news.dto.response.SliceResponseDto;
 import com.tave.alarmissue.news.exceptions.NewsException;
 import com.tave.alarmissue.news.repository.NewsRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static com.tave.alarmissue.news.exceptions.NewsErrorCode.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.tave.alarmissue.news.exceptions.NewsErrorCode.NEWS_ID_NOT_FOUND;
 
 @Service      //Spring이 관리하는 Bean으로 등록됨
 @Transactional(readOnly = true)   //읽기 전용. 성능향상 목적
@@ -34,7 +32,7 @@ public class NewsService {
 
         Slice<News> newsSlice=switch(sortType){
             case LATEST -> newsRepository.findAllByOrderByDateDesc(pageable);
-            case VIEWEST -> newsRepository.findAllByOrderByViewDescDateDesc(pageable);
+            case POPULAR -> newsRepository.findAllByOrderByViewDescDateDesc(pageable);
         };
         List<NewsResponseDto> content=newsSlice.getContent()
                 .stream().map(newsConverter::toDto)
@@ -47,7 +45,7 @@ public class NewsService {
     public SliceResponseDto<NewsResponseDto> getAllThemaNews(NewsSortType sortType,Thema thema,Pageable pageable) {
         Slice<News> newsSlice=switch(sortType){
             case LATEST -> newsRepository.findByThemaOrderByDateDesc(thema,pageable);
-            case VIEWEST -> newsRepository.findByThemaOrderByViewDescDateDesc(thema,pageable);
+            case POPULAR -> newsRepository.findByThemaOrderByViewDescDateDesc(thema,pageable);
         };
         List<NewsResponseDto> content=newsSlice.getContent()
                 .stream().map(newsConverter::toDto)
@@ -58,7 +56,8 @@ public class NewsService {
 
     @Transactional
     public NewsDetailResponseDto getDetailNews(Long newsId) {
-        News news=newsRepository.findById(newsId).orElseThrow(()->new NewsException(NEWS_ID_NOT_FOUND,"뉴스를 찾을 수 없습니다. ID: "+newsId));
+        News news = newsRepository.findById(newsId).orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "해당 뉴스를 찾을 수 없습니다."));
+
         news.incrementView();
         return newsConverter.toDetailDto(news);
 

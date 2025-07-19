@@ -10,12 +10,13 @@ import com.tave.alarmissue.news.util.TimeAgoUtil;
 import com.tave.alarmissue.user.domain.UserEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class NewsCommentConverter {
-    public static NewsCommentResponseDto toCommentResponseDto(NewsComment newsComment,NewsVoteType voteType){
+    public static NewsCommentResponseDto toCommentResponseDto(NewsComment newsComment, NewsVoteType voteType) {
         return NewsCommentResponseDto.builder()
                 .commentId(newsComment.getId())
                 .comment(newsComment.getComment())
@@ -23,6 +24,7 @@ public class NewsCommentConverter {
                 .createdAt(newsComment.getCreatedAt())
                 .timeAgo(TimeAgoUtil.getTimeAgo(newsComment.getCreatedAt()))   //현재 시간과 계산한 값
                 .voteType(voteType)
+                .parentId(newsComment.getParentComment() != null ? newsComment.getParentComment().getId() : null)
                 .build();
     }
 
@@ -36,16 +38,42 @@ public class NewsCommentConverter {
 
     }
 
-    //댓글 목록 변환
-//    public static NewsCommentListResponseDto toCommentListResponseDto(Long newsId, Long totalCount, List<NewsComment> comments) {
+//    public static NewsCommentListResponseDto toCommentListResponseDto(
+//            Long totalCount,
+//            List<NewsComment> comments,
+//            NewsVoteType voteType) {
+//
 //        List<NewsCommentResponseDto> commentResponseDtos = comments.stream()
-//                .map(NewsCommentConverter::toCommentResponseDto)
+//                .map(comment -> toCommentWithRepliesDto(comment, voteType)) // voteType 추가
 //                .collect(Collectors.toList());
 //
 //        return NewsCommentListResponseDto.builder()
-//                .newsId(newsId)
 //                .totalCount(totalCount)
 //                .comments(commentResponseDtos)
 //                .build();
 //    }
+
+    // 답글 포함 댓글 변환
+    public static NewsCommentResponseDto toCommentWithRepliesDto(NewsComment newsComment, Long userId, Long newsId, NewsVoteType voteType) {
+        {
+            // 답글들을 DTO로 변환
+            List<NewsCommentResponseDto> replyDtos = newsComment.getReplies().stream()
+                    .sorted(Comparator.comparing(NewsComment::getCreatedAt)) // 오래된 순
+                    .map(reply -> toCommentResponseDto(reply, voteType)) // voteType 함께 넘김
+                    .collect(Collectors.toList());
+
+            return NewsCommentResponseDto.builder()
+                    .commentId(newsComment.getId())
+                    .comment(newsComment.getComment())
+                    .nickName(newsComment.getUser().getNickName())
+                    .createdAt(newsComment.getCreatedAt())
+                    .timeAgo(TimeAgoUtil.getTimeAgo(newsComment.getCreatedAt()))
+                    .voteType(newsComment.getVoteType())
+                    .parentId(null) // 원댓글이므로 null
+                    .replies(replyDtos) // 답글들 포함
+                    .replyCount(replyDtos.size())
+                    .build();
+        }
+
+    }
 }

@@ -1,11 +1,15 @@
 package com.tave.alarmissue.news.controller;
 
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
+import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.dto.request.NewsCommentRequestDto;
+import com.tave.alarmissue.news.dto.request.NewsCommentUpdateRequest;
+import com.tave.alarmissue.news.dto.request.NewsReplyRequest;
 import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.service.NewsCommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +20,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("/news/v1/{newsId}/comments")
-@RequestMapping("news/v1/comments")
+@RequestMapping("news/v1/comment")
+@Tag(name = "뉴스 댓글 API")
 public class NewsCommentController {
 
     private final NewsCommentService newsCommentService;
@@ -44,8 +48,9 @@ public class NewsCommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    @Operation(summary = "댓글 삭제", description = "특정 댓글을 삭제합니다. (작성자만 가능)")
-    public ResponseEntity<Void>deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
+    @Operation(summary = "댓글/답글 삭제", description = "특정 댓글을 삭제합니다. (작성자만 가능), (답글도 모두 삭제)")
+    public ResponseEntity<Void>deleteComment(@PathVariable Long commentId,
+                                             @AuthenticationPrincipal PrincipalUserDetails principal){
         Long userId=principal.getUserId();
         newsCommentService.deleteComment(commentId,userId);
 
@@ -53,13 +58,26 @@ public class NewsCommentController {
 
     }
 
-    @PutMapping("/{commentId}")
-    @Operation(summary = "댓글 수정", description = "특정 댓글을 수정합니다. (작성자만 가능)")
-    public ResponseEntity<NewsCommentResponseDto> updateComment(@RequestBody NewsCommentRequestDto dto,
+    @PatchMapping("/{commentId}")
+    @Operation(summary = "댓글/답글 수정", description = "특정 댓글을 수정합니다. (작성자만 가능)")
+    public ResponseEntity<NewsCommentResponseDto> updateComment(@RequestBody NewsCommentUpdateRequest dto,
                                                                @PathVariable Long commentId,
                                                                @AuthenticationPrincipal PrincipalUserDetails principal){
         Long userId = principal.getUserId();
         NewsCommentResponseDto response = newsCommentService.updateComment(commentId, userId, dto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{commentId}")
+    @Operation(summary = "답글 생성", description = "특정 댓글에 대댓글을 작성합니다.")
+    public ResponseEntity<NewsCommentResponseDto> createReply(@RequestBody NewsReplyRequest dto,
+
+                                                              @AuthenticationPrincipal PrincipalUserDetails principal ){
+        Long userId=principal.getUserId();
+
+
+        NewsCommentResponseDto response=newsCommentService.createReply(userId,dto);
 
         return ResponseEntity.ok(response);
     }
