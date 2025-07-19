@@ -25,9 +25,11 @@ public class NewsCommentResponseDto {
     private String timeAgo;
     @Schema(description = "부모 댓글 ID (답글인 경우만)")
     private Long parentId;    //부모댓글 id, null이면 원댓글, 값이 있으면 답글
+
     @Schema(description = "답글 목록")
     @JsonInclude(JsonInclude.Include.NON_NULL) // null인 경우 JSON에서 제외
     private List<NewsCommentResponseDto> replies;    //답글 리스트
+
     @Schema(description = "답글 개수")
     @JsonInclude(JsonInclude.Include.NON_NULL) // null인 경우 JSON에서 제외
     private Integer replyCount;

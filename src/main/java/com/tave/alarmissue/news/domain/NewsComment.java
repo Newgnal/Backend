@@ -50,15 +50,8 @@ public class NewsComment extends BaseTimeEntity {
         this.comment=newComment;
     }
 
-
-
-
     public void updateVoteType(NewsVoteType voteType){
         this.voteType=voteType;
     }
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="parent_id")
-//    private Comment parent;       //답글을 위한 부모 댓글
 
 }

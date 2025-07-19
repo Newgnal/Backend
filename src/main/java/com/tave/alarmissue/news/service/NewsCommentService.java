@@ -102,11 +102,18 @@ public class NewsCommentService {
 
     }
 
+
+    //답글 작성
     @Transactional
     public NewsCommentResponseDto createReply(Long userId, NewsReplyRequest dto) {
         UserEntity user = getUserById(userId);   //사용자 확인
         NewsComment parentComment = getNewsCommentById(dto.getParentId(),userId); //부모댓글 확인
         News news= parentComment.getNews();
+
+        //답글은 부모 댓글id가 있으니까 부모 댓글 id가 있으면 답글 달 수 없게
+        if(isReply(parentComment)){
+            throw new NewsException(INVALID_REQUEST, "대댓글에는 답글을 달 수 없습니다.");
+        }
 
         NewsVoteType newsVoteType = newsVoteRepository.findVoteTypeByNewsIdAndUserId(news.getId(), userId).orElse(null);
         NewsComment reply=NewsComment.builder()
@@ -141,5 +148,11 @@ public class NewsCommentService {
         return newsCommentRepository.findByIdAndUserId(commentId,userId)
                 .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND,"userId"+userId));
     }
+
+    private boolean isReply(NewsComment comment){
+        return comment.getParentComment()!=null;
+    }
+
+
 
 }

@@ -32,7 +32,7 @@ public class NewsService {
 
         Slice<News> newsSlice=switch(sortType){
             case LATEST -> newsRepository.findAllByOrderByDateDesc(pageable);
-            case POPULAR -> newsRepository.findAllByOrderByViewDesc(pageable);
+            case POPULAR -> newsRepository.findAllByOrderByViewDescDateDesc(pageable);
         };
         List<NewsResponseDto> content=newsSlice.getContent()
                 .stream().map(newsConverter::toDto)
@@ -45,7 +45,7 @@ public class NewsService {
     public SliceResponseDto<NewsResponseDto> getAllThemaNews(NewsSortType sortType,Thema thema,Pageable pageable) {
         Slice<News> newsSlice=switch(sortType){
             case LATEST -> newsRepository.findByThemaOrderByDateDesc(thema,pageable);
-            case POPULAR -> newsRepository.findByThemaOrderByViewDesc(thema,pageable);
+            case POPULAR -> newsRepository.findByThemaOrderByViewDescDateDesc(thema,pageable);
         };
         List<NewsResponseDto> content=newsSlice.getContent()
                 .stream().map(newsConverter::toDto)
