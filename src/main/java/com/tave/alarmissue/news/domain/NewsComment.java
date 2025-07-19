@@ -2,6 +2,7 @@ package com.tave.alarmissue.news.domain;
 
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
 import com.tave.alarmissue.news.domain.enums.NewsVoteType;
+import com.tave.alarmissue.report.domain.Report;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -45,6 +46,9 @@ public class NewsComment extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true) //답글들도 함께 삭제
     private List<NewsComment> replies = new ArrayList<>();  // 답글 리스트
+
+    @OneToMany(mappedBy = "newsComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports = new ArrayList<>();
 
     public void updateContent(String newComment) {
         this.comment=newComment;

@@ -2,6 +2,7 @@ package com.tave.alarmissue.post.domain;
 
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
 import com.tave.alarmissue.post.domain.enums.VoteType;
+import com.tave.alarmissue.report.domain.Report;
 import com.tave.alarmissue.user.domain.UserEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -41,7 +42,7 @@ public class PostComment extends BaseTimeEntity {
     private List<PostLike> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "postComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostReport> reports = new ArrayList<>();
+    private List<Report> reports = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @JoinColumn(nullable = true)
