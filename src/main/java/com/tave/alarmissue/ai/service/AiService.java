@@ -19,7 +19,7 @@ import java.util.Map;
 public class AiService {
 
     private final WebClient webClientForThema;
-    private final WebClient webClient;
+    private final WebClient webClientForSummary;
 
     public Mono<ThemaResponse> analyzeThema(String text) {
 
@@ -32,7 +32,7 @@ public class AiService {
     }
 
     public Mono<SummaryResponse> analyzeSummary(String text) {
-        return webClient.post()
+        return webClientForSummary.post()
                 .uri("/summarize")
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(Map.of("text", text))
@@ -40,25 +40,25 @@ public class AiService {
                 .bodyToMono(SummaryResponse.class);
     }
 
-    public Mono<SentimentResponse> analyzeSentiment(String title) {
-        // 배열을 직접 전송 (객체로 감싸지 않음)
-        List<String> titles = List.of(title);
-
-        return webClient.post()
-                .uri("/sentiment")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(titles)  // Map이 아닌 List 직접 전송
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Double>>>() {})
-                .map(results -> {
-                    if (results.isEmpty()) {
-                        return new SentimentResponse(0.0f);
-                    }
-                    Double score = results.get(0).get("score");
-                    return new SentimentResponse(score != null ? score.floatValue() : 0.0f);
-                })
-                .onErrorReturn(new SentimentResponse(0.0f));
-    }
+//    public Mono<SentimentResponse> analyzeSentiment(String title) {
+//        // 배열을 직접 전송 (객체로 감싸지 않음)
+//        List<String> titles = List.of(title);
+//
+//        return webClient.post()
+//                .uri("/sentiment")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(titles)  // Map이 아닌 List 직접 전송
+//                .retrieve()
+//                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Double>>>() {})
+//                .map(results -> {
+//                    if (results.isEmpty()) {
+//                        return new SentimentResponse(0.0f);
+//                    }
+//                    Double score = results.get(0).get("score");
+//                    return new SentimentResponse(score != null ? score.floatValue() : 0.0f);
+//                })
+//                .onErrorReturn(new SentimentResponse(0.0f));
+//    }
 
 
 }

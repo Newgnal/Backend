@@ -2,6 +2,7 @@ package com.tave.alarmissue.ai.controller;
 
 import com.tave.alarmissue.ai.dto.request.SentimentRequest;
 import com.tave.alarmissue.ai.dto.request.SummaryRequest;
+import com.tave.alarmissue.ai.dto.request.ThemaRequest;
 import com.tave.alarmissue.ai.dto.response.SentimentResponse;
 import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/ai")
@@ -26,36 +25,18 @@ public class AiController {
 
     private final AiService aiService;
 
-    @PostMapping(value = "/thema", consumes = "application/json; charset=UTF-8")
-    public Mono<ThemaResponse> analyzeThema(@RequestBody String rawJson) {
-        try {
-            String text = extractTextFromJson(rawJson);
+    @PostMapping(value = "/thema", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ThemaResponse> analyzeThema(@RequestBody ThemaRequest request) {
 
-            if (text == null || text.isEmpty()) {
-                log.error("Cannot extract text from JSON");
-                return Mono.just(new ThemaResponse("텍스트 추출 오류"));
-            }
-
-            log.info("Successfully extracted text length: {}", text.length());
-            return aiService.analyzeThema(text);
-
-        } catch (Exception e) {
-            log.error("Error processing request: ", e);
-            return Mono.just(new ThemaResponse("처리 오류"));
-        }
+        return extractTextOrError(request.getText())
+                .flatMap(aiService::analyzeThema);
     }
 
     @PostMapping(value = "/summary", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<SummaryResponse> analyzeSummary(@RequestBody SummaryRequest request) {
-        String text = request.getText();
 
-        if (text == null || text.isEmpty()) {
-            log.error("Cannot extract text from JSON");
-            return Mono.just(new SummaryResponse("텍스트 추출 오류"));
-        }
-
-        log.info("Successfully extracted text length: {}", text.length());
-        return aiService.analyzeSummary(text);
+        return extractTextOrError(request.getText())
+                .flatMap(aiService::analyzeSummary);
     }
 
 //    @PostMapping("/sentiment")
@@ -63,27 +44,15 @@ public class AiController {
 //        return aiService.analyzeSentiment(request.getTitles());
 //    }
 //
-    private String extractTextFromJson(String jsonString) {
-        try {
-            // "text": "..." 패턴으로 텍스트 추출
-            Pattern pattern = Pattern.compile("\"text\"\\s*:\\s*\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"", Pattern.DOTALL);
-            Matcher matcher = pattern.matcher(jsonString);
 
-            if (matcher.find()) {
-                String extracted = matcher.group(1);
-                // 이스케이프된 문자들을 원래대로 변환
-                return extracted
-                        .replace("\\n", "\n")
-                        .replace("\\r", "\r")
-                        .replace("\\t", "\t")
-                        .replace("\\\"", "\"")
-                        .replace("\\\\", "\\");
-            }
-
-            return null;
-        } catch (Exception e) {
-            log.error("Error extracting text from JSON", e);
-            return null;
+    private <T> Mono<String> extractTextOrError(String text) {
+        if (text == null || text.isEmpty()) {
+            log.error("Cannot extract text from JSON");
+            return Mono.error(new IllegalArgumentException("텍스트 추출 오류"));
         }
+
+        log.info("Successfully extracted text length: {}", text.length());
+        return Mono.just(text);
     }
+
 }
