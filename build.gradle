@@ -56,7 +56,8 @@ dependencies {
 	//firebase
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
 
-	implementation 'io.projectreactor.netty:reactor-netty-http:1.1.4'  // 예시 버전, 최신 버전 확인 필요
+	implementation 'io.projectreactor:reactor-core:3.6.6'
+	implementation 'io.projectreactor.netty:reactor-netty-http:1.1.13'
 
 
 }
