@@ -3,6 +3,7 @@ package com.tave.alarmissue.news.service;
 import com.tave.alarmissue.news.domain.NewsComment;
 import com.tave.alarmissue.news.domain.NewsCommentLike;
 import com.tave.alarmissue.news.dto.response.NewsCommentLikeResponse;
+import com.tave.alarmissue.news.dto.response.NewsCommentLikeStatusResponse;
 import com.tave.alarmissue.news.exceptions.NewsException;
 import com.tave.alarmissue.news.repository.NewsCommentLikeRepository;
 import com.tave.alarmissue.news.repository.NewsCommentRepository;
@@ -58,5 +59,24 @@ public class NewsCommentLikeService {
 
         return new NewsCommentLikeResponse(commentId, isLiked, comment.getLikeCount());
     }
+
+
+    @Transactional(readOnly = true)
+    public NewsCommentLikeStatusResponse getLikeStatus(Long commentId, Long userId) {
+        // 댓글 존재 확인
+        NewsComment comment = newsCommentRepository.findById(commentId)
+                .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND, "댓글을 찾을 수 없습니다."));
+
+        // 좋아요 상태 확인
+        boolean isLiked = newsCommentLikeRepository.existsByCommentIdAndUserId(commentId, userId);
+
+        return new NewsCommentLikeStatusResponse(
+                commentId,
+                userId,
+                isLiked,
+                comment.getLikeCount()
+        );
+    }
+
 
 }

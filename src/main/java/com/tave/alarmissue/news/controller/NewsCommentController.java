@@ -6,6 +6,7 @@ import com.tave.alarmissue.news.dto.request.NewsCommentRequestDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentLikeResponse;
 import com.tave.alarmissue.news.dto.request.NewsCommentUpdateRequest;
 import com.tave.alarmissue.news.dto.request.NewsReplyRequest;
+import com.tave.alarmissue.news.dto.response.NewsCommentLikeStatusResponse;
 import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
 import com.tave.alarmissue.news.service.NewsCommentLikeService;
@@ -91,6 +92,16 @@ public class NewsCommentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/like/{commentId}/status")
+    @Operation(summary = "댓글 좋아요 상태 조회", description = "특정 사용자의 댓글 좋아요 상태를 조회합니다.")
+    public ResponseEntity<NewsCommentLikeStatusResponse> getLikeStatus(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal PrincipalUserDetails principal) {
 
+        Long userId = principal.getUserId();
+        NewsCommentLikeStatusResponse response = newsCommentLikeService.getLikeStatus(commentId, userId);
+
+        return ResponseEntity.ok(response);
+    }
 
 }
