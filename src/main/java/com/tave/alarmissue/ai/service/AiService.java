@@ -4,6 +4,7 @@ import com.tave.alarmissue.ai.dto.response.SentimentResponse;
 import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AiService {
 
     private final WebClient webClientForThema;
@@ -41,25 +43,26 @@ public class AiService {
                 .bodyToMono(SummaryResponse.class);
     }
 
-//    public Mono<SentimentResponse> analyzeSentiment(String title) {
-//        // 배열을 직접 전송 (객체로 감싸지 않음)
-//        List<String> titles = List.of(title);
-//
-//        return webClient.post()
-//                .uri("/sentiment")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .bodyValue(titles)  // Map이 아닌 List 직접 전송
-//                .retrieve()
-//                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Double>>>() {})
-//                .map(results -> {
-//                    if (results.isEmpty()) {
-//                        return new SentimentResponse(0.0f);
-//                    }
-//                    Double score = results.get(0).get("score");
-//                    return new SentimentResponse(score != null ? score.floatValue() : 0.0f);
-//                })
-//                .onErrorReturn(new SentimentResponse(0.0f));
-//    }
-
-
+    public Mono<SentimentResponse> analyzeSentiment(List<String> titles) {
+        log.info("Received /sentiment request with titles: {}", titles);
+        return webClientForSentiment.post()
+                .uri("/sentiment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(titles)
+                .exchangeToMono(response -> {
+                    log.info("FastAPI response status: {}", response.statusCode());
+                    if (response.statusCode().is2xxSuccessful()) {
+                        return response.bodyToMono(new ParameterizedTypeReference<List<Map<String, Double>>>() {
+                        });
+                    } else {
+                        return response.createException().flatMap(Mono::error);
+                    }
+                })
+                .map(results -> {
+                    Double score = results.isEmpty() ? 0.0 : results.get(0).get("score");
+                    return new SentimentResponse(score.floatValue());
+                })
+                .doOnError(e -> log.error("Error in sentiment analysis: ", e))
+                .onErrorReturn(new SentimentResponse(0.0f));
+    }
 }

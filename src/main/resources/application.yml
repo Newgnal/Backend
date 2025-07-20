@@ -3,6 +3,10 @@ server:
   port: 8080
 
 spring:
+  webflux:
+    async:
+      request-timeout: 60000
+
   profiles:
     include: local, jwt, oauth, aws
 
@@ -65,7 +69,7 @@ jwt:
 ai:
   base-url1: ${AI_BASE_URL_THEMA}
   base-url2: ${AI_BASE_URL_SUMMARY}
-  base-url3: ${AI_BASE_URL_SENTIMENT:test}
+  base-url3: ${AI_BASE_URL_SENTIMENT}
 
 kakao:
   oauth:

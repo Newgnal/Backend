@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/ai")
@@ -43,12 +45,14 @@ public class AiController {
                 .flatMap(aiService::analyzeSummary);
     }
 
-//    @PostMapping("/sentiment")
-//    public Mono<SentimentResponse> analyzeSentiment(@RequestBody SentimentRequest request) {
-//        return aiService.analyzeSentiment(request.getTitles());
-//    }
-//
+    @PostMapping("/sentiment")
+    public Mono<SentimentResponse> analyzeSentiment(@RequestBody List<String> titles) {
+        return aiService.analyzeSentiment(titles);
+    }
 
+    /*
+    private method 분리
+     */
     private <T> Mono<String> extractTextOrError(String text) {
         if (text == null || text.isEmpty()) {
             log.error("Cannot extract text from JSON");
