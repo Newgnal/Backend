@@ -30,7 +30,7 @@ public class DaumNewsCrawlService {
     private final S3Uploader s3Uploader;
     private final AiService aiService;
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     @Async
     public void crawlDaumEconomyNews() {
         int savedCount = 0;
