@@ -1,5 +1,5 @@
 package com.tave.alarmissue.ai.dto.response;
 
-public class SummaryResponse {
-    private String summary;
-}
+import lombok.AllArgsConstructor;
+
+public record SummaryResponse(String summary) {}

@@ -8,6 +8,7 @@ import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import com.tave.alarmissue.ai.service.AiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,16 +45,24 @@ public class AiController {
         }
     }
 
-    @PostMapping("/summary")
+    @PostMapping(value = "/summary", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<SummaryResponse> analyzeSummary(@RequestBody SummaryRequest request) {
-        return aiService.analyzeSummary(request.getText());
+        String text = request.getText();
+
+        if (text == null || text.isEmpty()) {
+            log.error("Cannot extract text from JSON");
+            return Mono.just(new SummaryResponse("텍스트 추출 오류"));
+        }
+
+        log.info("Successfully extracted text length: {}", text.length());
+        return aiService.analyzeSummary(text);
     }
 
-    @PostMapping("/sentiment")
-    public Mono<SentimentResponse> analyzeSentiment(@RequestBody SentimentRequest request) {
-        return aiService.analyzeSentiment(request.getTitles());
-    }
-
+//    @PostMapping("/sentiment")
+//    public Mono<SentimentResponse> analyzeSentiment(@RequestBody SentimentRequest request) {
+//        return aiService.analyzeSentiment(request.getTitles());
+//    }
+//
     private String extractTextFromJson(String jsonString) {
         try {
             // "text": "..." 패턴으로 텍스트 추출

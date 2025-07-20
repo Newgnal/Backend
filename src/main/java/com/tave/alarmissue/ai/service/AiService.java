@@ -5,6 +5,7 @@ import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,6 +34,7 @@ public class AiService {
     public Mono<SummaryResponse> analyzeSummary(String text) {
         return webClient.post()
                 .uri("/summarize")
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(Map.of("text", text))
                 .retrieve()
                 .bodyToMono(SummaryResponse.class);
