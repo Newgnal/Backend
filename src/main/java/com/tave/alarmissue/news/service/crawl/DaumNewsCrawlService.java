@@ -1,5 +1,6 @@
 package com.tave.alarmissue.news.service.crawl;
 
+import com.tave.alarmissue.ai.dto.response.SentimentResponse;
 import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import com.tave.alarmissue.ai.service.AiService;
@@ -33,7 +34,6 @@ public class DaumNewsCrawlService {
     @Scheduled(cron = "0 */30 * * * *")
     @Async
     public void crawlDaumEconomyNews() {
-        int savedCount = 0;
 
         WebDriver driver = webDriverFactory.createHeadlessDriver();
         driver.get("https://news.daum.net/economy");
@@ -141,6 +141,7 @@ public class DaumNewsCrawlService {
             }
 
             List<News> savedNewsList = newsRepository.saveAll(newsContentMap.keySet());
+            List<News> updatedNewsList = new ArrayList<>();
             log.info("[DAUM] 저장 완료 ({}건)", savedNewsList.size());
 
             for (News savedNews : savedNewsList) {
@@ -180,10 +181,13 @@ public class DaumNewsCrawlService {
                             .summary(summary)
                             .build();
                     newsRepository.save(updatedNews);
+                    updatedNewsList.add(updatedNews);
                 } catch (Exception e) {
                     log.error("뉴스 저장 중 에러 발생: {}", e.getMessage(), e);
                 }
             }
+
+            updateSentimentForNews(updatedNewsList);
 
         } catch (Exception e) {
             log.error("뉴스 크롤링 중 에러 발생", e);
@@ -192,4 +196,31 @@ public class DaumNewsCrawlService {
         }
     }
 
+    public void updateSentimentForNews(List<News> newsList) {
+        for (News news : newsList) {
+            String title = news.getTitle();
+            String escapedTitle = title.replace("\n", "\\n");
+            Float sentimentScore = 0.0f;
+
+            try {
+                SentimentResponse sentimentResponse = aiService.analyzeSentiment(List.of(escapedTitle)).block();
+                if (sentimentResponse != null) {
+                    sentimentScore = sentimentResponse.getScore();
+                    log.info("감정 분석 결과: {}", sentimentScore);
+                }
+            } catch (Exception e) {
+                log.error("Sentiment 분석 중 에러 발생: {}", e.getMessage(), e);
+            }
+
+            try {
+                News updatedNews = news.toBuilder()
+                        .sentiment(sentimentScore.doubleValue())
+                        .build();
+                newsRepository.save(updatedNews);
+            } catch (Exception e) {
+                log.error("뉴스 저장 중 에러 발생: {}", e.getMessage(), e);
+            }
+        }
+    }
 }
+

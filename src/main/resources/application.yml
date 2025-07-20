@@ -3,9 +3,9 @@ server:
   port: 8080
 
 spring:
-  webflux:
+  mvc:
     async:
-      request-timeout: 60000
+      request-timeout: 600000
 
   profiles:
     include: local, jwt, oauth, aws

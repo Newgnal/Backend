@@ -41,7 +41,7 @@ public class WebClientConfig {
     @Bean
     public WebClient webClientForSentiment() {
         HttpClient httpClient = HttpClient.create()
-                .responseTimeout(Duration.ofSeconds(40))
+                .responseTimeout(Duration.ofSeconds(100))
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
 
         return WebClient.builder()

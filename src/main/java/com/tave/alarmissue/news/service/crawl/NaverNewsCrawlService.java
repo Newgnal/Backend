@@ -1,5 +1,6 @@
 package com.tave.alarmissue.news.service.crawl;
 
+import com.tave.alarmissue.ai.dto.response.SentimentResponse;
 import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import com.tave.alarmissue.ai.service.AiService;
@@ -86,12 +87,14 @@ public class NaverNewsCrawlService {
                 String source = null;
                 try {
                     source = CrawlUtil.safeGetAttr(driver, "div.media_end_head_top img", "alt");
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 String dateStr = null;
                 try {
                     dateStr = CrawlUtil.safeGetAttr(driver, "span.media_end_head_info_datestamp_time._ARTICLE_DATE_TIME", "data-date-time");
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 LocalDateTime date = null;
                 if (dateStr != null && !dateStr.isEmpty()) {
@@ -104,7 +107,8 @@ public class NaverNewsCrawlService {
                 try {
                     content = CrawlUtil.safeGetText(driver, "article#dic_area");
                     contentBuilder.append(content);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 String rawContent = contentBuilder.toString();
                 String fileName = "news/naver/" + UUID.randomUUID() + ".txt";
@@ -121,12 +125,14 @@ public class NaverNewsCrawlService {
                             break;
                         }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 String imageCaption = "";
                 try {
                     imageCaption = CrawlUtil.safeGetText(driver, "em.img_desc");
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 boolean exists = newsRepository.findByUrl(link).isPresent()
                         || newsRepository.findByTitle(title).isPresent();
@@ -155,6 +161,7 @@ public class NaverNewsCrawlService {
 
             // 저장
             List<News> savedNewsList = newsRepository.saveAll(newsContentMap.keySet());
+            List<News> updatedNewsList = new ArrayList<>();
             log.info("[NAVER] 저장 완료 ({}건)", savedNewsList.size());
 
 
@@ -189,11 +196,42 @@ public class NaverNewsCrawlService {
                         .build();
 
                 newsRepository.save(updatedNews);
+                updatedNewsList.add(updatedNews);
             }
+
+            updateSentimentForNews(updatedNewsList);
+
         } catch (Exception e) {
             log.error("[NAVER] 뉴스 크롤링 중 에러 발생", e);
             driver.quit();
         }
     }
 
+    public void updateSentimentForNews(List<News> newsList) {
+        for (News news : newsList) {
+            String title = news.getTitle();
+            String escapedTitle = title.replace("\n", "\\n");
+            Float sentimentScore = 0.0f;
+
+            try {
+                SentimentResponse sentimentResponse = aiService.analyzeSentiment(List.of(escapedTitle)).block();
+                if (sentimentResponse != null) {
+                    sentimentScore = sentimentResponse.getScore();
+                    log.info("감정 분석 결과: {}", sentimentScore);
+                }
+            } catch (Exception e) {
+                log.error("Sentiment 분석 중 에러 발생: {}", e.getMessage(), e);
+            }
+
+            try {
+                News updatedNews = news.toBuilder()
+                        .sentiment(sentimentScore.doubleValue())
+                        .build();
+                newsRepository.save(updatedNews);
+            } catch (Exception e) {
+                log.error("뉴스 저장 중 에러 발생: {}", e.getMessage(), e);
+            }
+        }
+
+    }
 }
