@@ -20,6 +20,7 @@ public class AiService {
 
     private final WebClient webClientForThema;
     private final WebClient webClientForSummary;
+    private final WebClient webClientForSentiment;
 
     public Mono<ThemaResponse> analyzeThema(String text) {
 
