@@ -25,4 +25,6 @@ public interface NewsCommentRepository extends JpaRepository<NewsComment,Long> {
     List<NewsComment> findByNewsIdAndParentCommentIsNullOrderByCreatedAtDesc(Long newsId);  // 원댓글만 조회
     List<NewsComment> findByParentCommentIdOrderByCreatedAtDesc(Long parentCommentId);      // 특정 댓글의 답글들
     Long countByParentCommentId(Long parentCommentId);
+
+    List<NewsComment> findByNewsIdAndUserId(Long newsId, Long userId);
 }
