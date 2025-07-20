@@ -3,6 +3,10 @@ server:
   port: 8080
 
 spring:
+  mvc:
+    async:
+      request-timeout: 600000
+
   profiles:
     include: local, jwt, oauth, aws
 
@@ -61,6 +65,11 @@ jwt:
     access: ${ACCESS_EXPIRATION:1800000}
     refresh: ${REFRESH_EXPIRATION:2592000000}
   secret: ${JWT_SECRET:test1234tes1tte2st1234test1te!stte7stt@#e4sttes5ttest2testtest1234123415215161231}
+
+ai:
+  base-url1: ${AI_BASE_URL_THEMA}
+  base-url2: ${AI_BASE_URL_SUMMARY}
+  base-url3: ${AI_BASE_URL_SENTIMENT}
 
 kakao:
   oauth:
