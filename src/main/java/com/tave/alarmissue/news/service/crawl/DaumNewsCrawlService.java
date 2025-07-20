@@ -1,5 +1,8 @@
 package com.tave.alarmissue.news.service.crawl;
 
+import com.tave.alarmissue.ai.dto.response.SummaryResponse;
+import com.tave.alarmissue.ai.dto.response.ThemaResponse;
+import com.tave.alarmissue.ai.service.AiService;
 import com.tave.alarmissue.news.controller.CrawlUtil;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.WebDriverFactory;
@@ -11,12 +14,11 @@ import org.openqa.selenium.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +28,9 @@ public class DaumNewsCrawlService {
     private final NewsRepository newsRepository;
     private final WebDriverFactory webDriverFactory;
     private final S3Uploader s3Uploader;
+    private final AiService aiService;
 
-    @Scheduled(cron = "0 */30 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     @Async
     public void crawlDaumEconomyNews() {
         int savedCount = 0;
@@ -71,7 +74,7 @@ public class DaumNewsCrawlService {
             // DB에 이미 저장된 타이틀들 가져오기
             List<String> existingTitles = newsRepository.findAllTitlesByTitleIn(titles);
 
-            List<News> newsToSave = new ArrayList<>();
+            Map<News, String> newsContentMap = new HashMap<>();
 
             // 중복 아닌 뉴스만 크롤링 후 저장 준비
             for (int i = 0; i < titles.size(); i++) {
@@ -102,6 +105,7 @@ public class DaumNewsCrawlService {
                     if (!txt.isBlank()) contentBuilder.append(txt).append("\n");
                 }
 
+                String rawContent = contentBuilder.toString();
                 String fileName = "news/daum/" + UUID.randomUUID() + ".txt";
                 String contentUrl = s3Uploader.uploadContent(contentBuilder.toString(), fileName);
 
@@ -133,12 +137,53 @@ public class DaumNewsCrawlService {
                         .summary(null)
                         .build();
 
-                newsToSave.add(news);
+                newsContentMap.put(news, rawContent);
             }
 
-            newsRepository.saveAll(newsToSave);
-            savedCount += newsToSave.size();
-            log.info("[DAUM] 저장 완료 ({})", savedCount);
+            List<News> savedNewsList = newsRepository.saveAll(newsContentMap.keySet());
+            log.info("[DAUM] 저장 완료 ({}건)", savedNewsList.size());
+
+            for (News savedNews : savedNewsList) {
+                String rawContent = newsContentMap.get(savedNews);
+                String escapedContent = rawContent.replace("\n", "\\n");
+
+                Thema themaEnum = Thema.ETC;  // 기본값 ETC
+                try {
+                    ThemaResponse themaResponse = aiService.analyzeThema(escapedContent).block();
+                    if (themaResponse == null) {
+                        log.warn("Thema 분석 결과가 null입니다.");
+                    } else {
+                        themaEnum = Thema.fromString(themaResponse.theme());
+                        log.info("분석 결과: {}", themaEnum);
+                    }
+                } catch (Exception e) {
+                    log.error("Thema 분석 중 에러 발생: {}", e.getMessage(), e);
+                }
+
+                String summary = null;
+                try {
+                    SummaryResponse summaryResponse = aiService.analyzeSummary(escapedContent).block();
+                    if (summaryResponse == null) {
+                        log.warn("Summary 분석 결과가 null입니다.");
+                    } else {
+                        summary = summaryResponse.summary();
+                        log.info("요약 분석 결과: {}", summary);
+                    }
+                } catch (Exception e) {
+                    log.error("Summary 분석 중 에러 발생: {}", e.getMessage(), e);
+                }
+
+                try {
+                    // 업데이트된 뉴스 저장
+                    News updatedNews = savedNews.toBuilder()
+                            .thema(themaEnum)
+                            .summary(summary)
+                            .build();
+                    newsRepository.save(updatedNews);
+                } catch (Exception e) {
+                    log.error("뉴스 저장 중 에러 발생: {}", e.getMessage(), e);
+                }
+            }
 
         } catch (Exception e) {
             log.error("뉴스 크롤링 중 에러 발생", e);

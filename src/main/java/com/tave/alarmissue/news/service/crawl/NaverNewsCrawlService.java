@@ -1,5 +1,8 @@
 package com.tave.alarmissue.news.service.crawl;
 
+import com.tave.alarmissue.ai.dto.response.SummaryResponse;
+import com.tave.alarmissue.ai.dto.response.ThemaResponse;
+import com.tave.alarmissue.ai.service.AiService;
 import com.tave.alarmissue.news.controller.CrawlUtil;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.WebDriverFactory;
@@ -13,12 +16,11 @@ import org.openqa.selenium.WebElement;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,19 +30,17 @@ public class NaverNewsCrawlService {
     private final NewsRepository newsRepository;
     private final WebDriverFactory webDriverFactory;
     private final S3Uploader s3Uploader;
+    private final AiService aiService;
 
-    @Scheduled(cron = "0 */30 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     @Async
     public void crawlNaverEconomyNews() {
-        int savedCount = 0;
-
         WebDriver driver = webDriverFactory.createHeadlessDriver();
-        driver.get("https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=101"); // 경제 섹션
-
         try {
+            driver.get("https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=101"); // 경제 섹션
             CrawlUtil.sleep(3000);
 
-            //  기사 링크만 따로 수집
+            // 기사 링크만 수집
             List<WebElement> articleElements = driver.findElements(By.cssSelector("a.sa_text_title"));
             List<String> links = new ArrayList<>();
             for (WebElement el : articleElements) {
@@ -50,7 +50,7 @@ public class NaverNewsCrawlService {
                 }
             }
 
-            // 타이틀과 유효 링크만 우선 수집
+            // 타이틀과 유효 링크 수집
             List<String> titles = new ArrayList<>();
             List<String> validLinks = new ArrayList<>();
             for (int i = 0; i < Math.min(links.size(), 20); i++) {
@@ -64,28 +64,28 @@ public class NaverNewsCrawlService {
                     validLinks.add(link);
                 }
             }
-                // 이미 저장된 타이틀 한꺼번에 조회
-                List<String> existingTitles = newsRepository.findAllTitlesByTitleIn(titles);
 
-                List<News> newsToSave = new ArrayList<>();
+            // 기존 저장된 타이틀 조회
+            List<String> existingTitles = newsRepository.findAllTitlesByTitleIn(titles);
 
-                // 중복 아닌 뉴스만 상세 내용 크롤링 후 저장
-                for (int i = 0; i < titles.size(); i++) {
-                    String title = titles.get(i);
+            Map<News, String> newsContentMap = new HashMap<>();
 
-                    if (existingTitles.contains(title)) {
-                        log.info("[NAVER] 이미 저장된 기사 제목: {}", title);
-                        continue;
-                    }
+            // 중복 아닌 뉴스만 상세 크롤링 후 저장 준비
+            for (int i = 0; i < titles.size(); i++) {
+                String title = titles.get(i);
 
-                    String link = validLinks.get(i);
-                    driver.get(link);
-                    CrawlUtil.sleep(2000);
+                if (existingTitles.contains(title)) {
+                    log.info("[NAVER] 이미 저장된 기사 제목: {}", title);
+                    continue;
+                }
+
+                String link = validLinks.get(i);
+                driver.get(link);
+                CrawlUtil.sleep(2000);
 
                 String source = null;
                 try {
                     source = CrawlUtil.safeGetAttr(driver, "div.media_end_head_top img", "alt");
-
                 } catch (Exception ignored) {}
 
                 String dateStr = null;
@@ -99,16 +99,19 @@ public class NaverNewsCrawlService {
                     date = LocalDateTime.parse(dateStr, formatter);
                 }
 
+                StringBuilder contentBuilder = new StringBuilder();
                 String content = "";
                 try {
                     content = CrawlUtil.safeGetText(driver, "article#dic_area");
+                    contentBuilder.append(content);
                 } catch (Exception ignored) {}
 
+                String rawContent = contentBuilder.toString();
                 String fileName = "news/naver/" + UUID.randomUUID() + ".txt";
                 String contentUrl = s3Uploader.uploadContent(content, fileName);
                 log.info("Uploaded content URL: {}", contentUrl);
 
-                String imageUrl = null;
+                String imageUrl = "";
                 try {
                     List<WebElement> images = driver.findElements(By.cssSelector("article#dic_area img"));
                     for (WebElement img : images) {
@@ -119,14 +122,11 @@ public class NaverNewsCrawlService {
                         }
                     }
                 } catch (Exception ignored) {}
-                if (imageUrl == null) {
-                    imageUrl = "";
-                }
 
                 String imageCaption = "";
                 try {
                     imageCaption = CrawlUtil.safeGetText(driver, "em.img_desc");
-                    } catch (Exception ignored) {}
+                } catch (Exception ignored) {}
 
                 boolean exists = newsRepository.findByUrl(link).isPresent()
                         || newsRepository.findByTitle(title).isPresent();
@@ -150,16 +150,48 @@ public class NaverNewsCrawlService {
                         .summary(null)
                         .build();
 
-                    newsToSave.add(news);
-
+                newsContentMap.put(news, rawContent);
             }
-            newsRepository.saveAll(newsToSave);
-            savedCount += newsToSave.size();
-            log.info("[NAVER] 저장 완료 ({})", savedCount);
 
+            // 저장
+            List<News> savedNewsList = newsRepository.saveAll(newsContentMap.keySet());
+            log.info("[NAVER] 저장 완료 ({}건)", savedNewsList.size());
+
+
+            for (News savedNews : savedNewsList) {
+                String rawContent = newsContentMap.get(savedNews);
+                String escapedContent = rawContent.replace("\n", "\\n");
+
+                Thema themaEnum = Thema.ETC;
+
+                try {
+                    ThemaResponse themaResponse = aiService.analyzeThema(escapedContent).block();
+                    themaEnum = Thema.fromString(themaResponse.theme());
+                    log.info("분석 결과 (Thema): {}", themaEnum);
+                } catch (Exception e) {
+                    log.error("Thema 분석 실패: {}", e.getMessage(), e);
+                }
+
+
+                String summary = null;
+
+                try {
+                    SummaryResponse summaryResponse = aiService.analyzeSummary(escapedContent).block();
+                    summary = summaryResponse.summary();
+                    log.info("요약 분석 결과: {}", summary);
+                } catch (Exception e) {
+                    log.error("Summary 분석 실패: {}", e.getMessage(), e);
+                }
+
+                News updatedNews = savedNews.toBuilder()
+                        .thema(themaEnum)
+                        .summary(summary)
+                        .build();
+
+                newsRepository.save(updatedNews);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
+            log.error("[NAVER] 뉴스 크롤링 중 에러 발생", e);
             driver.quit();
         }
     }

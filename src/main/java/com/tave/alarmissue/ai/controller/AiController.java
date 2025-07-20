@@ -28,14 +28,18 @@ public class AiController {
     @PostMapping(value = "/thema", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ThemaResponse> analyzeThema(@RequestBody ThemaRequest request) {
 
-        return extractTextOrError(request.getText())
+        String cleanText = request.getText().replaceAll("\\r?\\n", " ");
+
+        return extractTextOrError(cleanText)
                 .flatMap(aiService::analyzeThema);
     }
 
     @PostMapping(value = "/summary", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<SummaryResponse> analyzeSummary(@RequestBody SummaryRequest request) {
 
-        return extractTextOrError(request.getText())
+        String cleanText = request.getText().replaceAll("\\r?\\n", " ");
+
+        return extractTextOrError(cleanText)
                 .flatMap(aiService::analyzeSummary);
     }
 

@@ -25,6 +25,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @Getter
 @AllArgsConstructor
+@Builder(toBuilder = true)
 @Table(name="news")
 @SQLDelete(sql = "UPDATE news SET deleted_at = NOW() WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
@@ -131,6 +132,8 @@ public class News extends BaseTimeEntityWithDeletion {
             this.commentNum=0L;
         }
     }
+
+
     public void incrementVoteCount(){
         this.voteNum+=1;
     }
