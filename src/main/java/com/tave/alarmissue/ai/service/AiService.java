@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -60,10 +62,12 @@ public class AiService {
                 })
                 .map(results -> {
                     Double score = results.isEmpty() ? 0.0 : results.get(0).get("score");
-                    float roundedScore = Math.round(score * 100) / 100.0f;
+
+                    float roundedScore = new BigDecimal(score)
+                            .setScale(2, RoundingMode.HALF_UP)
+                            .floatValue();
+
                     return new SentimentResponse(roundedScore);
-                })
-                .doOnError(e -> log.error("Error in sentiment analysis: ", e))
-                .onErrorReturn(new SentimentResponse(0.0f));
+                });
     }
 }
