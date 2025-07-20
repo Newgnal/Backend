@@ -60,7 +60,8 @@ public class AiService {
                 })
                 .map(results -> {
                     Double score = results.isEmpty() ? 0.0 : results.get(0).get("score");
-                    return new SentimentResponse(score.floatValue());
+                    float roundedScore = Math.round(score * 100) / 100.0f;
+                    return new SentimentResponse(roundedScore);
                 })
                 .doOnError(e -> log.error("Error in sentiment analysis: ", e))
                 .onErrorReturn(new SentimentResponse(0.0f));
