@@ -12,7 +12,9 @@ import com.tave.alarmissue.notification.service.NotificationHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +32,16 @@ public class FcmService {
                 .setBody(fcmSendDto.getBody())
                 .build();
 
+        AndroidConfig androidConfig = AndroidConfig.builder()
+                .setFcmOptions(AndroidFcmOptions.builder()
+                        .setAnalyticsLabel(generateAnalyticsLabel(fcmSendDto))
+                        .build())
+                .build();
 
         Message message = Message.builder()
                 .setToken(fcmSendDto.getToken()) // 특정 기기 토큰 (fcm token)
                 .setNotification(notification)
+                .setAndroidConfig(androidConfig)
                 .build();
         try {
             String messageId = FirebaseMessaging.getInstance().send(message);
@@ -112,5 +120,18 @@ public class FcmService {
         // Firebase 공식 문서에 따른 토큰 관련 에러 메시지 패턴 확인
         return errorMessage != null &&
                 errorMessage.contains("registration token is not a valid FCM registration token");
+    }
+
+    private String generateAnalyticsLabel(FcmSendRequest request) {
+        String baseLabel = "notification";
+
+        // 알림 타입별로 라벨 생성
+        if (request.getNotificationType() != null) {
+            baseLabel = request.getNotificationType().name().toLowerCase();
+        }
+
+        String dateLabel = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        return baseLabel + "_" + dateLabel;
     }
 }
