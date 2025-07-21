@@ -1,16 +1,18 @@
-package com.tave.alarmissue.post.service;
+package com.tave.alarmissue.report.service;
 
+import com.tave.alarmissue.news.domain.NewsComment;
+import com.tave.alarmissue.news.repository.NewsCommentRepository;
 import com.tave.alarmissue.post.domain.PostComment;
 import com.tave.alarmissue.post.domain.PostReply;
-import com.tave.alarmissue.post.domain.PostReport;
+import com.tave.alarmissue.report.domain.Report;
 import com.tave.alarmissue.post.exception.PostException;
 import com.tave.alarmissue.post.repository.CommentRepository;
 import com.tave.alarmissue.post.domain.Post;
 import com.tave.alarmissue.post.repository.PostRepository;
-import com.tave.alarmissue.post.converter.PostReportConverter;
-import com.tave.alarmissue.post.dto.response.ReportResponse;
+import com.tave.alarmissue.report.converter.ReportConverter;
+import com.tave.alarmissue.report.dto.response.ReportResponse;
 import com.tave.alarmissue.post.repository.ReplyRepository;
-import com.tave.alarmissue.post.repository.ReportRepository;
+import com.tave.alarmissue.report.repository.ReportRepository;
 import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.tave.alarmissue.post.exception.PostErrorCode.*;
 import static com.tave.alarmissue.post.exception.PostErrorCode.REPLY_ID_NOT_FOUND;
@@ -33,9 +34,10 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final PostReportConverter postReportConverter;
+    private final ReportConverter reportConverter;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
+    private final NewsCommentRepository newsCommentRepository;
 
     @Transactional
     public ReportResponse createPostReport(Long userId, Long postId) {
@@ -50,9 +52,9 @@ public class ReportService {
                 isPresent();
         validateNotAlreadyReported(alreadyReported);
 
-            PostReport report = postReportConverter.toPostReport(user, post);
-            PostReport saved = reportRepository.save(report);
-            return PostReportConverter.toReportResponseDto(saved);
+            Report report = reportConverter.toPostReport(user, post);
+            Report saved = reportRepository.save(report);
+            return ReportConverter.toReportResponseDto(saved);
 
     }
     //
@@ -69,9 +71,9 @@ public class ReportService {
                 isPresent();
         validateNotAlreadyReported(alreadyReported);
 
-            PostReport report = postReportConverter.toCommentReport(user, postComment);
-            PostReport saved = reportRepository.save(report);
-            return PostReportConverter.toReportResponseDto(saved);
+            Report report = reportConverter.toCommentReport(user, postComment);
+            Report saved = reportRepository.save(report);
+            return ReportConverter.toReportResponseDto(saved);
 
     }
     @Transactional
@@ -85,12 +87,24 @@ public class ReportService {
                 .isPresent();
         validateNotAlreadyReported(alreadyReported);
 
-            PostReport report = postReportConverter.toReplyReport(user, postReply);
-            PostReport saved = reportRepository.save(report);
-            return PostReportConverter.toReportResponseDto(saved);
+            Report report = reportConverter.toReplyReport(user, postReply);
+            Report saved = reportRepository.save(report);
+            return ReportConverter.toReportResponseDto(saved);
 
     }
+    @Transactional
+    public ReportResponse createNewsCommentReport(Long userId, Long newsCommentId) {
+        UserEntity user = getUserById(userId);
+        NewsComment newsComment = getNewsCommentById(newsCommentId);
+        validateNotSelfReport(user.getId(), newsComment.getUser().getId());
+        boolean alreadyReported = reportRepository.findNewsReport(user, newsComment)
+                .isPresent();
+        validateNotAlreadyReported(alreadyReported);
 
+        Report report = reportConverter.toNewsCommentReport(user, newsComment);
+        Report saved = reportRepository.save(report);
+        return ReportConverter.toReportResponseDto(saved);
+    }
     /*
       private method 분리
        */
@@ -114,6 +128,11 @@ public class ReportService {
         return replyRepository.findById(replyId).
                 orElseThrow(() -> new PostException(REPLY_ID_NOT_FOUND," replyId: " + replyId));
     }
+
+    private NewsComment getNewsCommentById(Long newsCommentId){
+        return newsCommentRepository.findById(newsCommentId).
+                orElseThrow(() -> new PostException(COMMENT_ID_NOT_FOUND," newsCommentId: " + newsCommentId));
+    }
     //이미 신고되었을때
     private void validateNotAlreadyReported(boolean alreadyReported) {
         if (alreadyReported) {
@@ -126,4 +145,5 @@ public class ReportService {
             throw new PostException(CANNOT_REPORT," userId: " + reporterId);
         }
     }
+
 }

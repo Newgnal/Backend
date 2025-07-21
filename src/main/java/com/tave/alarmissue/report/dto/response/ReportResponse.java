@@ -1,4 +1,4 @@
-package com.tave.alarmissue.post.dto.response;
+package com.tave.alarmissue.report.dto.response;
 
 import com.tave.alarmissue.post.domain.enums.TargetType;
 import lombok.AllArgsConstructor;
