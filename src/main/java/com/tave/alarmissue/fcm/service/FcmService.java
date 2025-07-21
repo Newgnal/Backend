@@ -9,6 +9,7 @@ import com.tave.alarmissue.fcm.exception.FcmException;
 import com.tave.alarmissue.notification.domain.enums.NotificationStatus;
 import com.tave.alarmissue.notification.dto.request.NotificationHistoryRequest;
 import com.tave.alarmissue.notification.service.NotificationHistoryService;
+import com.tave.alarmissue.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +24,8 @@ public class FcmService {
     private final NotificationHistoryService notificationHistoryService;
 
     public FcmNotificationResponse sendPushNotification(FcmSendRequest fcmSendDto) {
-        if (!fcmTokenService.isTokenExists(fcmSendDto.getToken())) {
-            throw new FcmException(FcmErrorCode.TOKEN_NOT_FOUND);
-        }
+        UserEntity user = fcmTokenService.getUserByToken(fcmSendDto.getToken());
+        Long userId = user.getId();
 
         Notification notification = Notification.builder()
                 .setTitle(fcmSendDto.getTitle())
@@ -48,7 +48,7 @@ public class FcmService {
             System.out.println("Successfully sent message: " + messageId);
 
             //성공 이력 저장
-            saveNotificationHistory(fcmSendDto, messageId, NotificationStatus.SUCCESS, null);
+            saveNotificationHistory(fcmSendDto, messageId, NotificationStatus.SUCCESS, null, userId);
 
             return FcmNotificationResponse.builder()
                     .messageId(messageId)
@@ -57,10 +57,10 @@ public class FcmService {
                     .build();
 
         } catch (FirebaseMessagingException ex) {
-            saveNotificationHistory(fcmSendDto, null, NotificationStatus.FAILED, ex.getMessage());
+            saveNotificationHistory(fcmSendDto, null, NotificationStatus.FAILED, ex.getMessage(),userId);
             handleFirebaseMessagingException(ex, fcmSendDto.getToken());
         } catch (Exception e) {
-            saveNotificationHistory(fcmSendDto, null, NotificationStatus.FAILED, e.getMessage());
+            saveNotificationHistory(fcmSendDto, null, NotificationStatus.FAILED, e.getMessage(),userId);
             throw new FcmException(FcmErrorCode.PUSH_SEND_FAILED);
         }
         return null;
@@ -69,10 +69,10 @@ public class FcmService {
     // ----- method -----
 
     private void saveNotificationHistory(FcmSendRequest request, String messageId,
-                                         NotificationStatus status, String failureReason) {
+                                         NotificationStatus status, String failureReason, Long userId) {
         try {
             NotificationHistoryRequest historyRequest = NotificationHistoryRequest.builder()
-                    .userId(request.getUserId())
+                    .userId(userId)
                     .notificationType(request.getNotificationType())
                     .title(request.getTitle())
                     .body(request.getBody())

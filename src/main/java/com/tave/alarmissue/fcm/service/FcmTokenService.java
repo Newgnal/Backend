@@ -62,4 +62,11 @@ public class FcmTokenService {
     public boolean isTokenExists(String token) {
         return fcmTokenRepository.existsByFcmToken(token);
     }
+
+    @Transactional(readOnly = true)
+    public UserEntity getUserByToken(String token) {
+        return fcmTokenRepository.findByFcmToken(token)
+                .map(FcmToken::getUser)
+                .orElseThrow(() -> new FcmException(FcmErrorCode.TOKEN_NOT_FOUND));
+    }
 }

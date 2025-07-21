@@ -19,9 +19,6 @@ public class FcmSendRequest {
     @Schema(description = "알림 내용")
     private String body;
 
-    @Schema(description = "사용자 ID")
-    private Long userId;
-
     @Schema(description = "알림 타입")
     private NotificationType notificationType;
 
