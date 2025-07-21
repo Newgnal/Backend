@@ -120,6 +120,7 @@ public class NewsCommentService {
                 .comment(dto.getComment())
                 .user(user)
                 .news(news)
+                .likeCount(0L)
                 .parentComment(parentComment)
                 .voteType(newsVoteType)
                 .build();
