@@ -45,7 +45,7 @@ public class AiService {
                 .bodyToMono(ThemaResponse.class)
                 .onErrorResume(e -> {
                     log.error("Thema 요청 실패", e);
-                    return Mono.just(new ThemaResponse("분석 실패")); // 또는 null, Optional, 에러 DTO 등
+                    return Mono.just(new ThemaResponse("분석 실패")); 
                 });
     }
 
@@ -65,7 +65,7 @@ public class AiService {
                 .bodyToMono(SummaryResponse.class)
                 .onErrorResume(e -> {
                     log.error("Summary 요청 실패", e);
-                    return Mono.just(new SummaryResponse("요약 실패")); // 필요에 따라 수정
+                    return Mono.just(new SummaryResponse("요약 실패")); 
                 });
     }
 
@@ -100,7 +100,7 @@ public class AiService {
                 })
                 .onErrorResume(e -> {
                     log.error("Sentiment 요청 실패", e);
-                    return Mono.just(new SentimentResponse(0.0f)); // 또는 실패 응답 정의
+                    return Mono.just(new SentimentResponse(0.0f));
                 });
     }
 }
