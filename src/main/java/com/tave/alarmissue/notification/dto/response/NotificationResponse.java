@@ -1,5 +1,6 @@
 package com.tave.alarmissue.notification.dto.response;
 
+import com.tave.alarmissue.notification.domain.enums.NotificationStatus;
 import com.tave.alarmissue.notification.domain.enums.NotificationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -45,4 +46,6 @@ public class NotificationResponse {
     @Schema(description = "관련 엔티티 ID")
     private Long relatedEntityId;
 
+    @Schema(description = "알림 전송 상태")
+    private NotificationStatus status;
 }

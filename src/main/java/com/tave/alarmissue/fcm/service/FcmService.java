@@ -6,6 +6,7 @@ import com.tave.alarmissue.fcm.dto.request.FcmSendRequest;
 import com.tave.alarmissue.fcm.dto.response.FcmNotificationResponse;
 import com.tave.alarmissue.fcm.exception.FcmErrorCode;
 import com.tave.alarmissue.fcm.exception.FcmException;
+import com.tave.alarmissue.notification.domain.NotificationTemplateManager;
 import com.tave.alarmissue.notification.domain.enums.NotificationStatus;
 import com.tave.alarmissue.notification.dto.request.NotificationHistoryRequest;
 import com.tave.alarmissue.notification.service.NotificationHistoryService;
@@ -22,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 public class FcmService {
     private final FcmTokenService fcmTokenService;
     private final NotificationHistoryService notificationHistoryService;
+    private final NotificationTemplateManager templateManager;
 
     public FcmNotificationResponse sendPushNotification(FcmSendRequest fcmSendDto) {
         UserEntity user = fcmTokenService.getUserByToken(fcmSendDto.getToken());
@@ -34,7 +36,7 @@ public class FcmService {
 
         AndroidConfig androidConfig = AndroidConfig.builder()
                 .setFcmOptions(AndroidFcmOptions.builder()
-                        .setAnalyticsLabel(generateAnalyticsLabel(fcmSendDto))
+                        .setAnalyticsLabel(templateManager.getAnalyticsLabel(fcmSendDto.getNotificationType()))
                         .build())
                 .build();
 
@@ -122,16 +124,4 @@ public class FcmService {
                 errorMessage.contains("registration token is not a valid FCM registration token");
     }
 
-    private String generateAnalyticsLabel(FcmSendRequest request) {
-        String baseLabel = "notification";
-
-        // 알림 타입별로 라벨 생성
-        if (request.getNotificationType() != null) {
-            baseLabel = request.getNotificationType().name().toLowerCase();
-        }
-
-        String dateLabel = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-        return baseLabel + "_" + dateLabel;
-    }
 }

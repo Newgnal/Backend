@@ -105,6 +105,7 @@ public class NotificationHistoryService {
                 .createdAt(history.getCreatedAt())
                 .readAt(history.getReadAt())
                 .relatedEntityId(history.getRelatedEntityId())
+                .status(history.getStatus())
                 .build();
     }
 
