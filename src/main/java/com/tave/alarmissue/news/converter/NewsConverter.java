@@ -39,6 +39,7 @@ public class NewsConverter {
                 .commentNum(news.getCommentNum())
                 .voteNum(news.getVoteNum())
                 .imageUrl(news.getImageUrl())
+                .summary(news.getSummary())
                 .imageCaption(news.getImageCaption())
                 .build();
     }
