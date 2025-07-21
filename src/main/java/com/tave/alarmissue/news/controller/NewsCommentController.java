@@ -32,20 +32,23 @@ public class NewsCommentController {
 
     @PostMapping
     @Operation(summary = "댓글 작성", description = "특정 뉴스에 댓글 작성합니다.")
-    public ResponseEntity<NewsCommentResponseDto> createComment(@RequestBody NewsCommentRequestDto dto,
-                                                                @AuthenticationPrincipal PrincipalUserDetails principal) {
+    public ResponseEntity<NewsCommentResponseDto> createComment(@RequestBody NewsCommentRequestDto dto, @AuthenticationPrincipal PrincipalUserDetails principal) {
         Long userId = principal.getUserId();
-
         NewsCommentResponseDto responseDto = newsCommentService.createComment(dto,userId, dto.getNewsId());
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping("/{newsId}")
-    @Operation(summary = "댓글 목록 조회(답글 포함)", description = "특정 뉴스의 모든 댓글을 최신순으로 조회합니다.(답글 포함)")
-    public ResponseEntity<NewsCommentListResponseDto> getComments(@PathVariable Long newsId){
+    @Operation(summary = "댓글 목록 조회", description = "특정 뉴스의 모든 댓글을 최신순으로 조회합니다.")
+    public ResponseEntity<NewsCommentListResponseDto> getComments(@PathVariable Long newsId, @AuthenticationPrincipal PrincipalUserDetails principal) {
 
-        NewsCommentListResponseDto comments = newsCommentService.getCommentsByNewsId(newsId);
-        return ResponseEntity.status(HttpStatus.OK).body(comments);
+        Long userId = null;
+        if (principal != null) {
+            userId = principal.getUserId();
+        }
+
+        NewsCommentListResponseDto comments=newsCommentService.getCommentsByNewsId(newsId,userId);
+        return ResponseEntity.ok(comments);
     }
 
     @DeleteMapping("/{commentId}")
