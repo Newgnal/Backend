@@ -32,6 +32,7 @@ public static LikeResponse toLikeResponseDto(PostLike like){
                 comment(postComment).
                 targetType(TargetType.COMMENT).
                 liked(true).
+                post(postComment.getPost()).
                 build();
     }
     public PostLike toReplyLike(UserEntity user, PostReply postReply){
@@ -40,6 +41,7 @@ public static LikeResponse toLikeResponseDto(PostLike like){
             postReply(postReply).
             targetType(TargetType.REPLY).
             liked(true).
+            post(postReply.getPost()).
             build();
     }
 }
