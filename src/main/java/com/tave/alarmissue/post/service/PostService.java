@@ -83,7 +83,7 @@ public class PostService {
 
         post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getThema(), dto.isHasVote(), news, news.getUrl());
 
-        //투표기능끄면 post와 연관된 vote DB삭제
+        //투표기능끄면 post와 연관된 vote DB 삭제
         if (!post.getHasVote()) voteRepository.deleteAllByPost(post);
         Post saved = postRepository.save(post);
         return PostConverter.toPostResponseDto(saved);
@@ -127,6 +127,9 @@ public class PostService {
     }
 
     private News getNewsById(Long newsId) {
+        if (newsId == null) {
+            return null;
+        }
         return newsRepository.findById(newsId)
                 .orElseThrow(() -> new PostException(NEWS_ID_NOT_FOUND, "newsId: " + newsId));
     }
