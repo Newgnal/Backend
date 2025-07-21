@@ -5,6 +5,7 @@ import com.tave.alarmissue.ai.dto.response.SummaryResponse;
 import com.tave.alarmissue.ai.dto.response.ThemaResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,10 +31,22 @@ public class AiService {
 
         return webClientForThema.post()
                 .uri("/predict")
-                .contentType(MediaType.APPLICATION_JSON)  // 요청 바디 타입
+                .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(Map.of("text", text))
                 .retrieve()
-                .bodyToMono(ThemaResponse.class);
+                .onStatus(HttpStatusCode::isError, response ->
+                        response.bodyToMono(String.class)
+                                .defaultIfEmpty("Unknown error")
+                                .flatMap(body -> {
+                                    log.error("Thema API error: {}", body);
+                                    return Mono.error(new RuntimeException("Thema API error: " + body));
+                                })
+                )
+                .bodyToMono(ThemaResponse.class)
+                .onErrorResume(e -> {
+                    log.error("Thema 요청 실패", e);
+                    return Mono.just(new ThemaResponse("분석 실패")); // 또는 null, Optional, 에러 DTO 등
+                });
     }
 
     public Mono<SummaryResponse> analyzeSummary(String text) {
@@ -42,7 +55,18 @@ public class AiService {
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(Map.of("text", text))
                 .retrieve()
-                .bodyToMono(SummaryResponse.class);
+                .onStatus(HttpStatusCode::isError, response ->
+                        response.bodyToMono(String.class)
+                                .flatMap(body -> {
+                                    log.error("Summary API error: {}", body);
+                                    return Mono.error(new RuntimeException("Summary API error: " + body));
+                                })
+                )
+                .bodyToMono(SummaryResponse.class)
+                .onErrorResume(e -> {
+                    log.error("Summary 요청 실패", e);
+                    return Mono.just(new SummaryResponse("요약 실패")); // 필요에 따라 수정
+                });
     }
 
     public Mono<SentimentResponse> analyzeSentiment(List<String> titles) {
@@ -57,7 +81,12 @@ public class AiService {
                         return response.bodyToMono(new ParameterizedTypeReference<List<Map<String, Double>>>() {
                         });
                     } else {
-                        return response.createException().flatMap(Mono::error);
+                        return response.bodyToMono(String.class)
+                                .defaultIfEmpty("Unknown error")
+                                .flatMap(body -> {
+                                    log.error("Sentiment API error body: {}", body);
+                                    return Mono.error(new RuntimeException("Sentiment API error: " + body));
+                                });
                     }
                 })
                 .map(results -> {
@@ -68,6 +97,10 @@ public class AiService {
                             .floatValue();
 
                     return new SentimentResponse(roundedScore);
+                })
+                .onErrorResume(e -> {
+                    log.error("Sentiment 요청 실패", e);
+                    return Mono.just(new SentimentResponse(0.0f)); // 또는 실패 응답 정의
                 });
     }
 }
