@@ -44,11 +44,11 @@ public class PostLike {
     private TargetType targetType;
 
     @Builder
-    public PostLike(UserEntity user, Post post, PostComment postComment, PostReply reply,TargetType targetType , boolean liked) {
+    public PostLike(UserEntity user, Post post, PostComment comment, PostReply postReply, TargetType targetType, boolean liked) {
         this.user = user;
         this.post = post;
-        this.comment = postComment;
-        this.postReply = reply;
+        this.comment = comment;
+        this.postReply = postReply;
         this.targetType = targetType;
         this.liked = liked;
     }
