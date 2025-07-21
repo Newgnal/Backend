@@ -100,7 +100,7 @@ PostConverter {
                 .postTitle(dto.getPostTitle())
                 .postContent(dto.getPostContent())
                 .news(news)
-                .newsUrl(news.getUrl())
+                .newsUrl(news != null ? news.getUrl() : null)
                 .thema(dto.getThema())
                 .hasVote(dto.isHasVote())
                 .likeCount(0L)
