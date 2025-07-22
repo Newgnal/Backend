@@ -70,7 +70,7 @@ public class NewsCommentService {
     public void deleteComment(Long commentId, Long userId) {
 
         // 해당 뉴스의 해당 사용자가 작성한 댓글만 조회
-        NewsComment comment = getNewsCommentById(commentId,userId);
+        NewsComment comment = getNewsCommentByIdAndUserId(commentId,userId);
 
         News news = comment.getNews();
 
@@ -91,7 +91,7 @@ public class NewsCommentService {
     @Transactional
     public NewsCommentResponseDto updateComment(Long commentId, Long userId, NewsCommentUpdateRequest dto) {
 
-        NewsComment comment = getNewsCommentById(commentId,userId);
+        NewsComment comment = getNewsCommentByIdAndUserId(commentId,userId);
 
         //댓글 내용 업데이트
         comment.updateContent(dto.getComment().trim());
@@ -101,12 +101,11 @@ public class NewsCommentService {
 
     }
 
-
     //답글 작성
     @Transactional
     public NewsCommentResponseDto createReply(Long userId, NewsReplyRequest dto) {
         UserEntity user = getUserById(userId);   //사용자 확인
-        NewsComment parentComment = getNewsCommentById(dto.getParentId(),userId); //부모댓글 확인
+        NewsComment parentComment = getNewsCommentById(dto.getParentId()); //부모댓글 확인
         News news= parentComment.getNews();
 
         //답글은 부모 댓글id가 있으니까 부모 댓글 id가 있으면 답글 달 수 없게
@@ -119,6 +118,7 @@ public class NewsCommentService {
                 .comment(dto.getComment())
                 .user(user)
                 .news(news)
+                .likeCount(0L)
                 .parentComment(parentComment)
                 .voteType(newsVoteType)
                 .build();
@@ -135,17 +135,23 @@ public class NewsCommentService {
   */
     private UserEntity getUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new NewsException(USER_ID_NOT_FOUND, "userId"+userId));
+                .orElseThrow(() -> new NewsException(USER_ID_NOT_FOUND, "userId" + userId));
     }
 
     private News getNewsById(Long newsId) {
         return newsRepository.findById(newsId)
-                .orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "newsId"+newsId));
+                .orElseThrow(() -> new NewsException(NEWS_ID_NOT_FOUND, "newsId" + newsId));
     }
 
-    private NewsComment getNewsCommentById(Long commentId, Long userId){
-        return newsCommentRepository.findByIdAndUserId(commentId,userId)
-                .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND,"userId"+userId));
+    private NewsComment getNewsCommentById(Long commentId){
+        return newsCommentRepository.findById(commentId)
+                .orElseThrow(() -> new NewsException(COMMENT_ID_NOT_FOUND, "commentId" + commentId));
+    }
+
+    private NewsComment getNewsCommentByIdAndUserId(Long commentId, Long userId){
+        return newsCommentRepository.findByIdAndUserId(commentId, userId)
+                .orElseThrow(() -> new NewsException(COMMENT_ACCESS_DENIED, "commentId" + commentId));
+
     }
 
     private boolean isReply(NewsComment comment){

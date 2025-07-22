@@ -3,10 +3,13 @@ package com.tave.alarmissue.news.controller;
 import com.tave.alarmissue.auth.dto.request.PrincipalUserDetails;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.dto.request.NewsCommentRequestDto;
+import com.tave.alarmissue.news.dto.response.NewsCommentLikeResponse;
 import com.tave.alarmissue.news.dto.request.NewsCommentUpdateRequest;
 import com.tave.alarmissue.news.dto.request.NewsReplyRequest;
+import com.tave.alarmissue.news.dto.response.NewsCommentLikeStatusResponse;
 import com.tave.alarmissue.news.dto.response.NewsCommentListResponseDto;
 import com.tave.alarmissue.news.dto.response.NewsCommentResponseDto;
+import com.tave.alarmissue.news.service.NewsCommentLikeService;
 import com.tave.alarmissue.news.service.NewsCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +28,7 @@ import java.util.List;
 public class NewsCommentController {
 
     private final NewsCommentService newsCommentService;
+    private final NewsCommentLikeService newsCommentLikeService;
 
     @PostMapping
     @Operation(summary = "댓글 작성", description = "특정 뉴스에 댓글 작성합니다.")
@@ -78,6 +82,27 @@ public class NewsCommentController {
 
 
         NewsCommentResponseDto response=newsCommentService.createReply(userId,dto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/like/{commentId}")
+    @Operation(summary = "댓글/답글 좋아요", description = "댓글/답글에 좋아요를 추가하거나 제거합니다.")
+    public ResponseEntity<NewsCommentLikeResponse> toggleLike(@PathVariable Long commentId, @AuthenticationPrincipal PrincipalUserDetails principal){
+        Long userId= principal.getUserId();
+        NewsCommentLikeResponse response=newsCommentLikeService.commentLike(commentId,userId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/like/{commentId}/status")
+    @Operation(summary = "댓글 좋아요 상태 조회", description = "특정 사용자의 댓글 좋아요 상태를 조회합니다.")
+    public ResponseEntity<NewsCommentLikeStatusResponse> getLikeStatus(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal PrincipalUserDetails principal) {
+
+        Long userId = principal.getUserId();
+        NewsCommentLikeStatusResponse response = newsCommentLikeService.getLikeStatus(commentId, userId);
 
         return ResponseEntity.ok(response);
     }

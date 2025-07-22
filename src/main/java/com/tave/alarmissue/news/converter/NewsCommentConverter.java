@@ -25,11 +25,11 @@ public class NewsCommentConverter {
         return NewsCommentResponseDto.builder()
                 .commentId(newsComment.getId())
                 .comment(newsComment.getComment())
+                .likeCount(newsComment.getLikeCount())
                 .nickName(newsComment.getUser().getNickName())
                 .createdAt(newsComment.getCreatedAt())
                 .timeAgo(TimeAgoUtil.getTimeAgo(newsComment.getCreatedAt()))   //현재 시간과 계산한 값
                 .parentId(newsComment.getParentComment()!=null ? newsComment.getParentComment().getId():null)
-//                .voteType(newsComment.getVoteType() != null ? newsComment.getVoteType() : null)
                 .voteType(currentUserVoteType)
                 .build();
     }
@@ -39,6 +39,7 @@ public class NewsCommentConverter {
                 .comment(dto.getComment())
                 .user(user)
                 .news(news)
+                .likeCount(0L)
                 .voteType(voteType)
                 .build();
 
@@ -46,7 +47,6 @@ public class NewsCommentConverter {
 
     public static NewsCommentListResponseDto toCommentListResponseDto(Long newsId, Long totalCount, List<NewsComment> comments,NewsVoteType currentUserVoteType) {
         List<NewsCommentResponseDto> commentResponseDtos = comments.stream()
-//                .map(NewsCommentConverter::toCommentWithRepliesDto)
                 .map(comment->toCommentWithRepliesDto(comment,currentUserVoteType))
                 .collect(Collectors.toList());
 
@@ -62,7 +62,6 @@ public class NewsCommentConverter {
         // 답글들을 DTO로 변환
         List<NewsCommentResponseDto> replyDtos = newsComment.getReplies().stream()
                 .sorted((r1, r2) -> r1.getCreatedAt().compareTo(r2.getCreatedAt())) // 답글은 오래된 순
-//                .map(NewsCommentConverter::toCommentResponseDto)
                 .map(reply->toCommentResponseDto(reply,currentUserVoteType))
                 .collect(Collectors.toList());
 
@@ -72,7 +71,8 @@ public class NewsCommentConverter {
                 .nickName(newsComment.getUser().getNickName())
                 .createdAt(newsComment.getCreatedAt())
                 .timeAgo(TimeAgoUtil.getTimeAgo(newsComment.getCreatedAt()))
-//                .voteType(newsComment.getVoteType())
+                .voteType(newsComment.getVoteType())
+                .likeCount(newsComment.getLikeCount())
                 .voteType(currentUserVoteType)
                 .parentId(null) // 원댓글이므로 null
                 .replies(replyDtos) // 답글들 포함
