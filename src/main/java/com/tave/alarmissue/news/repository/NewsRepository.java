@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -58,4 +59,17 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     List<News> findByDateBefore(LocalDateTime date);
 
+    // 테마별 일별 통계 조회
+    @Query("SELECT n.thema, AVG(CAST(n.sentiment AS double)), COUNT(n) " +
+            "FROM News n " +
+            "WHERE DATE(n.date) = :date " +
+            "GROUP BY n.thema")
+    List<Object[]> findDailyStatsByDateGroupByThema(@Param("date") LocalDate date);
+
+    // 특정 테마의 일별 통계
+    @Query("SELECT AVG(CAST(n.sentiment AS double)), COUNT(n) " +
+            "FROM News n " +
+            "WHERE DATE(n.date) = :date AND n.thema = :thema")
+    List<Object[]> findDailyStatsByDateAndThema(@Param("date") LocalDate date,
+                                                @Param("thema") Thema thema);
 }
