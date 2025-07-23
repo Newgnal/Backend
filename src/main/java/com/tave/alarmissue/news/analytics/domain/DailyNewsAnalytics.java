@@ -1,6 +1,7 @@
 package com.tave.alarmissue.news.analytics.domain;
 
 import com.tave.alarmissue.global.domain.BaseTimeEntity;
+import com.tave.alarmissue.news.domain.enums.Thema;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
-@Table(name = "daily_news_analytics")
+@Table(name = "daily_news_analytics",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"analyticsDate", "thema"}))
 @NoArgsConstructor(access = PROTECTED)
 @Getter
 public class DailyNewsAnalytics extends BaseTimeEntity {
@@ -24,6 +26,10 @@ public class DailyNewsAnalytics extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private LocalDate analyticsDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Thema thema;
+
     @Column(nullable = false)
     private Double avgSentiment;
 
@@ -31,8 +37,9 @@ public class DailyNewsAnalytics extends BaseTimeEntity {
     private Long newsCount;
 
     @Builder
-    public DailyNewsAnalytics(LocalDate analyticsDate, Double avgSentiment, Long newsCount) {
+    public DailyNewsAnalytics(LocalDate analyticsDate,Thema thema, Double avgSentiment, Long newsCount) {
         this.analyticsDate = analyticsDate;
+        this.thema = thema;
         this.avgSentiment = avgSentiment;
         this.newsCount = newsCount;
     }

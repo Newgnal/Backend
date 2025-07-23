@@ -6,6 +6,7 @@ import com.tave.alarmissue.news.analytics.dto.response.AnalyticsSummaryResponse;
 import com.tave.alarmissue.news.analytics.dto.response.DailyNewsAnalyticsResponse;
 import com.tave.alarmissue.news.analytics.dto.response.SentimentNewsResponse;
 import com.tave.alarmissue.news.analytics.repository.DailyNewsAnalyticsRepository;
+import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.exceptions.NewsErrorCode;
 import com.tave.alarmissue.news.exceptions.NewsException;
 import com.tave.alarmissue.news.repository.NewsRepository;
@@ -31,14 +32,14 @@ public class NewsAnalyticsService {
     private final DailyNewsAnalyticsRepository analyticsRepository;
     private final NewsRepository newsRepository;
 
-    public SentimentNewsResponse getRecentMonthAnalytics() {
+    public SentimentNewsResponse getRecentMonthAnalytics(Thema thema){
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusDays(29); // 30일간 (오늘 포함)
 
-        return getAnalyticsBetween(startDate, today);
+        return getAnalyticsBetween(thema, startDate, today);
     }
 
-    public SentimentNewsResponse getAnalyticsBetween(LocalDate startDate, LocalDate endDate) {
+    public SentimentNewsResponse getAnalyticsBetween(Thema thema, LocalDate startDate, LocalDate endDate) {
         // 날짜 유효성 검사
         if (startDate.isAfter(endDate)) {
             throw new NewsException(NewsErrorCode.INVALID_DATE_RANGE);
@@ -55,7 +56,8 @@ public class NewsAnalyticsService {
         if (startDate.isBefore(today)) {
             LocalDate pastEndDate = endDate.isBefore(today) ? endDate : today.minusDays(1);
             List<DailyNewsAnalytics> pastData = analyticsRepository
-                    .findByAnalyticsDateBetweenOrderByAnalyticsDate(startDate, pastEndDate);
+                    .findByAnalyticsDateBetweenAndThemaOrderByAnalyticsDateAsc(
+                            startDate, pastEndDate, thema);
 
             List<DailyNewsAnalyticsResponse> pastResponses = pastData.stream()
                     .map(DailyNewsAnalyticsResponse::from)
@@ -66,7 +68,7 @@ public class NewsAnalyticsService {
 
         // 2. 오늘 데이터는 실시간 계산
         if (!endDate.isBefore(today)) {
-            DailyNewsAnalyticsResponse todayData = getTodayAnalyticsRealtime(today);
+            DailyNewsAnalyticsResponse todayData = getTodayAnalyticsRealtime(today, thema);
             if (todayData != null) {
                 responseDtoList.add(todayData);
             }
@@ -82,15 +84,16 @@ public class NewsAnalyticsService {
         AnalyticsSummaryResponse summary = calculateSummaryFromDto(responseDtoList, startDate, endDate);
 
         return SentimentNewsResponse.builder()
+                .thema(thema)
                 .dailyData(responseDtoList)
                 .summary(summary)
                 .build();
     }
 
     //실시간 계산
-    private DailyNewsAnalyticsResponse getTodayAnalyticsRealtime(LocalDate today) {
+    private DailyNewsAnalyticsResponse getTodayAnalyticsRealtime(LocalDate today, Thema thema) {
         try {
-            List<Object[]> results = newsRepository.findDailyStatsByDate(today);
+            List<Object[]> results = newsRepository.findDailyStatsByDateAndThema(today, thema);
 
             if (!results.isEmpty()) {
                 Object[] stats = results.get(0);

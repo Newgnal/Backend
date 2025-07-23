@@ -2,6 +2,7 @@ package com.tave.alarmissue.news.analytics.scheduler;
 
 import com.tave.alarmissue.news.analytics.domain.DailyNewsAnalytics;
 import com.tave.alarmissue.news.analytics.repository.DailyNewsAnalyticsRepository;
+import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,46 +40,66 @@ public class NewsAnalyticsScheduler {
 
     // 집계 로직
     private void executeAggregation(LocalDate targetDate) {
-        log.info("일별 집계 시작: {}", targetDate);
+        log.info("테마별 집계 시작: {}", targetDate);
 
         try {
-            List<Object[]> results = newsRepository.findDailyStatsByDate(targetDate);
+            List<Object[]> results = newsRepository.findDailyStatsByDateGroupByThema(targetDate);
 
             if (!results.isEmpty()) {
-                Object[] stats = results.get(0);
+                int processedCount = 0;
 
-                if (stats != null && stats.length >= 2) {
-                    Double avgSentiment = stats[0] != null ? ((Number) stats[0]).doubleValue() : null;
-                    Long newsCount = stats[1] != null ? ((Number) stats[1]).longValue() : 0L;
+                for (Object[] stats : results) {
+                    if (stats != null && stats.length >= 3) {
+                        Thema thema = (Thema) stats[0];
+                        Double avgSentiment = stats[1] != null ?
+                                roundToTwoDecimalPlaces(((Number) stats[1]).doubleValue()) : null;
+                        Long newsCount = stats[2] != null ? ((Number) stats[2]).longValue() : 0L;
 
                     if (newsCount > 0) {
-                        analyticsRepository.findByAnalyticsDate(targetDate)
+                        analyticsRepository.findByAnalyticsDateAndThema(targetDate, thema)
                                 .ifPresentOrElse(
                                         existing -> {
                                             existing.updateAnalytics(avgSentiment, newsCount);
                                             analyticsRepository.save(existing);
-                                            log.info("집계 업데이트: {} (뉴스: {})", targetDate, newsCount);
+
+                                            log.debug("테마별 집계 업데이트: {} - {} (뉴스: {})",
+                                                    targetDate, thema, newsCount);
                                         },
                                         () -> {
                                             DailyNewsAnalytics newAnalytics = DailyNewsAnalytics.builder()
                                                     .analyticsDate(targetDate)
+                                                    .thema(thema)
                                                     .avgSentiment(avgSentiment)
                                                     .newsCount(newsCount)
                                                     .build();
                                             analyticsRepository.save(newAnalytics);
-                                            log.info("집계 생성: {} (뉴스: {})", targetDate, newsCount);
+                                            log.debug("테마별 집계 생성: {} - {} (뉴스: {})",
+                                                    targetDate, thema, newsCount);
                                         }
                                 );
-                    } else {
-                        log.warn("뉴스 없음: {}", targetDate);
+                        processedCount++;
+                    }
                     }
                 }
+
+                log.info("테마별 집계 완료: {} ({개 테마 처리)", targetDate, processedCount);
+
             } else {
                 log.warn("집계 데이터 없음: {}", targetDate);
             }
         } catch (Exception e) {
-            log.error("집계 실패: {} - {}", targetDate, e.getMessage());
+            log.error("테마별 집계 실패: {} - {}", targetDate, e.getMessage());
         }
+    }
+
+    /**
+     * 소수점 두자리 반올림
+     */
+    private Double roundToTwoDecimalPlaces(Double value) {
+        if (value == null) {
+            return null;
+        }
+        return Math.round(value * 100.0) / 100.0;
     }
 
 }
