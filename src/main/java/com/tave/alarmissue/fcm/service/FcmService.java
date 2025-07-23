@@ -8,8 +8,10 @@ import com.tave.alarmissue.fcm.exception.FcmErrorCode;
 import com.tave.alarmissue.fcm.exception.FcmException;
 import com.tave.alarmissue.notification.domain.NotificationTemplateManager;
 import com.tave.alarmissue.notification.domain.enums.NotificationStatus;
+import com.tave.alarmissue.notification.domain.enums.NotificationType;
 import com.tave.alarmissue.notification.dto.request.NotificationHistoryRequest;
 import com.tave.alarmissue.notification.service.NotificationHistoryService;
+import com.tave.alarmissue.notification.service.UserNotificationSettingService;
 import com.tave.alarmissue.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,11 +25,19 @@ import java.time.format.DateTimeFormatter;
 public class FcmService {
     private final FcmTokenService fcmTokenService;
     private final NotificationHistoryService notificationHistoryService;
+    private final UserNotificationSettingService settingService;
     private final NotificationTemplateManager templateManager;
 
     public FcmNotificationResponse sendPushNotification(FcmSendRequest fcmSendDto) {
         UserEntity user = fcmTokenService.getUserByToken(fcmSendDto.getToken());
         Long userId = user.getId();
+
+        //알림 설정 확인
+        if (!isNotificationAllowed(userId, fcmSendDto.getNotificationType())) {
+            // 이력만 저장하고 전송하지 않음
+            saveNotificationHistory(fcmSendDto, null, NotificationStatus.BLOCKED, "사용자 설정에 의해 차단됨", userId);
+            return null;
+        }
 
         Notification notification = Notification.builder()
                 .setTitle(fcmSendDto.getTitle())
@@ -122,6 +132,21 @@ public class FcmService {
         // Firebase 공식 문서에 따른 토큰 관련 에러 메시지 패턴 확인
         return errorMessage != null &&
                 errorMessage.contains("registration token is not a valid FCM registration token");
+    }
+
+    //알림 전송 허용 여부 확인
+    private boolean isNotificationAllowed(Long userId, NotificationType type) {
+        // 알림 타입이 활성화되어 있는지 확인
+        if (!settingService.isNotificationEnabled(userId, type)) {
+            return false;
+        }
+
+        // 방해금지 시간 확인
+        if (type.isSupportDoNotDisturb() && settingService.isDoNotDisturbTime(userId)) {
+            return false;
+        }
+
+        return true;
     }
 
 }
