@@ -109,4 +109,16 @@ public class NewsroomController {
         List<PopularKeywordResponse> keywords = popularKeywordService.getTopKeywords(count);
         return ResponseEntity.ok(keywords);
     }
+
+    //개별 키워드 알림 설정 토글
+    @PatchMapping("/{keywordId}/notification")
+    @Operation(summary = "개별 키워드 알림 설정 토글", description = "특정 키워드의 개별 알림 수신 여부를 변경합니다.")
+    public ResponseEntity<KeywordResponse> toggleIndividualKeywordNotification(
+            @PathVariable Long keywordId,
+            @AuthenticationPrincipal PrincipalUserDetails principal) {
+        Long userId = principal.getUserId();
+
+        KeywordResponse response = newsroomService.toggleIndividualKeywordNotification(userId, keywordId);
+        return ResponseEntity.ok(response);
+    }
 }

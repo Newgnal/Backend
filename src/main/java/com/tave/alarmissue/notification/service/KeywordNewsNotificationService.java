@@ -28,6 +28,7 @@ public class KeywordNewsNotificationService {
     private final FcmTokenService fcmTokenService;
     private final NotificationBuilderService notificationBuilderService;
     private final FcmService fcmService;
+    private final UserNotificationSettingService notificationSettingService;
 
     // 알림 전송
     @Async
@@ -90,6 +91,25 @@ public class KeywordNewsNotificationService {
     //개별 사용자 알림 전송 메서드
     private void sendNotificationToUser(News news, Keyword keyword) {
         UserEntity user = keyword.getUser();
+
+        //1. 키워드 뉴스 알림(전체)이 활성화 되어있는지 체크
+        if (!notificationSettingService.isNotificationEnabled(user.getId(), NotificationType.KEYWORD_NEWS)) {
+            log.debug("전체 키워드 뉴스 알림이 비활성화됨 - 사용자 ID: {}", user.getId());
+            return;
+        }
+
+        //2. 개별 키워드 뉴스 알림이 활성화 되어있는지 체크
+        if (!keyword.getNotificationEnabled()) {
+            log.debug("개별 키워드 '{}' 알림이 비활성화됨 - 사용자 ID: {}",
+                    keyword.getKeyword(), user.getId());
+            return;
+        }
+
+        //3. 방해금지 시간인지 체크
+        if (notificationSettingService.isDoNotDisturbTime(user.getId())) {
+            log.debug("방해금지 시간으로 알림 전송 스킵 - 사용자 ID: {}", user.getId());
+            return;
+        }
 
         // 사용자의 FCM 토큰 조회
         List<String> fcmTokens = fcmTokenService.getUserTokens(user.getId());
