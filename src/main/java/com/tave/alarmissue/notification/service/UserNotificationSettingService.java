@@ -50,15 +50,13 @@ public class UserNotificationSettingService {
     public UserNotificationSettingResponse toggleNotificationType(Long userId, NotificationType type, Boolean enabled) {
         UserNotificationSetting setting = getOrCreateSetting(userId);
 
-        if (type == NotificationType.KEYWORD_NEWS && !enabled && setting.getDoNotDisturbEnabled()) {
-            throw new NotificationException(NotificationErrorCode.DO_NOT_DISTURB_INVALID_STATE);
-        }
-
         setting.updateNotificationSetting(type, enabled);
 
         // 키워드 뉴스 알림 비활성화시, 방해금지 시간도 비활성화
         if (type == NotificationType.KEYWORD_NEWS && !enabled) {
-            setting.updateDoNotDisturbSetting(false, null, null);
+            setting.updateDoNotDisturbSetting(false,
+                    setting.getDoNotDisturbStartTime(),
+                    setting.getDoNotDisturbEndTime());
         }
 
         UserNotificationSetting savedSetting = settingRepository.save(setting);
