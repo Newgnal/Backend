@@ -1,5 +1,6 @@
 package com.tave.alarmissue.notification.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +18,15 @@ public class DoNotDisturbRequest {
     @Schema(description = "방해금지 모드 활성화 여부")
     private Boolean enabled;
 
-    @Schema(description = "방해금지 시작 시간", example = "22:00")
-    private LocalTime startTime;
+    @Builder.Default
+    @JsonFormat(pattern = "HH:mm:ss")
+    @Schema(description = "방해금지 시작 시간", type = "string", example = "22:00")
+    private LocalTime startTime = LocalTime.MIDNIGHT;
 
-    @Schema(description = "방해금지 종료 시간", example = "07:00")
-    private LocalTime endTime;
+    @Builder.Default
+    @JsonFormat(pattern = "HH:mm:ss")
+    @Schema(description = "방해금지 종료 시간", type = "string", example = "07:00")
+    private LocalTime endTime = LocalTime.MIDNIGHT;
+
+
 }
