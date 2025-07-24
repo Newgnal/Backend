@@ -1,6 +1,7 @@
 package com.tave.alarmissue.fcm.service;
 
 
+import com.google.firebase.ErrorCode;
 import com.google.firebase.messaging.*;
 import com.tave.alarmissue.fcm.dto.request.FcmSendRequest;
 import com.tave.alarmissue.fcm.dto.response.FcmNotificationResponse;
@@ -103,6 +104,13 @@ public class FcmService {
 
     private void handleFirebaseMessagingException(FirebaseMessagingException ex, String token) {
         MessagingErrorCode errorCode = ex.getMessagingErrorCode();
+
+        if (errorCode == null) {
+            ErrorCode generalErrorCode = ex.getErrorCode();
+            System.err.println("MessagingErrorCode is null, using general ErrorCode: " + generalErrorCode);
+
+            throw new FcmException(FcmErrorCode.PUSH_SEND_FAILED);
+        }
 
         switch (errorCode) {
             case UNREGISTERED:
