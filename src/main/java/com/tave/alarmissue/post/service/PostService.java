@@ -81,7 +81,7 @@ public class PostService {
         }
 
 
-        post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getThema(), dto.isHasVote(), news, news.getUrl());
+        post.Update(dto.getPostTitle(), dto.getPostContent(), dto.getThema(), dto.isHasVote(), news, newsUrl);
 
         //투표기능끄면 post와 연관된 vote DB 삭제
         if (!post.getHasVote()) voteRepository.deleteAllByPost(post);
