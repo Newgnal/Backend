@@ -166,6 +166,7 @@ public class NewsroomService {
                     .keywordId(keyword.getId())
                     .keywordName(keyword.getKeyword())
                     .count(count)
+                    .notificationEnabled(keyword.getNotificationEnabled())
                     .build());
         }
 
