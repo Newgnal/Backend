@@ -11,12 +11,14 @@ import com.tave.alarmissue.user.domain.UserEntity;
 import com.tave.alarmissue.post.domain.enums.VoteType;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
 public class PostReplyConverter {
-    public static ReplyResponse toReplyResponseDto(PostReply reply) {
+    public static ReplyResponse toReplyResponseDto(PostReply reply,boolean isLiked) {
         return ReplyResponse.builder()
                 .replyId(reply.getReplyId())
                 .replyContent(reply.getReplyContent())
@@ -24,6 +26,7 @@ public class PostReplyConverter {
                 .createdAt(reply.getCreatedAt())
                 .voteType(reply.getVoteType() != null ? reply.getVoteType() : null)
                 .likeCount(reply.getLikeCount())
+                .isLiked(isLiked)
                 .build();
 
 
@@ -38,9 +41,12 @@ public class PostReplyConverter {
                 likeCount(0L).
                 build();
    }
-    public static List<ReplyResponse> toReplyResponseDtos (List<PostReply> replies) {
+    public static List<ReplyResponse> toReplyResponseDtos(List<PostReply> replies, Map<Long, Boolean> replyIdToIsLikedMap) {
+        if (replies == null) {
+            return Collections.emptyList();
+        }
         return replies.stream()
-                .map(PostReplyConverter::toReplyResponseDto)
+                .map(reply -> PostReplyConverter.toReplyResponseDto(reply, replyIdToIsLikedMap.getOrDefault(reply.getReplyId(), false)))
                 .collect(Collectors.toList());
     }
 }

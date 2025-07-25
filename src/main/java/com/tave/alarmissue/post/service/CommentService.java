@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import static com.tave.alarmissue.post.exception.PostErrorCode.*;
@@ -61,7 +62,7 @@ public class CommentService {
 
         PostComment saved = commentRepository.save(postComment);
         postRepository.incrementCommentCount(postId); //댓글 갯수 증가
-        return PostCommentConverter.toCommentResponseDto(saved,null);
+        return PostCommentConverter.toCommentResponseDto(saved, Collections.emptyMap(),null,false);
     }
 
 
@@ -103,7 +104,7 @@ public class CommentService {
         PostReply reply = replyConverter.toReply(dto,user,post, postComment,voteType);
         PostReply saved = replyRepository.save(reply);
         postRepository.incrementCommentCount(postComment.getPost().getPostId()); //댓글  갯수 증가
-        return PostReplyConverter.toReplyResponseDto(saved);
+        return PostReplyConverter.toReplyResponseDto(saved,false);
 
     }
 

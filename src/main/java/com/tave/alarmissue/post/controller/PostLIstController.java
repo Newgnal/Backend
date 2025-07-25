@@ -37,9 +37,11 @@ public class PostLIstController {
     public ResponseEntity<PageResponse<PostResponse>> getAllPost(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "LATEST") SortType sortType
+            @RequestParam(defaultValue = "LATEST") SortType sortType,
+            @AuthenticationPrincipal PrincipalUserDetails principal
     ) {
-        return getSortedPosts(page, size, sortType, pageable -> postListService.getAllPost(pageable));
+        Long userId = principal != null ? principal.getUserId() : null;
+        return getSortedPosts(page, size, sortType, pageable -> postListService.getAllPost(pageable,userId));
     }
 
 
@@ -50,16 +52,19 @@ public class PostLIstController {
             @PathVariable Thema thema,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "LATEST") SortType sortType
+            @RequestParam(defaultValue = "LATEST") SortType sortType,
+            @AuthenticationPrincipal PrincipalUserDetails principal
     ) {
-        return getSortedPosts(page, size, sortType, pageable -> postListService.getPostByThema(thema, pageable));
+        Long userId = principal != null ? principal.getUserId() : null;
+        return getSortedPosts(page, size, sortType, pageable -> postListService.getPostByThema(thema, pageable,userId));
     }
 
 
     @GetMapping("/home")
     @Operation(summary = "게시글 홈 화면 조회", description = "인기 테마3개(게시글 순), 인기글 9개(조회수순), 최신 글 4개를 조회합니다")
-    public ResponseEntity<PostHomeResponse> getPostHome(){
-        PostHomeResponse responseDto = postListService.getPostHome();
+    public ResponseEntity<PostHomeResponse> getPostHome(@AuthenticationPrincipal PrincipalUserDetails principal){
+        Long userId = principal != null ? principal.getUserId() : null;
+        PostHomeResponse responseDto = postListService.getPostHome(userId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
