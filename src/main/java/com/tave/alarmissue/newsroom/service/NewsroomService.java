@@ -166,6 +166,7 @@ public class NewsroomService {
                     .keywordId(keyword.getId())
                     .keywordName(keyword.getKeyword())
                     .count(count)
+                    .notificationEnabled(keyword.getNotificationEnabled())
                     .build());
         }
 
@@ -197,6 +198,24 @@ public class NewsroomService {
             Long keywordId = keywordIds.get(i);
             keywordRepository.updateDisplayOrder(keywordId, i);
         }
+    }
+
+
+    // 개별 키워드 알림 설정
+    @Transactional
+    public KeywordResponse toggleIndividualKeywordNotification(Long userId, Long keywordId) {
+        Keyword keyword = keywordRepository.findById(keywordId)
+                .orElseThrow(() -> new KeywordException(KeywordErrorCode.KEYWORD_NOT_FOUND));
+
+        if (!keyword.getUser().getId().equals(userId)) {
+            throw new KeywordException(KeywordErrorCode.UNAUTHORIZED_ACCESS);
+        }
+
+        // 개별 키워드 알림 설정 토글
+        keyword.toggleNotification();
+        Keyword savedKeyword = keywordRepository.save(keyword);
+
+        return KeywordConverter.toResponse(savedKeyword);
     }
 
 }

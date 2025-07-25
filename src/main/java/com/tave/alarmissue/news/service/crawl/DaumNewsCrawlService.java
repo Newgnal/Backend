@@ -9,6 +9,7 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.WebDriverFactory;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
+import com.tave.alarmissue.notification.service.KeywordNewsNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
@@ -30,6 +31,7 @@ public class DaumNewsCrawlService {
     private final WebDriverFactory webDriverFactory;
     private final S3Uploader s3Uploader;
     private final AiService aiService;
+    private final KeywordNewsNotificationService keywordNewsNotificationService;
 
     @Scheduled(cron = "0 */30 * * * *")
     @Async
@@ -144,6 +146,8 @@ public class DaumNewsCrawlService {
             List<News> updatedNewsList = new ArrayList<>();
             log.info("[DAUM] 저장 완료 ({}건)", savedNewsList.size());
 
+            processKeywordNotifications(savedNewsList);
+
             for (News savedNews : savedNewsList) {
                 String rawContent = newsContentMap.get(savedNews);
                 String escapedContent = rawContent.replace("\n", "\\n");
@@ -219,6 +223,23 @@ public class DaumNewsCrawlService {
                 newsRepository.save(updatedNews);
             } catch (Exception e) {
                 log.error("뉴스 저장 중 에러 발생: {}", e.getMessage(), e);
+            }
+        }
+    }
+
+    private void processKeywordNotifications(List<News> newsList) {
+        if (newsList.isEmpty()) {
+            return;
+        }
+
+        log.info("[DAUM] 키워드 알림 처리 시작 - 대상 뉴스 개수: {}", newsList.size());
+
+        for (News news : newsList) {
+            try {
+                keywordNewsNotificationService.sendKeywordNewsNotifications(news);
+            } catch (Exception e) {
+                log.error("[DAUM] 뉴스 알림 처리 중 오류 발생 - 뉴스 ID: {}, 제목: {}",
+                        news.getId(), news.getTitle(), e);
             }
         }
     }

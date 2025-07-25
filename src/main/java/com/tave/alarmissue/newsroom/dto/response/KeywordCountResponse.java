@@ -20,4 +20,7 @@ public class KeywordCountResponse {
 
     @Schema(description = "뉴스 개수", example = "15")
     private Long count;
+
+    @Schema(description = "알림 활성화 여부", example = "true")
+    private Boolean notificationEnabled;
 }

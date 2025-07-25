@@ -23,5 +23,12 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
 
     @Query("SELECT k FROM Keyword k WHERE k.user.id = :userId ORDER BY k.displayOrder ASC, k.createdAt ASC")
     List<Keyword> findByUserIdOrderByDisplayOrder(@Param("userId") Long userId);
+
+    //알림 활성화된 특정 키워드 조회
+    List<Keyword> findByKeywordAndNotificationEnabledTrue(String keyword);
+
+    //알림 활성화된 모든 키워드 조회
+    @Query("SELECT DISTINCT k.keyword FROM Keyword k WHERE k.notificationEnabled = true")
+    List<String> findAllActiveKeywords();
 }
 

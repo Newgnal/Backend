@@ -43,8 +43,10 @@ public class SecurityConfig {
             "/search/v1/**",
             "/post/v1/detail/*",
             "/post/v1/list/**",
-            "/news/v1/comments/*",
-            "/ai/**"
+            "news/v1/comments/*",
+            "/ai/**",
+            "/fcm/v1/**",
+            "/notifications/v1/**"
     };
 
 

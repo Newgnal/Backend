@@ -34,4 +34,12 @@ public class Keyword extends BaseTimeEntity {
     @Column(nullable = false)
     @Builder.Default
     private Integer displayOrder = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean notificationEnabled = true;
+
+    public void toggleNotification() {
+        this.notificationEnabled = !this.notificationEnabled;
+    }
 }

@@ -9,6 +9,7 @@ import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.domain.WebDriverFactory;
 import com.tave.alarmissue.news.domain.enums.Thema;
 import com.tave.alarmissue.news.repository.NewsRepository;
+import com.tave.alarmissue.notification.service.KeywordNewsNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -32,6 +33,7 @@ public class NaverNewsCrawlService {
     private final WebDriverFactory webDriverFactory;
     private final S3Uploader s3Uploader;
     private final AiService aiService;
+    private final KeywordNewsNotificationService keywordNewsNotificationService;
 
     @Scheduled(cron = "0 */30 * * * *")
     @Async
@@ -164,6 +166,8 @@ public class NaverNewsCrawlService {
             List<News> updatedNewsList = new ArrayList<>();
             log.info("[NAVER] 저장 완료 ({}건)", savedNewsList.size());
 
+            //알림 전송
+            processKeywordNotifications(savedNewsList);
 
             for (News savedNews : savedNewsList) {
                 String rawContent = newsContentMap.get(savedNews);
@@ -233,5 +237,22 @@ public class NaverNewsCrawlService {
             }
         }
 
+    }
+
+    private void processKeywordNotifications(List<News> newsList) {
+        if (newsList.isEmpty()) {
+            return;
+        }
+
+        log.info("[NAVER] 키워드 알림 처리 시작 - 대상 뉴스 개수: {}", newsList.size());
+
+        for (News news : newsList) {
+            try {
+                keywordNewsNotificationService.sendKeywordNewsNotifications(news);
+            } catch (Exception e) {
+                log.error("[NAVER] 뉴스 알림 처리 중 오류 발생 - 뉴스 ID: {}, 제목: {}",
+                        news.getId(), news.getTitle(), e);
+            }
+        }
     }
 }
