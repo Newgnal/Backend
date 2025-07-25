@@ -13,5 +13,5 @@ public class HotPostResponse {
     private Thema thema;
     private Long viewCount;
     private Long commentCount;
-
+    private boolean isLiked;
 }

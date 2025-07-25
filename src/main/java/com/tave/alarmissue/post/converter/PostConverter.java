@@ -3,15 +3,15 @@ package com.tave.alarmissue.post.converter;
 import com.tave.alarmissue.news.domain.News;
 import com.tave.alarmissue.news.repository.NewsRepository;
 import com.tave.alarmissue.post.domain.Post;
-import com.tave.alarmissue.post.domain.PostComment;
-import com.tave.alarmissue.post.domain.PostReply;
 import com.tave.alarmissue.post.dto.request.PostCreateRequest;
 import com.tave.alarmissue.post.dto.response.*;
 import com.tave.alarmissue.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ PostConverter {
 
     private final NewsRepository newsRepository;
 
-    public static PostResponse toPostResponseDto(Post post) {
+    public static PostResponse toPostResponseDto(Post post,boolean isLiked) {
         return PostResponse.builder()
                 .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
@@ -36,14 +36,16 @@ PostConverter {
                 .hasVote(post.getHasVote())
                 .viewCount(post.getViewCount())
                 .commentCount(post.getCommentCount())
+                .isLiked(isLiked)
                 .build();
     }
 
     //게시글 상세 조회
     public static PostDetailResponse toPostDetailResponseDto(Post post,
                                                              VoteResponse vote,
-                                                             List<CommentResponse> comments) {
-        PostResponse postResponseDto = toPostResponseDto(post);
+                                                             List<CommentResponse> comments,
+                                                             boolean isLiked) {
+        PostResponse postResponseDto = toPostResponseDto(post,isLiked);
 
         return PostDetailResponse.builder()
                 .post(postResponseDto)
@@ -64,7 +66,9 @@ PostConverter {
     }
 
 
-    public static Page<PostResponse> toPostResponseDtos(Page<Post> posts) {
+    public static Page<PostResponse> toPostResponseDtos(Page<Post> posts, Map<Long, Boolean> postIdToIsLikedMap) {
+        Map<Long, Boolean> finalMap = postIdToIsLikedMap == null ? Collections.emptyMap() : postIdToIsLikedMap;
+
         return posts.map(post -> PostResponse.builder()
                 .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
@@ -78,12 +82,13 @@ PostConverter {
                 .hasVote(post.getHasVote())
                 .viewCount(post.getViewCount())
                 .commentCount(post.getCommentCount())
+                .isLiked(finalMap.getOrDefault(post.getPostId(), false))
                 .build()
         );
     }
 
     //인기 게시글
-    public static HotPostResponse toPostHotResponseDto(Post post){
+    public static HotPostResponse toPostHotResponseDto(Post post,boolean isLiked){
         return HotPostResponse.builder()
                .postId(post.getPostId())
                 .postTitle(post.getPostTitle())
@@ -91,10 +96,11 @@ PostConverter {
                 .thema(post.getThema())
                 .viewCount(post.getViewCount())
                 .commentCount(post.getCommentCount())
+                .isLiked(isLiked)
                 .build();
     }
 
-    public Post toPost(PostCreateRequest dto, UserEntity user,News news) {
+    public Post toPost(PostCreateRequest dto, UserEntity user, News news) {
 
         return Post.builder()
                 .postTitle(dto.getPostTitle())

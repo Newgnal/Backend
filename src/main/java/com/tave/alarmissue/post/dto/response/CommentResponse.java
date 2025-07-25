@@ -19,4 +19,5 @@ public class CommentResponse {
     private LocalDateTime createdAt;
     private VoteType voteType;
     private List<ReplyResponse> replies;
+    private boolean isLiked;
 }
