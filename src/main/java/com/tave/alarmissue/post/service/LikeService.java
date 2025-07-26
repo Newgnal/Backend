@@ -39,7 +39,7 @@ public class LikeService {
         Post post = getPostById(postId);
 
         // 기존 좋아요가 존재하는지 확인
-        Optional<PostLike> existingLike = likeRepository.findPostLike(user, post);
+        Optional<PostLike> existingLike = likeRepository.findPostLike(userId, postId);
 
         if (existingLike.isPresent()) {
 
@@ -67,7 +67,7 @@ public class LikeService {
         UserEntity user = getUserById(userId);
         PostComment postComment = getPostCommentById(commentId);
 
-        Optional<PostLike> existingLike = likeRepository.findCommentLike(user, postComment);
+        Optional<PostLike> existingLike = likeRepository.findCommentLike(userId, commentId);
 
         if (existingLike.isPresent()) {
             Long LikeId = existingLike.get().getLikeId();
@@ -94,7 +94,7 @@ public class LikeService {
         UserEntity user = getUserById(userId);
         PostReply reply = getPostReplyById(replyId);
 
-        Optional<PostLike> existingLike = likeRepository.findReplyLike(user,reply);
+        Optional<PostLike> existingLike = likeRepository.findReplyLike(userId,replyId);
         if (existingLike.isPresent()) {
             Long LikeId = existingLike.get().getLikeId();
             likeRepository.delete(existingLike.get()); // 좋아요 취소
