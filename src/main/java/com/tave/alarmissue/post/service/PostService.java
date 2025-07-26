@@ -88,7 +88,7 @@ public class PostService {
         if (!post.getHasVote()) voteRepository.deleteAllByPost(post);
         Post saved = postRepository.save(post);
 
-        boolean isLiked = isPostLikedByUser(user, post);
+        boolean isLiked = isPostLikedByUser(userId, postId);
 
         return PostConverter.toPostResponseDto(saved,isLiked);
 
@@ -117,7 +117,7 @@ public class PostService {
 
         VoteResponse voteResponse = createVoteResponse(post, userId);
 
-        boolean isLiked = isPostLikedByUser(user, post);
+        boolean isLiked = isPostLikedByUser(userId, postId);
         List<CommentResponse> commentResponses = getCommentResponses(post,user);
 
         return PostConverter.toPostDetailResponseDto(post, voteResponse, commentResponses, isLiked);
@@ -215,8 +215,8 @@ public class PostService {
         return PostVoteConverter.toVoteResponseDto(post, myVoteType, voteCounts);
     }
 
-    private boolean isPostLikedByUser(UserEntity user, Post post) {
-        return likeRepository.findPostLike(user, post)
+    private boolean isPostLikedByUser(Long userId, Long postId) {
+        return likeRepository.findPostLike(userId, postId)
                 .isPresent();
     }
 

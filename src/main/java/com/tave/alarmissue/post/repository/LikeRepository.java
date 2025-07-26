@@ -14,27 +14,29 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<PostLike, Long> {
-
     @Query("SELECT l FROM PostLike l " +
-            "WHERE l.user = :user AND l.post = :post AND l.targetType = 'POST'")
+            "WHERE l.user.id = :userId AND l.post.postId = :postId AND l.targetType = 'POST'")
     Optional<PostLike> findPostLike(
-            @Param("user") UserEntity user,
-            @Param("post") Post post
+            @Param("userId") Long userId,
+            @Param("postId") Long postId
     );
 
+    // 댓글 좋아요
     @Query("SELECT l FROM PostLike l " +
-            "WHERE l.user = :user AND l.comment = :comment AND l.targetType = 'COMMENT'")
+            "WHERE l.user.id = :userId AND l.comment.commentId = :commentId AND l.targetType = 'COMMENT'")
     Optional<PostLike> findCommentLike(
-            @Param("user") UserEntity user,
-            @Param("comment") PostComment comment
+            @Param("userId") Long userId,
+            @Param("commentId") Long commentId
     );
 
+    // 대댓글 좋아요
     @Query("SELECT l FROM PostLike l " +
-            "WHERE l.user = :user AND l.postReply = :reply AND l.targetType = 'REPLY'")
+            "WHERE l.user.id = :userId AND l.postReply.replyId = :replyId AND l.targetType = 'REPLY'")
     Optional<PostLike> findReplyLike(
-            @Param("user") UserEntity user,
-            @Param("reply") PostReply reply
+            @Param("userId") Long userId,
+            @Param("replyId") Long replyId
     );
+
     @Query("SELECT l FROM PostLike l WHERE l.user = :user AND l.targetType = :targetType AND l.post.postId IN :postIds")
     List<PostLike> findAllByUserAndTargetTypeAndPostIds(
             @Param("user") UserEntity user,
